@@ -51,44 +51,18 @@ jQuery('.hidemap').live('click', function(event) {
 });
 
 //show specific slide in gallery
-jQuery('.borderlist').live('click', function(event) {
-	var slidenum = jQuery(this).index();
-	var newslide = jQuery('.slide').eq(slidenum);
-	var slidecaption = jQuery('.caption').eq(slidenum);
-	
-	//fadein slide
-	if(newslide.is(':visible')) newslide.nextAll('.slide').fadeOut(2000);
-	else newslide.fadeIn(2000).prevAll('.slide').fadeIn(2000);
-		
-	//update caption and slidenav
-	slidecaption.fadeIn(2000).siblings().fadeOut(2000);
-	jQuery(this).addClass('selected').siblings().removeClass('selected');
-		
-	//pause slideshow
-	clearInterval(slideshow);	
+jQuery('.galthumbs a').live('click', function(event) {
+	var oldnum = jQuery('.gallery .slide:last').attr('id').split('-')[1];
+	var oldthumb = jQuery('.galthumbs a').eq(oldnum);
+	var newnum = jQuery(this).index();
 	event.preventDefault();
+	if(jQuery(this).children('img').length>0){
+		jQuery('#slide-'+newnum).hide().appendTo(jQuery('.gallery')).fadeIn(1000);
+		jQuery(this).hide();
+		oldthumb.show();
+	}
 });
 
-
-//start slideshow
-function startslideshow() {
-	if(jQuery('.slide').length>1){
-		slideshow = setInterval(function(){
-			var newnum = jQuery('.slide:visible').length;
-			if(newnum == jQuery('.slide').length) newnum = 0;
-			var newslide = jQuery('.slide').eq(newnum);
-			var newcaption = jQuery('.caption').eq(newnum);
-			
-			//fade in new slide
-			if(newslide.is(':visible')) newslide.nextAll('.slide').fadeOut(2000);
-			else newslide.fadeIn(2000);
-			
-			//update caption
-			newcaption.fadeIn(2000).siblings().fadeOut(2000);
-			
-		}, 4000);
-	}
-}
 
 //MAP FUNCTIONS//
 

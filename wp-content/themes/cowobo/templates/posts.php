@@ -5,7 +5,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 	//include post title and data
 	echo '<div class="tab">';
-	echo '<div class="feedtitle">'.cwb_feed_title().'</div>';
+	echo '<div class="feedtitle">'.cwb_feed_title();
+	if($author) echo '<a class="feededit" href="?action=editpost">+edit</a>';	
+	echo '</div>';
+	
 	foreach($layouts->layout[$postcat->term_id] as $field):$index++;
 		$slug = $field['type'].$index++;
 		if($field['type'] == 'tags'):
@@ -94,11 +97,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 	
 	//include main text if post has content
-	if(get_the_content()):
+	if(count($post->post_content)>5):
 		echo '<div class="tab">';
 			echo apply_filters('the_content', cwb_the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
-			if($author) echo '<br/><a href="?action=editpost">Edit Page</a>';	
 		echo '</div>';
 	endif;
 	

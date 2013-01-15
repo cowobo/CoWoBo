@@ -16,7 +16,7 @@ else:
 		$userid = $social->profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);	
-		$canedit = current_user_can('edit_settings');
+		$canedit = current_user_can('edit_others_posts');
 		if(!$postid) $postid = $post->ID;
 		if($_POST['post_ID']) $postid = $_POST['post_ID'];
 		if($post->ID == $userid or $canedit or $postcat->slug == 'region') $author = true; 
