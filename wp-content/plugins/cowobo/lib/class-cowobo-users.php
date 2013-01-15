@@ -25,17 +25,19 @@ class CoWoBo_Users
 
     /**
      * Create user and redirect them to profile
+     *
+     * Creates a username based on the emailaddress.
      */
     public function create_user(){
         global $cowobo;
 
         $email = $cowobo->query->email;
         if ( ! $name = sanitize_user ( $email ) ) {
-            $cowobo->notifications[] = array ( "error" => "Please supply an e-mail address." );
+            $cowobo->notifications[] = array ( "NOEMAIL" => "Please supply an e-mail address." );
             return ; // Userpw is posted, so login.php knows something is wrong
         }
         if ( ! is_email( $email ) ) {
-            $cowobo->notifications[] = array ( "error" => "E-mail address not valid." );
+            $cowobo->notifications[] = array ( "INVALIDEMAIL" => "E-mail address not valid." );
             return;
         }
 
@@ -53,28 +55,43 @@ class CoWoBo_Users
 
         $profileid = wp_insert_post ( $profile ) ;
         update_user_meta( $userid, 'cowobo_profile', $profileid );
-        $this->login_user();
+        $this->login_user( true );
     }
 
     /**
-     * Login user
+     * Login user based on email and redirect
      */
-    public function login_user(){
-        //combine first name and password to form unique user
-        $name = sanitize_user($_POST['username']);
-        $userpw = sanitize_user($_POST['userpw']);
-        $username = $name.$userpw;
+    public function login_user( $go_to_profile = false ){
+        global $cowobo;
 
-        //login user with this username
-        if($userid = username_exists($username)){
-            wp_signon(array('user_login'=> $username, 'user_password'=> $userpw, 'remember'=> true), false);
-            $profileid = get_user_meta($userid, 'cowobo_profile', true);
-            if($_GET['confirm']) wp_safe_redirect(get_permalink($profileid).'?action=editpost');
-            elseif($_POST['redirect'] == 'profile') wp_safe_redirect(get_permalink($profileid));
-            elseif($_POST['redirect'] == 'contact') wp_safe_redirect('?action=contact');
-            elseif($_POST['redirect'] == 'edit') wp_safe_redirect('?action=editpost');
-            else wp_safe_redirect($_SERVER["REQUEST_URI"]);
+        $email = $cowobo->query->email;
+
+        // Shouldn't happen, but hey..
+        if ( empty ( $email ) ) {
+            $cowobo->notifications[] = array ( "NOEMAIL" => "Please supply an e-mail address." );
+            return;
+        };
+
+        // Get user and check if she exists
+        $user = get_user_by( 'email', $email );
+        if ( ! isset( $user, $user->user_login, $user->user_status ) || 0 == (int) $user->user_status ) {
+            $cowobo->notifications[] = array ( "INVALIDUSER" => "User does not exist." );
+            return;
         }
+
+        $username = $user->user_login;
+        $signed_in_user = wp_signon( array ( 'user_login'=> $username, 'user_password'=> $userpw, 'remember'=> true ), false);
+
+        if ( is_a ( $signed_in_user, 'WP_Error' ) ) {
+            $cowobo->notifications[] = array ( "WRONGPASSWORD" => "The supplied password is incorrect." );
+            return;
+        }
+
+        $profileid = get_user_meta( $signed_in_user->user_ID, 'cowobo_profile', true );
+        if( $go_to_profile )
+            wp_safe_redirect( get_permalink( $profileid ) . '?action=editpost' );
+        else
+            $cowobo->redirect();
 
     }
 
