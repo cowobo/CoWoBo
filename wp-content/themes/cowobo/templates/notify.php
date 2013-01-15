@@ -18,7 +18,7 @@ if($requestposts):
 				$msg .= '<ul class="horlist">';
 				$msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
 				$msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
-                $msg .= wp_nonce_field( 'request', 'request' );
+                $msg .= wp_nonce_field( 'request', 'request', true, false );
 				$msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
 				$msg .= '</ul>';
 				$msg .= '</form>';

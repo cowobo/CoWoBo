@@ -22,6 +22,7 @@ echo '<div class="tab">';
 	echo '<h2>Share with friends &raquo;</h2>';
 	if($_POST['user_email']) echo 'Your message has been sent.';
 	echo '<form method="post" action="">';
+        wp_nonce_field( 'sendemail', 'sendemail' );
 		echo '<textarea name="emailtext" rows="3" class="emailtext"></textarea>';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
 		echo '<input type="input" class="half" name="user_firstname" value="Your name" onfocus="this.value=\'\'"/>';

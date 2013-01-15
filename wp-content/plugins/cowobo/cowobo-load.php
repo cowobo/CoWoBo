@@ -190,7 +190,7 @@ if (!class_exists('CoWoBo')) :
 
 //            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
-            elseif( $query->emailtext && ! $query->user ) $notices = $this->send_email();
+            elseif( $verify->sendemail && ! $query->user ) $notices = $this->send_email();
             elseif( $verify->request ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
         }
