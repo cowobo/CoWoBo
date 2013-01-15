@@ -37,6 +37,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-query.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-feed.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-posts.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -85,6 +86,7 @@ if (!class_exists('CoWoBo')) :
             $this->users = new CoWoBo_Users;
             $this->feed = new CoWoBo_Feed;
             $this->posts = new CoWoBo_Posts;
+            $this->relations = new Cowobo_Related_Posts();
 
             $this->actions_and_filters();
         }
@@ -112,10 +114,11 @@ if (!class_exists('CoWoBo')) :
             $users = &$this->users;
             $feed = &$this->feed;
             $posts = &$this->posts;
+            $relations = &$this->relations;
 
             // User actions
             if( $verify->confirm ) $users->create_user();
-            elseif( $query->userpw && !$_POST['user']) $users->login_user();
+            elseif( $query->userpw && ! $query->user ) $users->login_user();
 
             // Feed actions
             elseif( $query->sort ) $feed->filter_feed();
@@ -125,7 +128,7 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->delete ) $posts->delete_post();
             elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
-            elseif( $query->linkto ) $notices = $posts->link_post();
+            elseif( $query->linkto ) $notices = $relations->link_post();
 
             elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
