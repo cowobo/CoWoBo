@@ -4,7 +4,7 @@ global $cowobo;
 if($_POST['post_ID']) $postid = $_POST['post_ID'];
 elseif(!$postid) $postid = $post->ID;
 
-$postcat = cwob_get_category($postid);
+$postcat = $cowobo->posts->get_category($postid);
 
 //if user is not author show become editor screen
 if(!$author):
@@ -179,6 +179,7 @@ if($layouts->layout[$postcat->term_id]):
 		echo '<a class="button" href="'.get_permalink($postid).'">Cancel</a>';
 		echo '<a class="button" href="'.get_bloginfo('url').'?delete=' . wp_create_nonce( 'delete' ). '&id='.$postid.'">Delete</a>';
 		echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
+        wp_nonce_field( 'save', 'save' );
 		echo '<button type="submit" class="button">Save</button>';
 		echo '<span class="loadicon"></span>';
 	echo '</div>';
