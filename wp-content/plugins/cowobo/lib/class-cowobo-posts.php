@@ -180,7 +180,7 @@ class CoWoBo_Posts
             endif;
             //add new image
             if(!empty($file)):
-                $imgid = cwb_insert_attachment('file'.$x, $postid);
+                $imgid = $this->insert_attachment('file'.$x, $postid);
                 update_post_meta($postid, 'imgid'.$x, $imgid);
             endif;
         endfor;
@@ -208,19 +208,23 @@ class CoWoBo_Posts
         if (empty($ancestors)) return $cat[0];
         return get_category(array_pop($ancestors));
     }
+
+    //insert and resize uploaded attachments
+    private function insert_attachment( $file_handler, $post_id, $setthumb='false' ) {
+      if ($_FILES[$file_handler]['error'] !== UPLOAD_ERR_OK ) return false;
+
+      require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+      require_once(ABSPATH . "wp-admin" . '/includes/file.php');
+      require_once(ABSPATH . "wp-admin" . '/includes/media.php');
+
+      $attach_id = media_handle_upload( $file_handler, $post_id );
+      if ($setthumb) update_post_meta($post_id,'_thumbnail_id',$attach_id);
+      return $attach_id;
+    }
+
 }
 
 
-//insert and resize uploaded attachments
-function cwb_insert_attachment($file_handler,$post_id,$setthumb='false') {
-  if ($_FILES[$file_handler]['error'] !== UPLOAD_ERR_OK) __return_false();
-  require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-  require_once(ABSPATH . "wp-admin" . '/includes/file.php');
-  require_once(ABSPATH . "wp-admin" . '/includes/media.php');
-  $attach_id = media_handle_upload( $file_handler, $post_id );
-  if ($setthumb) update_post_meta($post_id,'_thumbnail_id',$attach_id);
-  return $attach_id;
-}
 
 //Link post to another related post
 function cwb_link_post(){
