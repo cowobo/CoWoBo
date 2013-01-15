@@ -2,7 +2,7 @@
 global $cowobo;
 
 if (have_posts()) : while (have_posts()) : the_post();
-	$postcat = cwob_get_category($post->ID);
+	$postcat = $cowobo->posts->get_category($post->ID);
 	$postid = get_the_ID();
 
 	//include post title and data
@@ -107,7 +107,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//sort linked posts by type
 	if($linkedids = $related->cwob_get_related_ids($postid)):
 		foreach($linkedids as $linkedid):
-			$typecat = cwob_get_category($linkedid);
+			$typecat = $cowobo->posts->get_category($linkedid);
 			$excludecats = array(get_cat_ID('Uncategorized'));
 			if($postcat->slug == 'coder' or $postcat->slug == 'location') $excludecats[] = $postcat->term_id;
 			if($typecat && !in_array($typecat->term_id, $excludecats)):
@@ -133,7 +133,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<div class="horlist">';
 				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners').','.$postcat->term_id;
 				foreach(get_categories('parent=0&exclude='.$exclude.'&hide_empty=0') as $cat):
-					echo '<a href="?new='.$cat->name.'">'.$cat->name.'</a>';
+					echo '<a href="?new=' . wp_create_nonce( 'new' ). '&cat='.$cat->name.'">'.$cat->name.'</a>';
 				endforeach;
 			echo '</div>';
 			echo '<form method="post" action="">';
