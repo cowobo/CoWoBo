@@ -1,0 +1,8 @@
+/*
+Styles for RTL languages
+*/
+
+body {direction: rtl; unicode-bidi: embed;}
+
+.border {float:right; margin:3px 0 0 15px;}
+
