@@ -5,6 +5,13 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Query
 {
+    private $nonce = false;
+
+    function __construct( $nonce = false ) {
+        if ( $nonce = true )
+            $this->nonce = true;
+    }
+
     function get($key) {
         if (is_array($key)) {
             $result = array();
@@ -13,14 +20,14 @@ class CoWoBo_Query
             }
             return $result;
         }
-        $query_var = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : null;
+        $query_var = ( isset($_REQUEST[$key] ) ) ? $this->verify( $key, $_REQUEST[$key] ) : null;
         if ($query_var) {
             return $this->strip_magic_quotes($query_var);
         } else {
             return null;
         }
     }
-   
+
     function __get($key) {
         return $this->get($key);
     }
@@ -35,5 +42,10 @@ class CoWoBo_Query
         } else {
             return $value;
         }
+    }
+
+    private function verify( $action, $nonce ) {
+        if ( ! $this->nonce ) return $nonce;
+        if ( ! wp_verify_nonce( $nonce, $action ) ) return null;
     }
 }
