@@ -5,7 +5,7 @@ global $social;
 global $layouts;
 global $langnames;
 global $lang;
-global $primecats; 
+global $primecats;// Unused?
 
 define ( 'SITEURL', get_bloginfo('url') );
 define ( 'PERSONALFEEDSLUG', 'personal-feed' );
@@ -25,13 +25,8 @@ $layouts = new Cowobo_Layouts;
 //$map = new Cowobo_Map;
 
 //ACTIONS/FILTERS
-add_action('template_redirect', 'cwb_loadcheck');
 add_action('comment_post', 'cwb_comment_notice');
 add_action('wp', 'activate_daily_events');
-add_action('show_user_profile', 'my_show_extra_profile_fields' );
-add_action('edit_user_profile', 'my_show_extra_profile_fields' );
-add_action('personal_options_update', 'my_save_extra_profile_fields' );
-add_action('edit_user_profile_update', 'my_save_extra_profile_fields' );
 add_action('comment_post', 'cowobo_add_comment_meta', 1);
 add_filter('show_admin_bar', 'my_function_admin_bar');
 
@@ -48,94 +43,11 @@ function console_log ( $content ) {
 	echo "<script>console.log('$content')</script>";
 }
 
-//Add profile id to backend profile
-function my_show_extra_profile_fields( $user ) { 
-	echo '<table class="form-table">';
-		echo '<tr>';
-			echo '<th><label>Profile ID:</label></th>';
-			echo '<td><input type="text" name="cowobo_profile" id="cowobo_profile" value="'.esc_attr(get_the_author_meta('cowobo_profile', $user->ID )).'"/><br/>';
-			echo '</td>';
-		echo '</tr>';
-	echo '</table>';
-}
-
-//Save profile id field
-function my_save_extra_profile_fields( $user_id ) {
-	if ( !current_user_can( 'edit_user', $user_id ) )
-		return false;
-	update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
-}
-
-
 //GLOBAL FUNCTIONS
 
 //Update language session
 if($_GET['lang']) $_SESSION['lang'] = $_GET['lang'];
 $lang = $_SESSION['lang'];
-
-//Do stuff before page loads
-function cwb_loadcheck(){
-	global $postid; global $postmsg;
-
-	if($_GET['confirm']) cwb_create_user();
-	elseif($_POST['userpw'] && !$_POST['user']) cwb_login_user();
-	elseif($_GET['sort']) cwb_filter_feed();
-	elseif($_GET['showall']) cwb_related_feed();
-	elseif($_GET['delete']) cwb_delete_post();
-	elseif($_GET['new'] && empty($_POST)) $postid = cwb_create_post();
-	elseif($_POST['requesttype']) $notices = cwb_edit_request();
-	elseif($_POST['correctlang']) $notices = cwb_correct_translation();	
-	elseif($_POST['emailtext'] && !$_POST['user']) $notices = cwb_send_email();
-	elseif($_POST['linkto']) $notices = cwb_link_post();
-	elseif($_POST['commentid']) wp_delete_comment($_POST['commentid']);
-	elseif($_POST['post_ID']) $postmsg = cwb_save_post();
-}
-
-
-//Create user and redirect them to profile
-function cwb_create_user(){
-	
-	//combine first name and password to form unique username
-    $name = sanitize_user($_POST['username']);
-	$userpw = sanitize_user($_POST['userpw']);
-	$username = $name.$userpw;
-	
-	//add user to database
-	$tempemail = $username.'@cowobo.org';
-	$userid = wp_create_user($username, $userpw, $tempemail);
-	$usercount = count_users();
-	$profile = array(
-		'post_author' => $userid,
-		'post_category' => array(get_cat_ID('Coders')),
-		'post_content' => " ",
-		'post_status' => 'publish',
-		'post_title' => $name,
-		'post_type' => 'post'
-	);
-	$profileid = wp_insert_post($profile);
-	update_user_meta($userid, 'cowobo_profile', $profileid);
-	cwb_login_user();
-}
-
-//Login user
-function cwb_login_user(){
-	//combine first name and password to form unique user
-    $name = sanitize_user($_POST['username']);
-	$userpw = sanitize_user($_POST['userpw']);
-	$username = $name.$userpw;
-	
-	//login user with this username
-	if($userid = username_exists($username)){
-		wp_signon(array('user_login'=> $username, 'user_password'=> $userpw, 'remember'=> true), false);
-		$profileid = get_user_meta($userid, 'cowobo_profile', true);
-		if($_GET['confirm']) wp_safe_redirect(get_permalink($profileid).'?action=editpost');
-		elseif($_POST['redirect'] == 'profile') wp_safe_redirect(get_permalink($profileid));
-		elseif($_POST['redirect'] == 'contact') wp_safe_redirect('?action=contact');
-		elseif($_POST['redirect'] == 'edit') wp_safe_redirect('?action=editpost');
-		else wp_safe_redirect($_SERVER["REQUEST_URI"]);
-	}
-
-}
 
 //POST FUNCTIONS
 
@@ -146,19 +58,19 @@ function cwb_create_post(){
 	$linked = $post->ID;
 	$catid = get_cat_ID($newtype);
 	$postcat = get_category($catid);
-	
+
 	//insert the post
-	$current_user = wp_get_current_user();	
+	$current_user = wp_get_current_user();
 	$postid = wp_insert_post( array(
 		'post_status' => 'auto-draft',
 		'post_title' => ' ',
 		'post_category' => array($catid),
 		'post_author' => $current_user->ID,
 	));
-	
+
 	//add the user to the authors list (used for multiple author checks)
 	add_post_meta($postid, 'author', $social->profile_id);
-	
+
 	return $postid;
 }
 
@@ -173,38 +85,38 @@ function cwb_delete_post() {
 //Save post with new data
 function cwb_save_post(){
 	global $related; global $post; global $social;
-	
+
 	//store all data
 	$postid = $_POST['post_ID'];
-	
+
 	$post_title  = (isset($_POST['post_title'])) ? trim(strip_tags($_POST['post_title'])) : null;
 	$post_content = ( isset($_POST['post_content']) ) ? trim($_POST['post_content']) : null;
 	$tags  = (isset($_POST['tags'])) ? trim(strip_tags($_POST['tags'])) : null;
 	$oldcity = get_post_meta($postid, 'cityid', true);
-	$oldslug = $post->post_name; 
+	$oldslug = $post->post_name;
 	$involvement = $_POST['involvement'];
 	$newslug = sanitize_title($post_title);
-	$postcat = cwob_get_category($postid);	
+	$postcat = cwob_get_category($postid);
 	$author = true;
-	
+
 	//check if post is created from within another post
 	if($postid != $post->ID) $linkedid = $post->ID;
-	
-	
+
+
 	//if the user is not involved don't link it to their profile
 	if($involvement == 'none'):
 		$related->delete_relations($postid, $social->post_id); //existing posts
 		$linkedid = false;
 	else:
 		$linkedid = $social->profile_id;
-	endif;	
+	endif;
 
 	//check if title filled correctly
 	if ($post_title == '') $postmsg['post_title'] = 'You forgot to add one.';
-	
+
 	//check if the user entered all text in english
 	if(!$_POST['confirmenglish'])  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
-	
+
 	//update all the custom fields
 	foreach ($_POST as $key => $value) :
 		if($value != ''):
@@ -218,29 +130,29 @@ function cwb_save_post(){
 			endif;
 		endif;
 	endforeach;
-					
-	//if its a new location post geocode its location 
+
+	//if its a new location post geocode its location
 	if($postcat->slug == 'location'):
 		if($countryid = $_POST['country']):
 			$tagarray = array($countryid);
 			if($latlng = cwb_geocode($post_title.', '.$country)):
 				$coordinates = $latlng['lat'].','.$latlng['lng'];
-				$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);						
+				$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
 				//check if coordinates have already been added (avoids international spelling differences)
 				if($citypost && $citypost[0]->ID != $postid):
 					$postmsg['post_title'] = 'The location you are trying to add already exists';
 				else:
-					add_post_meta($postid, 'coordinates', $coordinates);	
+					add_post_meta($postid, 'coordinates', $coordinates);
 				endif;
 				if(!empty($linkedid)): $related->create_relations($postid, array($linkedid)); endif;
 			else:
 				$postmsg['post_title'] = 'We could not find that city. Check your spelling or internet connection.';
 			endif;
 		else:
-			$postmsg['country'] = 'Please select a country';			
+			$postmsg['country'] = 'Please select a country';
 		endif;
 	endif;
-	
+
 	//if post contains a location create or link to that location post
 	if($city = $_POST['city']):
 		if($city != get_post_meta($postid, 'cityid', true)):
@@ -248,16 +160,16 @@ function cwb_save_post(){
 				$countrycat = get_category($countryid);
 				if($latlng = cwb_geocode($city.', '.$countrycat->name)):
 					$coordinates = $latlng['lat'].','.$latlng['lng'];
-					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);						
+					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
 					//check if coordinates have already been added (avoids international spelling differences)
 					if($citypost):
 						$cityid = $citypost[0]->ID;
 					else:
 						//todo use returned geocoding city name
 						$cityid = wp_insert_post(array('post_title'=>$city, 'post_category'=>array($countryid), 'post_status'=>'Publish'));
-						add_post_meta($cityid, 'coordinates', $coordinates);	
+						add_post_meta($cityid, 'coordinates', $coordinates);
 					endif;
-					$related->delete_relations($postid, $oldcity);				
+					$related->delete_relations($postid, $oldcity);
 					$related->create_relations($postid, array($cityid));
 					add_post_meta($postid, 'cityid', $cityid);  //save ID to check city next time
 					update_post_meta($postid, 'coordinates', $coordinates);
@@ -270,7 +182,7 @@ function cwb_save_post(){
 		endif;
 		add_post_meta($postid, $key, $value);
 	endif;
-		
+
 	//get ids for each tag and create them if they dont already exist
 	if ($tags != ''):
 		foreach(explode(',', $tags) as $tag):
@@ -279,12 +191,15 @@ function cwb_save_post(){
 			$tagarray[] = $tagid['term_id'];
 		endforeach;
 		$tagarray = array_map('intval', $tagarray);
-	    $tagarray = array_unique($tagarray);	
+	    $tagarray = array_unique($tagarray);
 	elseif($postcat->slug != 'location'):
-		 $postmsg['tags'] = 'You must add atleast one.';	
+		 $postmsg['tags'] = 'You must add atleast one.';
 	endif;
-	
+
 	//handle images
+    /**
+     * @todo check for malicious code in jpg?
+     */
 	for ($x=0; $x<5; $x++):
 		$imgid = $_POST['imgid'.$x];
 		$file = $_FILES['file'.$x]['name'];
@@ -300,18 +215,18 @@ function cwb_save_post(){
 			update_post_meta($postid, 'imgid'.$x, $imgid);
 		endif;
 	endfor;
-	
+
 	//update draft post
 	$postdata = array('ID' => $postid, 'post_title' => $post_title, 'post_content' => $post_content, 'post_status' => 'draft', 'post_category' => $tagarray);
 	wp_update_post($postdata);
-	
+
 	// if there are no errors publish post, add links, and show thanks for saving message
 	if(empty($postmsg)):
 		wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug));
 		if(!empty($linkedid)) $related->create_relations($postid, array($linkedid));
 		$postmsg = 'saved';
 	endif;
-	
+
 	return $postmsg;
 }
 
@@ -370,7 +285,7 @@ function cwb_time_passed($timestamp){
     }
 }
 
-//Store post views 
+//Store post views
 function cwb_update_views($postID) {
     $count_key = 'cowobo_post_views';
     $count = get_post_meta($postID, $count_key, true);
@@ -435,39 +350,39 @@ function cwb_correct_translation() {
 //Filter feed based on parameters set in browse
 function cwb_filter_feed(){
 	global $wp_query; global $lang; global $langnames;
-	
+
 	//store variables from browse form
 	$cats = $_GET['cats'];
 	$sortby = $_GET['sort'];
 	$keywords = $_GET['keywords'];
 	$country = $_GET['country'];
-	
+
 	//store cats to filter
 	if($cats && $cats[0] != 'all'):
 		$catstring = implode(',',$cats);
 	elseif(is_category()):
 		$catstring = get_query_var('cat');
 	endif;
-	
+
 	if($country != 'all'):
-		$metaquery = array('key'=>'country', 'value'=>$country);	
+		$metaquery = array('key'=>'country', 'value'=>$country);
 	endif;
-	
+
 	if(empty($sort)) $sort = 'modified';
 	if($sort == 'featured'):
 		$sort = 'meta_value';
 		$metaquery = array('meta_key'=>'featured');
 	endif;
-	
+
 	//query filtered posts
 	query_posts(array('orderby'=>$sort, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' =>array($metaquery)));
-	
+
 }
 
 //Construct feed title;
 function cwb_feed_title($link = true){
 	global $currentcat; global $post; global $lang; global $langnames;
-	
+
 	if($_GET['new']):
 		$feedtitle .= 'Add '.$_GET['new'];
 	elseif(is_404()):
@@ -477,7 +392,7 @@ function cwb_feed_title($link = true){
 	elseif($_GET['showall']):
 		$feedtitle .= '<a href="'.get_permalink($post->ID).'">'.cwb_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
 	elseif($_GET['action'] == 'login'):
-		$feedtitle .= 'Who are you?';	
+		$feedtitle .= 'Who are you?';
 	elseif($_GET['action'] == 'search'):
 		$feedtitle .= 'Search for posts';
 	elseif($_GET['action'] == 'contact'):
@@ -485,7 +400,7 @@ function cwb_feed_title($link = true){
 	elseif($_GET['action'] == 'translate'):
 		$feedtitle .= 'Language';
 	elseif($_GET['action'] == 'editpost'):
-		$feedtitle .= 'Edit Post';	
+		$feedtitle .= 'Edit Post';
 	elseif(is_single()):
 		$feedtitle .= cwb_the_title($post->ID);
 	elseif($_GET['sort2']):
@@ -502,15 +417,15 @@ function cwb_feed_title($link = true){
 		else:
 			$feedtitle .= 'All posts ';
 		endif;
-		if($country != 'all'): 
+		if($country != 'all'):
 			$countrycat = get_category($country);
-			$feedtitle .= ' in "'.$countrycat->name.'"'; 
+			$feedtitle .= ' in "'.$countrycat->name.'"';
 		endif;
-		if($keywords = $_GET['keywords']): 
+		if($keywords = $_GET['keywords']):
 			$feedtitle .= ' containing "'.$keywords.'"';
 		endif;
-		if($sort = $_GET['sort']): 
-			$feedtitle .= ' sorted by '.$sort; 
+		if($sort = $_GET['sort']):
+			$feedtitle .= ' sorted by '.$sort;
 		endif;
 	elseif(is_category() or $_GET['sort']):
 		$feedtitle .= $currentcat->name;
@@ -537,21 +452,21 @@ function cwob_get_type($catid) {
 function cwb_loadgallery($postid){
 
 	$slidenum = 1; //to limit the download burden
-	
-	for ($x=0; $x<$slidenum; $x++): 
-			
+
+	for ($x=0; $x<$slidenum; $x++):
+
 		//check if the slide has an image
 		if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
 			if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
 				$slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
 			endif;
 		endif;
-		
+
 		foreach(get_children('post_parent='.$postid.'&numberposts=4&post_mime_type=image') as $image):
 			$imgsrc = wp_get_attachment_image_src($image->ID, $size = 'large');
-			$slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';		
+			$slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
 		endforeach;
-		
+
 		//check if the slide has a video
 		if($caption = get_post_meta($postid, 'caption'.$x, true)):
 			$videocheck = explode("?v=", $caption);
@@ -602,11 +517,11 @@ function cwb_edit_request(){
 	$rquser = $_POST["requestuser"];
 	$rqpost = $_POST["requestpost"];
 	$rqmsg = $_POST["requestmsg"];
-	
+
 	//if request is coming from a post use that data instead
 	if(!$rquser) $rquser = $social->profile_id;
 	if(!$rqpost) $rqpost = $post->ID;
-	
+
 	//if we are dealing with an existing request get its meta
 	if($rqtype != 'add'):
 		$requests = get_post_meta($rqpost, 'request', false);
@@ -615,7 +530,7 @@ function cwb_edit_request(){
 			if($rqdata[0] == $rquser) $toedit = $request;
 		endforeach;
 	endif;
-	
+
 	//handle the request
 	if($rqtype == 'add'):
 		add_post_meta($rqpost, 'request', $rquser.'|'.$rqmsg);
@@ -623,16 +538,16 @@ function cwb_edit_request(){
 	elseif($rqtype == 'accept'):
 		delete_post_meta($rqpost, 'request', $toedit);
 		add_post_meta($rqpost, 'author', $rquser);
-		$notices = 'Thank you, the request has been accepted.';	
+		$notices = 'Thank you, the request has been accepted.';
 	elseif($rqtype == 'deny'):
 		delete_post_meta($rqpost, 'request', $toedit);
 		add_post_meta($rqpost, 'request', $requestuser.'|deny');
-		$notices = 'Thank you, the request has been denied.';	
+		$notices = 'Thank you, the request has been denied.';
 	elseif($rqtype == 'cancel'):
 		delete_post_meta($rqpost, 'request', $toedit);
-		$notices = 'Thank you, the request has been cancelled.';	
+		$notices = 'Thank you, the request has been cancelled.';
 	endif;
-	
+
 	return $notices;
 }
 
@@ -685,8 +600,8 @@ function cwb_send_email() {
 	$firstname = $_POST['user_firstname'];
 	$header  = 'MIME-Version: 1.0'."\r\n";
 	$header .= 'Content-type: text/html; charset=utf8'."\r\n";
-	$header .= 'From: Coders Without Borders <'.get_bloginfo('admin_email').'>' . "\r\n";	
-			
+	$header .= 'From: Coders Without Borders <'.get_bloginfo('admin_email').'>' . "\r\n";
+
 	if($from = $_POST['user_email']):
 		$subject = 'New message from a visitor';
 		$message = $_POST['emailtext'].'<br/><br/>'.$firstname.'<br/><br/>';
@@ -702,7 +617,7 @@ function cwb_send_email() {
 		$emailnotice = 'Please enter at least one email address';
 	endif;
 	$emailnotice = 'Your email has been sent successfully';
-	
+
 	return $emailnotice;
 	//to do: handle and return errors
 }
@@ -803,11 +718,11 @@ function remove_doubles($postlist) {
 
 //store different translating messages
 $langnames = array(
-	'en' => array('English', 'Welcome to Coders Without Borders', 'Translating page..'),	
+	'en' => array('English', 'Welcome to Coders Without Borders', 'Translating page..'),
 	'ar' => array('دي', 'مرحبا بكم في المبرمجون بلا حدود', 'متابعة باللغة العربية', '..ترجمة الصفحة'),
 	'ca' => array('Català', 'Benvingut als Codificadors Sense Fronteres', ' Traduint pàgina..'),
 	'cs' => array('Ceské', 'Vítejte na programátory bez hranic', "Překlady stránku .."),
-	'da' => array('Dansk', 'Velkommen til Programmører Uden Grænser', 'Oversætter siden ..'),	
+	'da' => array('Dansk', 'Velkommen til Programmører Uden Grænser', 'Oversætter siden ..'),
 	'de' => array('Deutsch', 'Welkom bei Programmierer ohne Grenzen', 'Seite Verarbeitung ..'),
 	'el' => array('Ελληνική', 'Καλώς ήλθατε στο Coders Χωρίς Σύνορα', 'Μεταφράζοντας σελίδα ..'),
 	'es' => array('Españoles', 'Bienvenido a Codificadores Sin Fronteras', ' Traduciendo página .. '),
@@ -820,9 +735,9 @@ $langnames = array(
 	'ja' => array('日本', '国境なきコーダーへようこそ', '日本語で継続', 'ページを翻訳する..'),
 	'hu' => array('Magyar', 'Üdvözöljük a programozóknak Határok Nélkül', 'Fordítás oldal ..'),
 	'hr' => array('Hrvatskom', 'Dobrodošli Programera Bez Granica', ' Prevođenje stranica .. '),
-	'lt' => array('Lietuvos', 'Sveiki atvykę į Programuotojams be Sienų ', 'ulkojot lapu ..'),	
+	'lt' => array('Lietuvos', 'Sveiki atvykę į Programuotojams be Sienų ', 'ulkojot lapu ..'),
 	'no' => array('Norsk', 'Velkommen til Programmerere Uten Grenser', ' Oversett siden ..'),
-	'pl' => array('Polish', 'Witamy Programistów Bez Granic', 'Przełożenie stronę ..'),	
+	'pl' => array('Polish', 'Witamy Programistów Bez Granic', 'Przełożenie stronę ..'),
 	'pt' => array('Português', 'Bem-vindo ao Coders Sem Fronteiras', ' Página Traduzindo ..'),
 	'nl' => array('Nederlands', 'Welkom bij Codeurs Zonder Grenzen', 'Pagina wordt vertaald..'),
 	'ro' => array('Român', 'Bine ați venit la Programatori Fără Frontiere ', 'Traducerea pagina ..'),
@@ -836,7 +751,7 @@ $langnames = array(
 	'uk' => array('Український', 'Ласкаво просимо в кодери без кордонів', 'Переклад сторінці ..'),
 	'vi' => array('Việt Nam', 'Chào mừng bạn đến với các lập trình viên không biên giới', 'trang Dịch ..'),
 	'vko' => array('한국어', '국경을 초월한 코더에 오신 것을 환영합니다', '한국어로 계속', '번역 페이지를 ..'),
-	'zh-CN' => array('中国', '欢迎到编码器无国界', '继续在中国', '网页翻译。'),	
+	'zh-CN' => array('中国', '欢迎到编码器无国界', '继续在中国', '网页翻译。'),
 );
 
 ?>
