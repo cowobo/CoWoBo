@@ -27,16 +27,14 @@ define('COWOBO_PLUGIN_VERSION', '0.1');
 define('COWOBO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('COWOBO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('COWOBO_PLUGIN_LIB', COWOBO_PLUGIN_DIR . 'lib/' );
-//define('COWOBO_PLUGIN_TEMPLATES_DIR', COWOBO_PLUGIN_DIR . 'templates/');
-//define('COWOBO_PLUGIN_TEMPLATES_URL', COWOBO_PLUGIN_URL . 'templates/');
-//define('COWOBO_PLUGIN_INC_URL', COWOBO_PLUGIN_TEMPLATES_URL . '_inc/');
 
 /**
  * Requires and includes
  *
  * @since 0.1
  */
-require_once ( COWOBO_PLUGIN_LIB . 'query');
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-query.php');
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php');
 
 if (!class_exists('CoWoBo')) :
 
