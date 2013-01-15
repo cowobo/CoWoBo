@@ -5,31 +5,32 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Posts
 {
+    /**
+     * Create a new post
+     */
+    public function create_post(){
+        global $cowobo, $profile_id;
 
+        $newcat = $cowobo->query->new;
+        $catid = get_cat_ID( $newcat );
+
+        //insert the post
+        $current_user = wp_get_current_user();
+        $postid = wp_insert_post( array(
+            'post_status' => 'auto-draft',
+            'post_title' => ' ',
+            'post_category' => array( $catid ),
+            'post_author' => $current_user->ID,
+        ));
+
+        //add the user to the authors list (used for multiple author checks)
+        add_post_meta( $postid, 'author', $profile_id );
+
+        return $postid;
+    }
 }
 
-//Create a new post
-function cwb_create_post(){
-	global $post; global $social;
-	$newtype = $_GET['new'];
-	$linked = $post->ID;
-	$catid = get_cat_ID($newtype);
-	$postcat = get_category($catid);
 
-	//insert the post
-	$current_user = wp_get_current_user();
-	$postid = wp_insert_post( array(
-		'post_status' => 'auto-draft',
-		'post_title' => ' ',
-		'post_category' => array($catid),
-		'post_author' => $current_user->ID,
-	));
-
-	//add the user to the authors list (used for multiple author checks)
-	add_post_meta($postid, 'author', $social->profile_id);
-
-	return $postid;
-}
 
 //Delete post and all links associated with it
 function cwb_delete_post() {
