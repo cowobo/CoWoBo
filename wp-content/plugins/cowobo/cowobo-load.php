@@ -36,6 +36,7 @@ define('COWOBO_PLUGIN_LIB', COWOBO_PLUGIN_DIR . 'lib/' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-query.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-feed.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-posts.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -83,6 +84,7 @@ if (!class_exists('CoWoBo')) :
             $this->verified_query = new CoWoBo_Query ( true );
             $this->users = new CoWoBo_Users;
             $this->feed = new CoWoBo_Feed;
+            $this->posts = new CoWoBo_Posts;
 
             $this->actions_and_filters();
         }
