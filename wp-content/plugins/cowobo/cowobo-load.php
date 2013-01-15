@@ -108,13 +108,13 @@ if (!class_exists('CoWoBo')) :
          */
         public function controller() {
             $query = &$this->query;
-            $verified = &$this->verified_query;
+            $verify = &$this->verified_query;
             $users = &$this->users;
             $feed = &$this->feed;
             $posts = &$this->posts;
 
             // User actions
-            if( $verified->confirm ) $users->create_user();
+            if( $verify->confirm ) $users->create_user();
             elseif( $query->userpw && !$_POST['user']) $users->login_user();
 
             // Feed actions
