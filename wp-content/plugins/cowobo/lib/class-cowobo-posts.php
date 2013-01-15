@@ -222,6 +222,46 @@ class CoWoBo_Posts
       return $attach_id;
     }
 
+    /**
+     * Store post views
+     */
+    public function update_views( $postID ) {
+        $count_key = 'cowobo_post_views';
+        $count = get_post_meta($postID, $count_key, true);
+        if( empty ( $count ) ) {
+            $count = 0;
+            delete_post_meta($postID, $count_key);
+            add_post_meta($postID, $count_key, '0');
+        } else {
+            $count++;
+            update_post_meta($postID, $count_key, $count);
+        }
+
+
+    }
+
+    /**
+     * Retrieve post views
+     */
+    public function get_views($postID){
+        $count_key = 'cowobo_post_views';
+        $count = get_post_meta($postID, $count_key, true);
+        if($count==''){
+            delete_post_meta($postID, $count_key);
+            add_post_meta($postID, $count_key, '0');
+            $count = '0';
+        }
+        return $count;
+    }
+
+    //returns the first image in a post
+    public function get_first_image( $postID ) {
+        foreach( get_children('post_parent='.$postID.'&numberposts=1&post_mime_type=image' ) as $image):
+            $src = wp_get_attachment_image_src($image->ID, $size = 'medium');
+        endforeach;
+        return $src[0];
+    }
+
 }
 
 
@@ -230,60 +270,4 @@ class CoWoBo_Posts
 function cwb_link_post(){
 	global $related; global $post;
 	$related->create_relations($post->ID, array($_POST['linkto']));
-}
-
-//Return time passed since publish date
-function cwb_time_passed($timestamp){
-    $timestamp = (int) $timestamp;
-    $current_time = time();
-    $diff = $current_time - $timestamp;
-    $intervals = array ('day' => 86400, 'hour' => 3600, 'minute'=> 60);
-    //now we just find the difference
-    if ($diff == 0) return 'just now &nbsp;';
-    if ($diff < $intervals['hour']){
-        $diff = floor($diff/$intervals['minute']);
-        return $diff == 1 ? $diff . ' min ago' : $diff . ' mins ago';
-    }
-    if ($diff >= $intervals['hour'] && $diff < $intervals['day']){
-        $diff = floor($diff/$intervals['hour']);
-        return $diff == 1 ? $diff . ' hour ago' : $diff . ' hours ago';
-    }
-    if ($diff >= $intervals['day']){
-        $diff = floor($diff/$intervals['day']);
-        return $diff == 1 ? $diff . ' day ago' : $diff . ' days ago';
-    }
-}
-
-//Store post views
-function cwb_update_views($postID) {
-    $count_key = 'cowobo_post_views';
-    $count = get_post_meta($postID, $count_key, true);
-    if($count==''){
-        $count = 0;
-        delete_post_meta($postID, $count_key);
-        add_post_meta($postID, $count_key, '0');
-    }else{
-        $count++;
-        update_post_meta($postID, $count_key, $count);
-    }
-}
-
-//Retrieve post views
-function cwb_get_views($postID){
-    $count_key = 'cowobo_post_views';
-    $count = get_post_meta($postID, $count_key, true);
-    if($count==''){
-        delete_post_meta($postID, $count_key);
-        add_post_meta($postID, $count_key, '0');
-        $count = '0';
-    }
-    return $count;
-}
-
-//returns the first image in a post
-function cwb_get_first_image($postID){
-	foreach(get_children('post_parent='.$postID.'&numberposts=1&post_mime_type=image') as $image):
-		$src = wp_get_attachment_image_src($image->ID, $size = 'medium');
-	endforeach;
-	return $src[0];
 }
