@@ -403,16 +403,15 @@ class CoWoBo_Posts
         return array ( "message", $notices );
     }
 
-}
-
-//Get list of all published IDs
-function get_published_ids() {
-	global $wpdb;
-	$postobjs = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_status = 'publish'");
-	$postids = array();
-	foreach ( $postobjs as $post ) {
-		$postids[] = $post->ID;
-	}
-	return $postids;
+    //Get list of all published IDs
+    public function get_published_ids() {
+        global $wpdb;
+        $postobjs = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_status = 'publish'");
+        $postids = array();
+        foreach ( $postobjs as $post ) {
+            $postids[] = $post->ID;
+        }
+        return $postids;
+    }
 }
 
