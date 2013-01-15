@@ -228,14 +228,12 @@ class CoWoBo_Posts
     public function update_views( $postID ) {
         $count_key = 'cowobo_post_views';
         $count = get_post_meta($postID, $count_key, true);
-        if( empty ( $count ) ) {
+        if( empty ( $count ) )
             $count = 0;
-            delete_post_meta($postID, $count_key);
-            add_post_meta($postID, $count_key, '0');
-        } else {
-            $count++;
-            update_post_meta($postID, $count_key, $count);
-        }
+
+        $count++;
+
+        update_post_meta($postID, $count_key, $count);
 
 
     }
