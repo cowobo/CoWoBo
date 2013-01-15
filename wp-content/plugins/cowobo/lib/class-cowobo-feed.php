@@ -64,7 +64,7 @@ class CoWoBo_Feed
         elseif( $cowobo->query->userpw )
             $feedtitle .= 'Welcome to the club';
         elseif( $cowobo->query->showall )
-            $feedtitle .= '<a href="'.get_permalink( $post->ID ).'">'.cwb_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
+            $feedtitle .= '<a href="'.get_permalink( $post->ID ).'">'. $cowobo->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
         elseif($_GET['action'] == 'login')
             $feedtitle .= 'Who are you?';
         elseif($_GET['action'] == 'search')
@@ -76,7 +76,7 @@ class CoWoBo_Feed
         elseif($_GET['action'] == 'editpost')
             $feedtitle .= 'Edit Post';
         elseif(is_single())
-            $feedtitle .= cwb_the_title($post->ID);
+            $feedtitle .= $cowobo->L10n->the_title($post->ID);
         elseif($_GET['sort2']) {
             $cats = $cowobo->query->cats;
             $country = $cowobo->query->country;
