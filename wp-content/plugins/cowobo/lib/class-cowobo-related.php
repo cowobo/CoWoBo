@@ -21,9 +21,6 @@
  *
  */
 
-global $related;
-$related = new Cowobo_Related_Posts;
-
 /**
  * This class handles all post relationships more efficiently then through taxonomy or custom fields
  *
@@ -35,10 +32,9 @@ class Cowobo_Related_Posts {
      * Runs installation and cleans db on deletion of posts.
      */
 	public function __construct() {
-		// Run at theme activation
 		global $pagenow;
 		if ( is_admin() && 'themes.php' == $pagenow && isset( $_GET['activated'] ) )
-			$this->cwob_activate();
+			$this->activate();
 		// The various action hooks
 		add_action("delete_post", array($this,'delete_relations'));
 	}
@@ -46,7 +42,7 @@ class Cowobo_Related_Posts {
     /**
      * Run when the plugin is first installed and after an upgrade
      */
-	private function cwob_activate() {
+	private function activate() {
 		global $wpdb;
 		// Check if post_relationships table exists, if not, create it
 		$query = "SHOW TABLES LIKE '".$wpdb->prefix."post_relationships'";
@@ -66,9 +62,9 @@ class Cowobo_Related_Posts {
      * @param int post_id
      * @return array of related posts ids
      */
-	public function cwob_get_related_ids($postid) {
+	public function get_related_ids($postid) {
 		global $wpdb;
-		$query = "SELECT * FROM ".$wpdb->prefix."post_relationships	wpr WHERE wpr.post1_id = ".$postid." OR wpr.post2_id = ".$postid;
+		$query = $wpdb->prepare ( "SELECT * FROM ".$wpdb->prefix."post_relationships wpr WHERE wpr.post1_id = %d OR wpr.post2_id = %d", $postid, $postid );
 		$ids = $wpdb->get_results($query);
 		//return $ids;
 		if($ids):
@@ -93,28 +89,34 @@ class Cowobo_Related_Posts {
         $results = array();
         foreach($relatedpostids as $relatedpostid) {
  			//$this->delete_relations($postid, $relatedpostid);
-			$query = "INSERT INTO ".$wpdb->prefix."post_relationships VALUES($postid, $relatedpostid)";
+			$query = $wpdb-prepare ( "INSERT INTO ".$wpdb->prefix."post_relationships VALUES(%s, %s)", $postid, $relatedpostid );
 			$results[] = $wpdb->query($query);
         }
         return $results;
     }
-	
-		/**
+
+    /**
      * Delete relationships for a post
      *
      * @param int post_id
      * @param int $linkedid of another post
      * @return wp query
      */
-	 
+
 	public function delete_relations($post_id, $linkedid = false) {
 		global $wpdb;
-		$query = 'DELETE FROM '.$wpdb->prefix.'post_relationships WHERE post1_id = '.$post_id;
-		
+		$query = $wpdb->prepare ( 'DELETE FROM '.$wpdb->prefix.'post_relationships WHERE post1_id = %d ', $post_id );
+
 		//if specific link is specified delete just that link else delete all links with that post
-		if($linkedid) $query .= ' AND post2_id = '.$linkedid.' OR post1_id = '.$linkedid.' AND post2_id = '.$post_id;
-		else $query .= ' OR post2_id = '.$post_id;
-		
+		if($linkedid) $query .= $wpdb->prepare ( ' AND post2_id = %d OR post1_id = %d AND post2_id = %d', $linkedid, $linkedid, $post_id );
+		else $query .= $wpdb->prepare ( ' OR post2_id = %d', $post_id );
+
 		$delete = $wpdb->query($query);
 	}
+
+    //Link post to another related post
+    public function link_post(){
+        global $post;
+        $this->create_relations( $post->ID, $linkto );
+    }
 }
