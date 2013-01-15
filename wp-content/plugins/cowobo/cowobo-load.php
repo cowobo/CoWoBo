@@ -128,7 +128,7 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->delete ) $posts->delete_post();
             elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
-            elseif( $query->linkto ) $notices = $relations->link_post();
+            elseif( $verify->linkposts ) $notices = $relations->link_post();
 
             elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
