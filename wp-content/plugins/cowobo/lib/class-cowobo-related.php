@@ -24,7 +24,8 @@
 /**
  * This class handles all post relationships more efficiently then through taxonomy or custom fields
  *
- * @package related-posts
+ * @package CoWoBo
+ * @subpackage Plugin
  */
 class Cowobo_Related_Posts {
 
