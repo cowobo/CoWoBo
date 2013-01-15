@@ -8,13 +8,13 @@ class CoWoBo_Query
     private $nonce = false;
     private $req = array();
 
-    function __construct( $nonce = false ) {
+    public function __construct( $nonce = false ) {
         $this->req = array_merge($_GET, $_POST);
         if ( $nonce )
             $this->nonce = true;
     }
 
-    function get($key) {
+    private function get($key) {
         if (is_array($key)) {
             $result = array();
             foreach ($key as $k) {
@@ -30,15 +30,15 @@ class CoWoBo_Query
         }
     }
 
-    function __get($key) {
+    public function __get($key) {
         return $this->get($key);
     }
 
-    function __isset($key) {
+    public function __isset($key) {
         return ($this->get($key) !== null);
     }
 
-    function strip_magic_quotes($value) {
+    private function strip_magic_quotes($value) {
         if (get_magic_quotes_gpc()) {
             return stripslashes($value);
         } else {
@@ -49,5 +49,19 @@ class CoWoBo_Query
     private function verify( $action, $nonce ) {
         if ( ! $this->nonce || wp_verify_nonce( $nonce, $action ) ) return $nonce;
         else return null;
+    }
+
+    public function set_cookie( $key, $value ) {
+        $user_id = get_current_user_id();
+        $expiration = time() + apply_filters('auth_cookie_expiration', 172800, $user_id, true);
+        $secure = apply_filters('secure_auth_cookie', $secure, $user_id);
+
+        setcookie( $key, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
+        if ( COOKIEPATH != SITECOOKIEPATH )
+            setcookie( $key, $value, $expiration, SITECOOKIEPATH, COOKIE_DOMAIN, $secure, true );
+    }
+
+    public function get_cookie() {
+        return ( isset ( $_COOKIE[$key] ) ) ? $_COOKIE[$key] : null;
     }
 }
