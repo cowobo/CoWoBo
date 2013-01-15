@@ -33,10 +33,10 @@ class CoWoBo_Posts
      * Delete post and all links associated with it
      */
     public function delete_post() {
-        global $related, $cowobo;
+        global $cowobo;
 
         $deleteid = $cowobo->query->id;
-        $related->delete_relations($deleteid);
+        $cowobo->relations->delete_relations($deleteid);
         if ( wp_delete_post($deleteid) ) {
             $cowobo->notifications[] = array (
                 "error" => "An error occurred deleting your post."
@@ -53,7 +53,7 @@ class CoWoBo_Posts
      * @todo This is one beast of a method - can we make some subroutines?
      */
     public function save_post(){
-        global $related, $post, $social, $cowobo, $profile_id;
+        global $post, $social, $cowobo, $profile_id;
 
         //store all data
         $postid = $cowobo->query->post_ID;
@@ -72,7 +72,7 @@ class CoWoBo_Posts
 
         //if the user is not involved don't link it to their profile
         if($involvement == 'none') {
-            $related->delete_relations($postid, $profile_id); //existing posts
+            $cowobo->relations->delete_relations($postid, $profile_id); //existing posts
             $linkedid = false;
         } else {
             $linkedid = $profile_id;
@@ -114,7 +114,7 @@ class CoWoBo_Posts
                     } else {
                         add_post_meta($postid, 'coordinates', $coordinates);
                     }
-                    if( ! empty( $linkedid ) ) $related->create_relations($postid, array($linkedid));
+                    if( ! empty( $linkedid ) ) $cowobo->relations->create_relations($postid, array($linkedid));
                 } else {
                     $postmsg['post_title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
@@ -139,8 +139,8 @@ class CoWoBo_Posts
                             $cityid = wp_insert_post(array('post_title'=>$city, 'post_category'=>array($countryid), 'post_status'=>'Publish'));
                             add_post_meta($cityid, 'coordinates', $coordinates);
                         endif;
-                        $related->delete_relations($postid, $oldcity);
-                        $related->create_relations($postid, array($cityid));
+                        $cowobo->relations->delete_relations($postid, $oldcity);
+                        $cowobo->relations->create_relations($postid, array($cityid));
                         add_post_meta($postid, 'cityid', $cityid);  //save ID to check city next time
                         update_post_meta($postid, 'coordinates', $coordinates);
                     else:
@@ -192,7 +192,7 @@ class CoWoBo_Posts
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)):
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug));
-            if(!empty($linkedid)) $related->create_relations($postid, array($linkedid));
+            if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
             $postmsg = 'saved';
         endif;
 
@@ -294,13 +294,4 @@ class CoWoBo_Posts
         return '';
     }
 
-
-}
-
-
-
-//Link post to another related post
-function cwb_link_post(){
-	global $related; global $post;
-	$related->create_relations($post->ID, array($_POST['linkto']));
 }
