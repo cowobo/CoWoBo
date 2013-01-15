@@ -8,7 +8,7 @@ class CoWoBo_Query
     private $nonce = false;
 
     function __construct( $nonce = false ) {
-        if ( $nonce = true )
+        if ( $nonce )
             $this->nonce = true;
     }
 
@@ -45,7 +45,7 @@ class CoWoBo_Query
     }
 
     private function verify( $action, $nonce ) {
-        if ( ! $this->nonce ) return $nonce;
-        if ( ! wp_verify_nonce( $nonce, $action ) ) return null;
+        if ( ! $this->nonce || wp_verify_nonce( $nonce, $action ) ) return $nonce;
+        else return null;
     }
 }
