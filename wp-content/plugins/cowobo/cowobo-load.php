@@ -38,6 +38,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-feed.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-posts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-l10n.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -133,6 +134,7 @@ if (!class_exists('CoWoBo')) :
             $this->feed = new CoWoBo_Feed;
             $this->posts = new CoWoBo_Posts;
             $this->relations = new Cowobo_Related_Posts();
+            $this->L10n = new CoWoBo_Localization();
 
             $this->old_includes();
 
@@ -172,6 +174,7 @@ if (!class_exists('CoWoBo')) :
             $feed = &$this->feed;
             $posts = &$this->posts;
             $relations = &$this->relations;
+            $L10n = &$this->L10n;
 
             // User actions
             if( $verify->confirm ) $notices = $users->create_user();
@@ -191,7 +194,7 @@ if (!class_exists('CoWoBo')) :
 
             elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
             elseif( $query->requesttype ) $notices = cwb_edit_request();
-            elseif( $query->correctlang ) $notices = cwb_correct_translation();
+            elseif( $query->correctlang ) $notices = $L10n->correct_translation();
         }
 
         /**
