@@ -145,16 +145,7 @@ if (!class_exists('CoWoBo')) :
 
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
-            $this->users = new CoWoBo_Users;
-            $this->feed = new CoWoBo_Feed;
-            $this->posts = new CoWoBo_Posts;
-            $this->relations = new Cowobo_Related_Posts;
-            $this->L10n = new CoWoBo_Localization;
-            $this->layouts = new Cowobo_Layouts;
-            //$this->map = new Cowobo_Map;
-
-            $this->old_includes();
-
+            
             $this->actions_and_filters();
         }
 
@@ -167,14 +158,19 @@ if (!class_exists('CoWoBo')) :
                 $this->__construct();
             }
 
-        private function old_includes() {
-            include_once( TEMPLATEPATH . '/lib/class-cowobo-map.php');
-            global $social, $layouts;
-        }
-
         private function actions_and_filters() {
+            add_action('init', array ( &$this, 'setup' ) );
             add_action('template_redirect', array ( &$this, 'controller' ) );
 
+        }
+
+        public function setup() {
+            $this->users = new CoWoBo_Users;
+            $this->feed = new CoWoBo_Feed;
+            $this->posts = new CoWoBo_Posts;
+            $this->relations = new Cowobo_Related_Posts;
+            $this->L10n = new CoWoBo_Localization;
+            $this->layouts = new Cowobo_Layouts;
         }
 
         /**
@@ -289,5 +285,5 @@ if (!class_exists('CoWoBo')) :
 
     }
 
-    add_action('init', array('CoWoBo', 'init'));
+    add_action('plugins_loaded', array('CoWoBo', 'init'));
 endif;
