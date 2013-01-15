@@ -43,7 +43,7 @@ form {margin:0 auto;}
 .inline {display: inline!important;}
 .nowrap {white-space:nowrap; height:25px; overflow:hidden; color:#999; text-overflow: ellipsis; }
 .hint {font-weight:bold; color:#999; margin-left:5px;}
-.half {width:290px; float:left; margin-right:15px;}
+.half {width:290px; float:left; clear:none!important;}
 .auto {width:auto}
 
 /* Map Styles*/
@@ -88,15 +88,15 @@ form {margin:0 auto;}
 .tabthumb {border:10px solid #fff; width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden;}
 .tabthumb {text-align:center; line-height:90px; font-size:100px; color:#ccc; margin-bottom:30px}
 .tabtext {width:440px; height:100px; background:#fff; border: 10px solid white; overflow:hidden; margin-bottom:30px}
+.nextthumb {float:left; width:40px; height:30px; overflow:hidden; background:#eee;}
 .gallery {position:relative; height:350px; overflow:hidden; opacity:0.9; cursor:pointer;}
 .slide {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; background:#fff; z-index:1}
 .caption, .captionback {position:absolute; bottom:0; left:0; width:610px; padding:0 5px 5px 5px; height:20px; overflow:hidden; z-index:1}
 .caption {color:#fff;}
 .captionback {background:#000; opacity: 0.5;}
-.galthumbs {height:85px; overflow:hidden; margin-top:8px; width:628px;}
-.galthumbs a {width:149px; background:#eee; height:85px; float:left; border-right:8px solid #fff;}
-.galthumbs a:hover {opacity:0.8;}
-
+.galthumbs {height:95px; overflow:hidden; width:628px;}
+.galthumbs a {width:149px; background:#eee; height:95px; float:left; border-right:8px solid #fff;}
+.galthumbs a:hover {opacity:0.8; }
 .symbol {color:#888; margin-right:5px}
 
 /* Comment Styles */

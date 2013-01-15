@@ -92,12 +92,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 	echo '</div>';
 	
 	//include gallery if post has images
-	if($images = cwb_loadgallery($post->ID)):
-		echo '<div class="tab">'.$images.'</div>';
-	endif;
-	
+	echo cwb_loadgallery($post->ID);
+
 	//include main text if post has content
-	if(count($post->post_content)>5):
+	if(strlen($post->post_content)>5):
 		echo '<div class="tab">';
 			echo apply_filters('the_content', cwb_the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
@@ -125,6 +123,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 			include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
+	
+	//include next post
+	$tabpost = get_next_post();
+	$tabtype = 'next'; include(TEMPLATEPATH.'/templates/tabs.php');
 			
 	if($author):
 		echo '<div class="tabthumb right">+</div>';

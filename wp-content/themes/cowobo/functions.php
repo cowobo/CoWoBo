@@ -570,13 +570,13 @@ function cwb_loadgallery($postid){
 	//construct gallery
 	if($slides):
 		$slides = array_reverse($slides); //so they appear in the correct order
-		$gallery = '<div class="gallery">'.implode('', $slides).'</div>';
+		$gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
 	endif;
 	
 	if(count($slides)<4 && count($slides)>1):
 		$remaining = 5 - count($slides);
 		for ($x=0; $x<$remaining; $x++) $thumbs[] = '<a href="#"></a>';
-		$gallery .= '<div class="galthumbs">'.implode('',$thumbs).'</div>';
+		$gallery .= '<div class="tab"><div class="galthumbs">'.implode('',$thumbs).'</div></div>';
 	endif;
 	
 	return $gallery;

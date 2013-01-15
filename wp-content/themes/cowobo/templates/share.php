@@ -11,7 +11,7 @@ $fburl .= '&redirect_uri='.$pagelink;
 $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://www.cowobo.org/"');
 
 echo '<div class="tab">';
-	echo '<h2>Subscribe to this feed &raquo;</h2>';
+	echo '<h2>Follow us via our RSS Feeds &raquo;</h2>';
 	echo '<div class="rsslinks">';
 		$social->print_rss_links();
 	echo '</div>';
