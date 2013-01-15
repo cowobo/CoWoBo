@@ -48,7 +48,7 @@ else:
 	echo '</div>';
 
 	//include navigation links
-	echo '<div class="center">'; cwb_pagination(); echo '</div>';
+	echo '<div class="center">'; $cowobo->feed->pagination(); echo '</div>';
 
 endif;
 ?>
