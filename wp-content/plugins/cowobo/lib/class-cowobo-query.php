@@ -6,8 +6,10 @@ if (!defined('ABSPATH'))
 class CoWoBo_Query
 {
     private $nonce = false;
+    private $req = array();
 
     function __construct( $nonce = false ) {
+        $this->req = array_merge($_GET, $_POST);
         if ( $nonce )
             $this->nonce = true;
     }
@@ -20,7 +22,7 @@ class CoWoBo_Query
             }
             return $result;
         }
-        $query_var = ( isset($_REQUEST[$key] ) ) ? $this->verify( $key, $_REQUEST[$key] ) : null;
+        $query_var = ( isset($this->req[$key] ) ) ? $this->verify( $key, $this->req[$key] ) : null;
         if ($query_var) {
             return $this->strip_magic_quotes($query_var);
         } else {
