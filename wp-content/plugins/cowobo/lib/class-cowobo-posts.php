@@ -413,5 +413,91 @@ class CoWoBo_Posts
         }
         return $postids;
     }
+
+    /**
+     * Prints RSS links for current feed
+     *
+     * @param str (optional) feedlink
+     * @param str (optional) what to print before the link
+     * @param str (optional) what to print after the link
+     * @return boolean
+     */
+    public function print_rss_links( $feed_link = false, $before = '', $after = '' ) {
+        $rss_services = array(
+            'yahoo' => array(
+                'name' => 'myYahoo',
+                'url' => 'http://add.my.yahoo.com/rss?url=%enc_feed%',
+                ),
+			'facebook' => array(
+                'name' => 'Facebook',
+                'url' => 'http://www.facebook.com/cowobo',
+                ),
+            'google' => array(
+                'name' => 'iGoogle',
+                'url' => 'http://fusion.google.com/add?feedurl=%enc_feed%',
+                ),
+			'bloglines' => array(
+                'name' => 'Bloglines',
+                'url' => 'http://www.bloglines.com/sub/%feed%',
+                ),
+			'netvibes' => array(
+                'name' => 'netvibes',
+                'url' => 'http://www.netvibes.com/subscribe.php?url=%enc_feed%',
+                ),
+            'newsgator' => array(
+                'name' => 'newsgator',
+                'url' => 'http://www.newsgator.com/ngs/subscriber/subext.aspx?url=%enc_feed%',
+                ),
+			'rss_feed' => array(
+                'name' => 'Other RSS Feed Readers',
+                'url' => '%feed%',
+             	),
+        );
+
+        if ( ! $feed_link ) $feed_link = $this->current_feed_url();
+        $output = "";
+        foreach ( $rss_services as $rss ) {
+            $output .= "$before<a href ='" .$this->get_feed_url ( $rss['url'], $feed_link ) . "'>{$rss['name']}</a>$after";
+        }
+
+        echo $output;
+        return true;
+    }
+
+        /**
+         * Converts the url to the right one
+          *
+          * @param str $url for the rss service with either %enc_feed% or %feed%
+          * @param str $feed_url url for the feed to be added
+          * @return str Url for the service with feed url
+        */
+        private function get_feed_url($url, $feed_url) {
+            $url = str_replace(
+                array('%enc_feed%', '%feed%'),
+                array(urlencode($feed_url), esc_url($feed_url),
+            ),$url);
+            return $url;
+        }
+
+        /**
+         * Returns the RSS URL for the current feed in the feederbar
+         *
+         * @return str RSS URL for the current feed in the feederbar
+         */
+        private function current_feed_url() {
+            $url = 'http';
+            if ($_SERVER["HTTPS"] == "on") {$url .= "s";}
+            $url .= "://";
+            if ($_SERVER["SERVER_PORT"] != "80") {
+                $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+            } else {
+                $url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+            }
+
+            if ( substr ( $url, -1 ) != '/' ) $url .= '/';
+
+            $url .= "feed";
+            return $url;
+        }
 }
 
