@@ -1,4 +1,3 @@
-`
                                    ':-        '+o                        ./yydMMMMMMyyyyyy/:::.     
                                    oMMNmsssshNNMMm-                   :sNMMMMMMMMMMMMMMMMMMMMMMNNNs/
                             .shdNNNMMMMMMMMMMMMMMMNo-               /dMdMMMMMMMMMMMMMMMMMMMMMMMMMMNo
@@ -45,4 +44,4 @@ yM+'                                 .+hmMMMMMmo:/dMMMMMMMMMMMMMMMMMMMy-
                                 .NMMMNh-    -MMMMMMd/                                               
                                  :ss/       'yMMMMo                                                 
                                              .ym/-                                                  
-					     `
+					     
