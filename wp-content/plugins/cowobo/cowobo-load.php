@@ -81,6 +81,7 @@ if (!class_exists('CoWoBo')) :
          */
         public function __construct() {
             $this->query = new CoWoBo_Query;
+            $this->verified_query = new CoWoBo_Query ( true );
             $this->users = new CoWoBo_Users;
 
             $this->actions_and_filters();
@@ -105,9 +106,10 @@ if (!class_exists('CoWoBo')) :
          */
         public function controller() {
             $query = &$this->query;
+            $verified = &$this->verified_query;
             $users = &$this->users;
 
-            if( $query->confirm ) $users->create_user();
+            if( $verified->confirm ) $users->create_user();
             elseif( $query->userpw && !$_POST['user']) $users->login_user();
 
 
