@@ -45,13 +45,17 @@ class CoWoBo_Users
 
         //add user to database
         $userid = wp_create_user ( $name, $cowobo->query->userpw, $email );
+        if ( is_a ( $userid, 'WP_Error' ) ) {
+            $cowobo->notifications[] = array ( "USEREXISTS" => "User already exists." );
+            return;
+        }
 
         $profile = array(
             'post_author' => $userid,
             'post_category' => array( get_cat_ID('Coders') ),
             'post_content' => "",
             'post_status' => 'publish',
-            'post_title' => substr ($name, strpos ( '@', $name ) ),
+            'post_title' => substr ( $name, 0, strpos ( $name, '@' ) ),
             'post_type' => 'post'
         );
 
@@ -76,13 +80,13 @@ class CoWoBo_Users
 
         // Get user and check if she exists
         $user = get_user_by( 'email', $email );
-        if ( ! isset( $user, $user->user_login, $user->user_status ) || 0 == (int) $user->user_status ) {
+        if ( ! isset( $user, $user->user_login, $user->user_status ) ) {
             $cowobo->notifications[] = array ( "INVALIDUSER" => "User does not exist." );
             return;
         }
 
         $username = $user->user_login;
-        $signed_in_user = wp_signon( array ( 'user_login'=> $username, 'user_password'=> $userpw, 'remember'=> true ), false);
+        $signed_in_user = wp_signon( array ( 'user_login'=> $username, 'user_password'=> $cowobo->query->userpw, 'remember'=> true ), false);
 
         if ( is_a ( $signed_in_user, 'WP_Error' ) ) {
             $cowobo->notifications[] = array ( "WRONGPASSWORD" => "The supplied password is incorrect." );
