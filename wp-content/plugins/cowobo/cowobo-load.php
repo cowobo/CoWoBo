@@ -125,6 +125,29 @@ if (!class_exists('CoWoBo')) :
             elseif( $query->post_ID ) $GLOBALS['postmsg'] = cwb_save_post();
         }
 
+        /**
+         * Redirect users based on $_REQUEST['redirect']
+         */
+        public function redirect() {
+            if ( $redirect = $this->query->redirect ) {
+                switch ( $redirect ) {
+                    case 'profile' :
+                        $profile_id = $this->users->get_current_user_profile_id();
+                        wp_safe_redirect(get_permalink( $profile_id ) );
+                        break;
+                    case 'contact' :
+                        wp_safe_redirect('?action=contact');
+                        break;
+                    case 'edit' :
+                        wp_safe_redirect('?action=editpost');
+                        break;
+                    default :
+                        wp_safe_redirect($_SERVER["REQUEST_URI"]);
+                        break;
+                }
+            } else wp_safe_redirect($_SERVER["REQUEST_URI"]);
+        }
+
 
     }
 
