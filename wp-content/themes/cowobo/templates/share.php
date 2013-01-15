@@ -14,7 +14,7 @@ $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://
 echo '<div class="tab">';
 	echo '<h2>Subscribe to this feed &raquo;</h2>';
 	echo '<div class="rsslinks">';
-		$social->print_rss_links();
+		$cowobo->posts->print_rss_links();
 	echo '</div>';
 echo '</div>';
 

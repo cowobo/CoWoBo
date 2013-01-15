@@ -1,5 +1,5 @@
 <?php
-global $cowobo;
+global $cowobo, $profile_id;
 
 if($_GET['q']):
 	//if translating without javascript load page in google translate iframe
@@ -14,7 +14,7 @@ else:
 		$feedtitle = $langnames[$lang][1];
 		$subtitle = $langnames[$lang][2];
 	elseif(is_single()):
-		$userid = $social->profile_id;
+		$userid = $profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);
 		$canedit = current_user_can('edit_settings');
@@ -36,7 +36,7 @@ else:
 		echo '<a href="?action=contact">Contact</a>';
 		echo '<a href="?action=search'.'">Search</a>';
 		if(is_user_logged_in()):
-			echo '<a href="'.get_permalink($social->profile_id).'">Profile</a>';
+			echo '<a href="'.get_permalink($profile_id).'">Profile</a>';
 		else:
 			echo '<a href="?action=login'.'">Profile</a>';
 		endif;

@@ -140,7 +140,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				echo '<select name="linkto" class="smallfield">';
 				echo '<option>Or link to your other posts:</option>';
 				echo '<option></option>';
-				foreach(get_posts('meta_key=author&meta_value='.$social->ID.'&numberposts=-1') as $userpost):
+				foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&numberposts=-1') as $userpost):
 					echo '<option value="'.$userpost->ID.'">' . $cowobo->L10n->the_title($userpost->ID).'</option>';
 				endforeach;
 				echo '</select>';

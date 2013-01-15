@@ -1,7 +1,7 @@
 <?php
 
 //check if the user has any pending author requests
-$requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$social->profile_id), array('key'=>'request')), ));
+$requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$GLOBALS['profile_id']), array('key'=>'request')), ));
 
 if($requestposts):
 	foreach($requestposts as $requestpost):

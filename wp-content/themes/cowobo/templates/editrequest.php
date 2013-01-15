@@ -6,7 +6,7 @@ if(is_user_logged_in()):
 	echo '<div class="tab">';
 	foreach($requests as $request):
 		$rqdata = explode('|', $request);
-		if($rqdata[0] == $social->profile_id):
+		if($rqdata[0] == $GLOBALS['profile_id']):
 			if($rqdata[1] == 'deny'):
 				$denied = true;
 				echo '<h2>Your request for this post was denied</h2>';
