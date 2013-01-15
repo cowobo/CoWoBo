@@ -1,4 +1,5 @@
 <?php
+global $cowobo;
 
 if($_POST['post_ID']) $postid = $_POST['post_ID'];
 elseif(!$postid) $postid = $post->ID;
@@ -6,13 +7,13 @@ elseif(!$postid) $postid = $post->ID;
 $postcat = cwob_get_category($postid);
 
 //if user is not author show become editor screen
-if(!$author):	
+if(!$author):
 	echo '<h2>To edit this post enter a first name and password &raquo;</h2>';
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
 echo '<div class="tab">';
-	echo '<div class="feedtitle">'.cwb_feed_title().'</div>';
+	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
 	if(empty($postmsg)):
 		echo '<b>Please enter all text in ';
 		echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
@@ -40,7 +41,7 @@ if($layouts->layout[$postcat->term_id]):
 		echo '</h3>';
 		if($field['type'] == 'title'):
 			$post_title = get_the_title($postid);
-			echo '<input type="text" name="post_title" value="'.$post_title.'"/>';	
+			echo '<input type="text" name="post_title" value="'.$post_title.'"/>';
 		elseif($field['type'] == 'gallery'): unset($thumbs);
 			echo '<div class="headerrow">';
 				echo '<div class="thumbcol">Thumb</div>';
@@ -63,8 +64,8 @@ if($layouts->layout[$postcat->term_id]):
 			endfor;
 		elseif($field['type'] == 'tags'):
 			$tags = array();
-			foreach(get_the_category($postid) as $cat): 
-				if($cat->term_id != $postcat->term_id) $tags[] = $cat->name; 
+			foreach(get_the_category($postid) as $cat):
+				if($cat->term_id != $postcat->term_id) $tags[] = $cat->name;
 			endforeach;
 			$tags = implode(', ', $tags);
 			echo '<input type="text" name="tags" value="'.$tags.'"/>';
@@ -98,7 +99,7 @@ if($layouts->layout[$postcat->term_id]):
 			$cat = get_the_category($postid);
 			echo '<select name="country" class="full">';
 			echo '<option></option>';
-			foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name&hide_empty=0') as $country): 
+			foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name&hide_empty=0') as $country):
 				if($cat[0]->term_id == $country->term_id) $state = 'selected'; else $state = '';
 				echo '<option value="'.$country->term_id.'" '.$state.'> '.$country->name.'</option>';
 			endforeach;
@@ -113,7 +114,7 @@ if($layouts->layout[$postcat->term_id]):
 			echo '<div class="half">';
 			echo '<select tabindex="'.$index.'" name="country" class="country left">';
 				echo '<option></option>';
-				foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name') as $country): 
+				foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name') as $country):
 					if($countryid == $country->term_id) $state = 'selected'; else $state = '';
 					echo '<option value="'.$country->term_id.'" '.$state.'> '.$country->name.'</option>';
 				endforeach;
@@ -122,7 +123,7 @@ if($layouts->layout[$postcat->term_id]):
 				echo '<option></option>';
 				for($x=3; $x<17; $x++):
 					if($x == $zoomlevel) $state="selected"; else $state='';
-					echo '<option value="'.$x.'" '.$state.'>'.($x-2).'</option>'; 
+					echo '<option value="'.$x.'" '.$state.'>'.($x-2).'</option>';
 				endfor;
 				echo '<option value="14">Max Zoom</option>';
 			echo '</select>';
@@ -170,7 +171,7 @@ if($layouts->layout[$postcat->term_id]):
 		endif;
 		echo '</div>';
 	endforeach;
-	
+
 	echo '<div class="tab">';
 		if($_GET['new']) $state=''; else $state='checked="checked"';
 		echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';

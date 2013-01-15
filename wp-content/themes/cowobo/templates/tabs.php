@@ -1,18 +1,20 @@
-<?php 
+<?php
+global $cowobo;
+
 if($tabtype == 'cat'):
 	if ($tabposts) $catposts = $tabposts;
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
 	if(is_single()):
 		if($postcat->slug !='coder') $prefix = 'Related ';
-		$catlink = '?showall='.$tabcat->name;						
+		$catlink = '?showall='.$tabcat->name;
 	else:
 		$catlink = get_category_link($tabcat->term_id);
 	endif;
-	
+
 	echo '<div class="tabthumb left">';
 			cwb_the_thumbnail($catposts[0]->ID, $tabcat->slug);
 	echo '</div>';
-	
+
 	echo '<div class="tabtext right">';
 		echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 		if($catposts):
@@ -22,13 +24,13 @@ if($tabtype == 'cat'):
 				$views = '<li>'.cwb_get_views($catpost->ID).' Views</li>';
 				//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 				$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
-				$tabcat = get_the_category($catpost->ID); 
+				$tabcat = get_the_category($catpost->ID);
 				$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
 				if($tabcat->slug == 'wiki'):
 					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
 				elseif($tabcat->slug == 'news'):
-					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';				
-				
+					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
+
 				else:
 					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
 				endif;
@@ -43,22 +45,22 @@ else:
 	$views = '<li>'.cwb_get_views($tabpost->ID).' Views</li>';
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 	$date = '<li>'.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
-	$tabcat = get_the_category($tabpost->ID); 
-	$tabtype = cwob_get_type($tabcat[0]->term_id);
+	$tabcat = get_the_category($tabpost->ID);
+	$tabtype = $cowobo->feed->get_type($tabcat[0]->term_id);
 	$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
-		
+
 	echo '<div class="tabthumb left">';
 		cwb_the_thumbnail($tabpost->ID, $tabtype->slug);
 	echo '</div>';
-	
-	echo '<div class="tabtext right">';	
+
+	echo '<div class="tabtext right">';
 		if($tabtype->slug == 'wiki'):
 			echo $title.'<br/><ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		elseif($tabtype->slug == 'location'):
 			echo $title.', <a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a>';
 			echo '<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		elseif($tabtype->slug == 'news'):
-			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';							
+			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		else:
 			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		endif;

@@ -12,7 +12,7 @@ define ( 'PERSONALFEEDSLUG', 'personal-feed' );
 define ( 'PERSONALFEEDURL', SITEURL . '/' . PERSONALFEEDSLUG );
 
 //LIBRARIES
-include_once('lib/class-cowobo-feed.php');
+//include_once('lib/class-cowobo-feed.php');
 include_once('lib/class-cowobo-social.php');
 include_once('lib/class-cowobo-map.php');
 include_once('lib/class-cowobo-layouts.php');
@@ -28,12 +28,13 @@ $layouts = new Cowobo_Layouts;
 add_action('comment_post', 'cwb_comment_notice');
 add_action('wp', 'activate_daily_events');
 add_action('comment_post', 'cowobo_add_comment_meta', 1);
-add_filter('show_admin_bar', 'my_function_admin_bar');
+//add_filter('show_admin_bar', 'my_function_admin_bar');
 
 
 //ADMIN FUNCTIONS
 
 //Remove admin bar
+// Not needed?
 function my_function_admin_bar(){
     return false;
 }
@@ -247,13 +248,6 @@ function cwb_link_post(){
 	$related->create_relations($post->ID, array($_POST['linkto']));
 }
 
-//Show all posts related to current post in requested category
-function cwb_related_feed(){
-	global $related; global $post;
-	$postids = $related->cwob_get_related_ids($post->ID);
-	$catid = get_cat_ID($_GET['showall']);
-	query_posts(array('cat'=> $catid, 'post__in'=>$postids));
-}
 
 //Get primal category of post
 function cwob_get_category($postid) {
@@ -344,109 +338,6 @@ function cwb_correct_translation() {
 	update_post_meta($post->ID, 'content-'.$lang, $_POST['content-'.$lang]);
    	return $notices;
 }
-
-//FEED FUNCTIONS
-
-//Filter feed based on parameters set in browse
-function cwb_filter_feed(){
-	global $wp_query; global $lang; global $langnames;
-
-	//store variables from browse form
-	$cats = $_GET['cats'];
-	$sortby = $_GET['sort'];
-	$keywords = $_GET['keywords'];
-	$country = $_GET['country'];
-
-	//store cats to filter
-	if($cats && $cats[0] != 'all'):
-		$catstring = implode(',',$cats);
-	elseif(is_category()):
-		$catstring = get_query_var('cat');
-	endif;
-
-	if($country != 'all'):
-		$metaquery = array('key'=>'country', 'value'=>$country);
-	endif;
-
-	if(empty($sort)) $sort = 'modified';
-	if($sort == 'featured'):
-		$sort = 'meta_value';
-		$metaquery = array('meta_key'=>'featured');
-	endif;
-
-	//query filtered posts
-	query_posts(array('orderby'=>$sort, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' =>array($metaquery)));
-
-}
-
-//Construct feed title;
-function cwb_feed_title($link = true){
-	global $currentcat; global $post; global $lang; global $langnames;
-
-	if($_GET['new']):
-		$feedtitle .= 'Add '.$_GET['new'];
-	elseif(is_404()):
-		$feedtitle .= 'Yikes we cannot find that content';
-	elseif($_POST['userpw']):
-		$feedtitle .= 'Welcome to the club';
-	elseif($_GET['showall']):
-		$feedtitle .= '<a href="'.get_permalink($post->ID).'">'.cwb_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
-	elseif($_GET['action'] == 'login'):
-		$feedtitle .= 'Who are you?';
-	elseif($_GET['action'] == 'search'):
-		$feedtitle .= 'Search for posts';
-	elseif($_GET['action'] == 'contact'):
-		$feedtitle .= 'Contact';
-	elseif($_GET['action'] == 'translate'):
-		$feedtitle .= 'Language';
-	elseif($_GET['action'] == 'editpost'):
-		$feedtitle .= 'Edit Post';
-	elseif(is_single()):
-		$feedtitle .= cwb_the_title($post->ID);
-	elseif($_GET['sort2']):
-		$cats = $_GET['cats'];
-		$country = $_GET['country'];
-		if($cats && $cats[0] != 'all'):
-			$count = count($cats);
-			foreach($cats as $catid): $x++;
-				$cat = get_category($catid);
-				$feedtitle .= $cat->name;
-				if($x < $count) $feedtitle .= ', ';
-				if($x == $count-1) $feedtitle .= 'and ';
-			endforeach;
-		else:
-			$feedtitle .= 'All posts ';
-		endif;
-		if($country != 'all'):
-			$countrycat = get_category($country);
-			$feedtitle .= ' in "'.$countrycat->name.'"';
-		endif;
-		if($keywords = $_GET['keywords']):
-			$feedtitle .= ' containing "'.$keywords.'"';
-		endif;
-		if($sort = $_GET['sort']):
-			$feedtitle .= ' sorted by '.$sort;
-		endif;
-	elseif(is_category() or $_GET['sort']):
-		$feedtitle .= $currentcat->name;
-	else:
-		//$feedtitle = $langnames[$lang][1];
-		$feedtitle = 'Welcome to Coders Without Borders';
-	endif;
-
-	return $feedtitle;
-}
-
-//Get primal category of feed category
-function cwob_get_type($catid) {
-	$ancestors = get_ancestors($catid,'category');
-	if (empty($ancestors)):
-		return get_category($catid);
-	else:
-		return get_category(array_pop($ancestors));
-	endif;
-}
-
 
 //Return gallery with captions
 function cwb_loadgallery($postid){
@@ -595,7 +486,7 @@ function cwb_add_comment_meta($comment_id) {
 
 // Send contact email
 function cwb_send_email() {
-	global $social;
+	global $social, $cowobo;
 	$profile = get_post($social->profile_id);
 	$firstname = $_POST['user_firstname'];
 	$header  = 'MIME-Version: 1.0'."\r\n";
@@ -610,7 +501,7 @@ function cwb_send_email() {
 	elseif($to = $_POST['user_friends']):
 		$subject = $firstname.' sent you this message via our site';
 		$message = $_POST['emailtext'].'<br/><br/>'.$firstname.'<br/><br/>';
-		$message .= '<a href="'.$_SERVER['REQUEST_URI'].'">'.cwb_feed_title().'</a><br/>';
+		$message .= '<a href="'.$_SERVER['REQUEST_URI'].'">'. $cowobo->feed->feed_title() .'</a><br/>';
 		if(is_single()) $message .= get_the_excerpt(); else $message .= get_bloginfo('description');
 		mail('balthazar@cowobo.org,'.$to, $subject, $message, $header);
 	else:
