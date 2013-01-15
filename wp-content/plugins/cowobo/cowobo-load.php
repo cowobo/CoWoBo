@@ -39,6 +39,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-feed.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-posts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-l10n.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -133,8 +134,9 @@ if (!class_exists('CoWoBo')) :
             $this->users = new CoWoBo_Users;
             $this->feed = new CoWoBo_Feed;
             $this->posts = new CoWoBo_Posts;
-            $this->relations = new Cowobo_Related_Posts();
-            $this->L10n = new CoWoBo_Localization();
+            $this->relations = new Cowobo_Related_Posts;
+            $this->L10n = new CoWoBo_Localization;
+            $this->layouts = new Cowobo_Layouts;
 
             $this->old_includes();
 
@@ -151,12 +153,8 @@ if (!class_exists('CoWoBo')) :
             }
 
         private function old_includes() {
-            include_once( TEMPLATEPATH . '/lib/class-cowobo-social.php');
             include_once( TEMPLATEPATH . '/lib/class-cowobo-map.php');
-            include_once( TEMPLATEPATH . '/lib/class-cowobo-layouts.php');
             global $social, $layouts;
-            $social = new Cowobo_Social;
-            $layouts = new Cowobo_Layouts;
         }
 
         private function actions_and_filters() {
