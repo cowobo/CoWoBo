@@ -11,7 +11,7 @@ class CoWoBo_Posts
     public function create_post(){
         global $cowobo, $profile_id;
 
-        $newcat = $cowobo->query->new;
+        $newcat = $cowobo->query->cat;
         $catid = get_cat_ID( $newcat );
 
         //insert the post
