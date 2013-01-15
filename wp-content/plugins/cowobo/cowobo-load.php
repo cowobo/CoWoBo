@@ -133,7 +133,7 @@ if (!class_exists('CoWoBo')) :
             $this->feed = new CoWoBo_Feed;
             $this->posts = new CoWoBo_Posts;
             $this->relations = new Cowobo_Related_Posts();
-            
+
             $this->old_includes();
 
             $this->actions_and_filters();
@@ -174,15 +174,15 @@ if (!class_exists('CoWoBo')) :
             $relations = &$this->relations;
 
             // User actions
-            if( $verify->confirm ) $users->create_user();
-            elseif( $query->userpw && ! $query->user ) $users->login_user();
+            if( $verify->confirm ) $notices = $users->create_user();
+            elseif( $query->userpw && ! $query->user ) $notices = $users->login_user();
 
             // Feed actions
-            elseif( $query->sort ) $feed->filter_feed();
-            elseif( $query->showall ) $feed->related_feed();
+            elseif( $query->sort ) $notices = $feed->filter_feed();
+            elseif( $query->showall ) $notices = $feed->related_feed();
 
             // Post actions
-            elseif( $verify->delete ) $posts->delete_post();
+            elseif( $verify->delete ) $notices = $posts->delete_post();
             elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
