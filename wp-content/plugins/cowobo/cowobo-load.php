@@ -57,14 +57,15 @@ if (!class_exists('CoWoBo')) :
          * @static
         */
         public static function &init() {
-            static $instance = false;
+            global $cowobo;
+            //static $instance = false;
 
-            if (!$instance) {
+            if (!$cowobo) {
                 load_plugin_textdomain('cowobo', false, basename(COWOBO_PLUGIN_DIR) . '/languages/');
-                $instance = new CoWoBo;
+                $cowobo = new CoWoBo;
             }
 
-            return $instance;
+            return $cowobo;
         }
 
         /**
@@ -87,6 +88,9 @@ if (!class_exists('CoWoBo')) :
                 $this->__construct();
             }
 
+        /**
+         * @todo Add nonces
+         */
         private function controller() {
             $query = &$this->query;
 
