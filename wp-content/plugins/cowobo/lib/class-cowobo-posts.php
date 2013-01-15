@@ -28,17 +28,27 @@ class CoWoBo_Posts
 
         return $postid;
     }
+
+    /**
+     * Delete post and all links associated with it
+     */
+    public function delete_post() {
+        global $related, $cowobo;
+
+        $deleteid = $cowobo->query->id;
+        $related->delete_relations($deleteid);
+        if ( wp_delete_post($deleteid) ) {
+            $cowobo->notifications[] = array (
+                "error" => "An error occurred deleting your post."
+            );
+        } else {
+            $cowobo->notifications[] = array (
+                "success" => "Post succesfully deleted."
+            );
+        }
+    }
 }
 
-
-
-//Delete post and all links associated with it
-function cwb_delete_post() {
-	global $related;
-	$deleteid = $_GET['delete'];
-	$related->delete_relations($deleteid);
-	wp_delete_post($deleteid);
-}
 
 //Save post with new data
 function cwb_save_post(){
