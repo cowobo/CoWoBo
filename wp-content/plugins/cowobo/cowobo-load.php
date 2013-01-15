@@ -111,6 +111,7 @@ if (!class_exists('CoWoBo')) :
             $verified = &$this->verified_query;
             $users = &$this->users;
             $feed = &$this->feed;
+            $posts = &$this->posts;
 
             // User actions
             if( $verified->confirm ) $users->create_user();
@@ -121,14 +122,16 @@ if (!class_exists('CoWoBo')) :
             elseif( $query->showall ) $feed->related_feed();
 
             // Post actions
-            elseif( $query->delete ) cwb_delete_post();
-            elseif( $query->new ) $GLOBALS['postid'] = cwb_create_post();
+            elseif( $verify->delete ) $posts->delete_post();
+            elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
+            elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
+            elseif( $query->linkto ) $notices = $posts->link_post();
+
+            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
+
+            elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
             elseif( $query->requesttype ) $notices = cwb_edit_request();
             elseif( $query->correctlang ) $notices = cwb_correct_translation();
-            elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
-            elseif( $query->linkto ) $notices = cwb_link_post();
-            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
-            elseif( $query->post_ID ) $GLOBALS['postmsg'] = cwb_save_post();
         }
 
         /**
