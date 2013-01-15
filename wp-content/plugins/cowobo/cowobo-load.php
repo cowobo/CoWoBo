@@ -33,8 +33,9 @@ define('COWOBO_PLUGIN_LIB', COWOBO_PLUGIN_DIR . 'lib/' );
  *
  * @since 0.1
  */
-require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-query.php');
-require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php');
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-query.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-users.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-feed.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -107,13 +108,17 @@ if (!class_exists('CoWoBo')) :
             $query = &$this->query;
             $verified = &$this->verified_query;
             $users = &$this->users;
+            $feed = &$this->feed;
 
+            // User actions
             if( $verified->confirm ) $users->create_user();
             elseif( $query->userpw && !$_POST['user']) $users->login_user();
 
+            // Feed actions
+            elseif( $query->sort ) $feed->filter_feed();
+            elseif( $query->showall ) $feed->related_feed();
 
-            elseif( $query->sort ) cwb_filter_feed();
-            elseif( $query->showall ) cwb_related_feed();
+            // Post actions
             elseif( $query->delete ) cwb_delete_post();
             elseif( $query->new ) $GLOBALS['postid'] = cwb_create_post();
             elseif( $query->requesttype ) $notices = cwb_edit_request();
