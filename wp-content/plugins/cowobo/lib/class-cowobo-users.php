@@ -11,6 +11,8 @@ if (!defined('ABSPATH'))
  */
 class CoWoBo_Users
 {
+    public $current_user_profile_id = 0;
+
     public function __construct() {
         $this->actions_and_filters();
     }
@@ -87,13 +89,35 @@ class CoWoBo_Users
             return;
         }
 
-        $profileid = get_user_meta( $signed_in_user->user_ID, 'cowobo_profile', true );
+        $profileid = get_user_meta( $signed_in_user->ID, 'cowobo_profile', true );
         if( $go_to_profile )
             wp_safe_redirect( get_permalink( $profileid ) . '?action=editpost' );
         else
             $cowobo->redirect();
 
     }
+
+    /**
+     * Get the 'cowobo_profile' metavalue for the current user
+     * @return type
+     */
+    public function get_current_user_profile_id() {
+        if ( ! $this->current_user_profile_id ) {
+            $user_id = wp_get_current_user()->ID;
+            $this->current_user_profile_id = $this->get_user_profile_id( $user_id );
+        }
+
+        return $this->current_user_profile_id;
+    }
+
+        public function get_user_profile_id ( $user_id = 0 ) {
+            if ( is_a ( $user_id, 'WP_User' ) )
+                $user_id = $user->ID;
+
+            if ( ! $user_id ) return false;
+
+            return get_user_meta($user_id, 'cowobo_profile', true);
+        }
 
 
     /**
