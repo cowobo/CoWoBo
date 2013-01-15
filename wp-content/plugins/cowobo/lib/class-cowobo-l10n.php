@@ -67,7 +67,10 @@ class CoWoBo_Localization
 
     public function get_lang_cookie() {
         global $cowobo;
-        return $cowobo->query->get_cookie('cowobo_lang');
+        if ( ! $lang = $cowobo->query->get_cookie('cowobo_lang') )
+            $lang = 'en';
+
+        return $lang;
     }
 
     private function set_langnames() {

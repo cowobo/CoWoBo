@@ -61,7 +61,7 @@ class CoWoBo_Query
             setcookie( $key, $value, $expiration, SITECOOKIEPATH, COOKIE_DOMAIN, $secure, true );
     }
 
-    public function get_cookie() {
+    public function get_cookie( $key ) {
         return ( isset ( $_COOKIE[$key] ) ) ? $_COOKIE[$key] : null;
     }
 }

@@ -306,36 +306,36 @@ class CoWoBo_Posts
             //check if the slide has an image
             if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
                 if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-                    $slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
+                    $slides[$x] = '<div class="slide "><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
                 endif;
             endif;
 
             foreach(get_children('post_parent='.$postid.'&numberposts=4&post_mime_type=image') as $image):
                 $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'large');
-                $slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
+                $slides[$x] = '<div class="slide "><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
             endforeach;
 
             //check if the slide has a video
             if($caption = get_post_meta($postid, 'caption'.$x, true)):
                 $videocheck = explode("?v=", $caption);
                 if($url = $videocheck[1]):
-                    $slides[$x] = '<div class="slide '.$state.'"><object>';
+                    $slides[$x] = '<div class="slide "><object>';
                         $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                         $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                         $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                         $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                     $slides[$x] .= '</object></div>';
-                    $captions .= '<div class="caption '.$state.'"></div>';
+                    $captions .= '<div class="caption "></div>';
                 else:
-                    $captions .= '<div class="caption '.$state.'">'.$caption.'</div>';
+                    $captions .= '<div class="caption ">'.$caption.'</div>';
                     unset($caption);
                 endif;
             else:
-                $captions .= '<div class="caption '.$state.'"></div>';
+                $captions = '<div class="caption "></div>';
             endif;
         endfor;
 
-        if($slides):
+        if( isset ( $slides ) && is_array ( $slides ) ):
             return '<div class="gallery">'.implode('', $slides).'</div>';
         endif;
     }
@@ -486,7 +486,7 @@ class CoWoBo_Posts
          */
         private function current_feed_url() {
             $url = 'http';
-            if ($_SERVER["HTTPS"] == "on") {$url .= "s";}
+            if ( isset ( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on") {$url .= "s";}
             $url .= "://";
             if ($_SERVER["SERVER_PORT"] != "80") {
                 $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];

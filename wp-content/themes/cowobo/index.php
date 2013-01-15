@@ -1,14 +1,14 @@
 <?php
-global $cowobo, $profile_id;
+global $cowobo, $profile_id, $langnames, $lang;
 
-if($_GET['q']):
+if( $cowobo->query->q ) :
 	//if translating without javascript load page in google translate iframe
 	include(TEMPLATEPATH.'/iframe.php');
 else:
 	get_header();
 
 	//VARIABLES
-	$action = $_GET['action'];
+	$action = $cowobo->query->action;
 	$feedtitle = $langnames[$lang][2];
 	if(is_home()):
 		$feedtitle = $langnames[$lang][1];
@@ -18,9 +18,9 @@ else:
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);
 		$canedit = current_user_can('edit_settings');
-		if(!$postid) $postid = $post->ID;
-		if($_POST['post_ID']) $postid = $_POST['post_ID'];
-		if($post->ID == $userid or $canedit or $postcat->slug == 'region') $author = true;
+		if(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
+		if( $cowobo->query->post_ID ) $postid = $_POST['post_ID'];
+		if( $post->ID == $userid || $canedit ) $author = true;
 		else $author = false;
 		if($profiles && $userid && in_array($userid, $profiles))$author = true;
 		$cowobo->posts->update_views($post->ID);
@@ -69,7 +69,7 @@ else:
 			else:
 				include(TEMPLATEPATH.'/templates/'.$action.'.php');
 			endif;
-		elseif($_GET['new']): $author = true;
+		elseif( $cowobo->query->new ): $author = true;
 			if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
 				 include(TEMPLATEPATH.'/templates/login.php');
 			else:
@@ -84,7 +84,7 @@ else:
 		endif;
 
 		//include share forms below feeds
-		if(!$action && !$_GET['new']) include( TEMPLATEPATH . '/templates/share.php');
+		if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');
 
 	echo '</div>';
 

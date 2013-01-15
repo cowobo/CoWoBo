@@ -1,4 +1,5 @@
 <?php
+global $cowobo;
 
 //check if the user has any pending author requests
 $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$GLOBALS['profile_id']), array('key'=>'request')), ));
@@ -28,7 +29,7 @@ if($requestposts):
 endif;
 
 //check if the user sent an email
-if($_POST['emailmsg']):
+if( $cowobo->query->emailmsg ):
  	$msg .= 'Your email has been sent. We will get back to you shortly!';
 endif;
 

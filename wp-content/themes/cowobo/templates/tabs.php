@@ -1,8 +1,12 @@
 <?php
 global $cowobo;
 
+$prefix = '';
+$sort = ( isset ( $sort ) ) ? $sort : '';
+
 if($tabtype == 'cat'):
-	if ($tabposts) $catposts = $tabposts;
+	if ( isset ( $tabposts ) && ! empty ( $tabposts ) ) $catposts = $tabposts;
+    /** @todo something is wrong with $sort **/
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
 	if(is_single()):
 		if($postcat->slug !='coder') $prefix = 'Related ';
@@ -11,8 +15,9 @@ if($tabtype == 'cat'):
 		$catlink = get_category_link($tabcat->term_id);
 	endif;
 
+    if ( ! isset ( $catposts[0] ) ) return;
 	echo '<div class="tabthumb left">';
-			$cowobo->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
+    $cowobo->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 	echo '</div>';
 
 	echo '<div class="tabtext right">';
@@ -26,13 +31,13 @@ if($tabtype == 'cat'):
 				$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
 				$tabcat = get_the_category($catpost->ID);
 				$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
-				if($tabcat->slug == 'wiki'):
-					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
-				elseif($tabcat->slug == 'news'):
-					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
+				if($tabcat[0]->slug == 'wiki'):
+					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
+				elseif($tabcat[0]->slug == 'news'):
+					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
 
 				else:
-					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.$coders.'</ul>';
+					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
 				endif;
 			endforeach;
 		else:

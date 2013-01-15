@@ -9,8 +9,8 @@ if(is_home()):
 		echo '<img src="'.get_bloginfo('template_url').'/images/intro.png" alt=""/>';
 	echo '</div>';
 
-	foreach(get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $tabcat):
-			$sort = $sort[$cat->term_id];
+	foreach( get_categories( 'parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized') ) as $tabcat):
+			//$sort = $sort[$tabcat->term_id];
 			$tabtype = 'cat'; include(TEMPLATEPATH.'/templates/tabs.php');
 	endforeach;
 else:
@@ -28,7 +28,7 @@ else:
 	echo '</div>';
 
 	if (have_posts()):
-		$sort = $sort[$cat->term_id];
+		//$sort = $sort[$cat->term_id];
 		while (have_posts()) : the_post();
 			$tabpost = $post;
 			$tabtype = 'post'; include(TEMPLATEPATH.'/templates/tabs.php');

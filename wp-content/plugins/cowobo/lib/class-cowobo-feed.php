@@ -57,6 +57,7 @@ class CoWoBo_Feed
     function feed_title(){
         global $currentcat, $post, $cowobo;
 
+        $feedtitle = '';
         if( $cowobo->query->new )
             $feedtitle .= 'Add '.$cowobo->query->new;
         elseif( is_404() )
@@ -65,19 +66,21 @@ class CoWoBo_Feed
             $feedtitle .= 'Welcome to the club';
         elseif( $cowobo->query->showall )
             $feedtitle .= '<a href="'.get_permalink( $post->ID ).'">'. $cowobo->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
-        elseif($_GET['action'] == 'login')
+        elseif( $cowobo->query->action == 'login')
             $feedtitle .= 'Who are you?';
-        elseif($_GET['action'] == 'search')
+        elseif( $cowobo->query->action == 'search')
             $feedtitle .= 'Search for posts';
-        elseif($_GET['action'] == 'contact')
+        elseif( $cowobo->query->keywords )
+            $feedtitle .= 'Search results';
+        elseif( $cowobo->query->action == 'contact')
             $feedtitle .= 'Contact';
-        elseif($_GET['action'] == 'translate')
+        elseif( $cowobo->query->action == 'translate')
             $feedtitle .= 'Language';
-        elseif($_GET['action'] == 'editpost')
+        elseif( $cowobo->query->action == 'editpost')
             $feedtitle .= 'Edit Post';
         elseif(is_single())
             $feedtitle .= $cowobo->L10n->the_title($post->ID);
-        elseif($_GET['sort2']) {
+        elseif( $cowobo->query->sort2 ) {
             $cats = $cowobo->query->cats;
             $country = $cowobo->query->country;
             if( $cats && $cats[0] != 'all' ) {
@@ -100,7 +103,7 @@ class CoWoBo_Feed
             }
             if($sort = $cowobo->query->sort)
                 $feedtitle .= ' sorted by '.$sort;
-        } elseif(is_category() || $cowobo->query->sort)
+        } elseif( is_category() || $cowobo->query->sort )
             $feedtitle .= $currentcat->name;
         else {
             //$feedtitle = $langnames[$lang][1];

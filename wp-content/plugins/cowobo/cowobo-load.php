@@ -145,7 +145,7 @@ if (!class_exists('CoWoBo')) :
 
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
-            
+
             $this->actions_and_filters();
         }
 
@@ -235,6 +235,8 @@ if (!class_exists('CoWoBo')) :
          * @return arr  current category (obj) and category id (str)
          */
         public function get_current_category() {
+            global $post, $currentcat;
+
             if (is_home()) {
                 $catid = 0;
                 $currentcat = false;

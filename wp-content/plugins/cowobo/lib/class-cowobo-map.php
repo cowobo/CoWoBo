@@ -93,22 +93,23 @@ function cwb_geocode($address) {
 }
 
 function cwb_loadmap() {
-	global $cowobo; global $post;
+	global $cowobo, $post;
 	$linkedmarkers = array();
+    $postid = 0;
 
 	//setup default map and tile size
-	$data = array('lat'=> '0', 'lng'=>'40', 'zoom'=>3, 'type'=>'sat');
+	$data = array('lat'=> '0', 'lng'=>'40', 'zoom'=>3, 'type'=>'sat', 'path' => '', 'type' => 'sat' );
 	$xmid = 500; $ymid = 250;
-	if($_POST['post_ID']) $postid = $_POST['post_ID'];
+	if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
 	elseif(is_single()) $postid = $post->ID;
 
 	//get coordinates if specified in url or post
 	$postcoordinates = get_post_meta($postid, 'coordinates', true);
 
-	if($_GET['center']) $newcenter = $_GET['center'];
+	if($cowobo->query->center) $newcenter = $cowobo->query->center;
 	else $newcenter = $postcoordinates;
-	if($_POST['keywords']):
-		$geocode = cwb_geocode($_POST['keywords']);
+	if($cowobo->query->keywords):
+		$geocode = cwb_geocode($cowobo->query->keywords);
 		$data['lat'] = $geocode['lat'];
 		$data['lng'] = $geocode['lng'];
 	elseif($newcenter):
@@ -118,17 +119,17 @@ function cwb_loadmap() {
 	endif;
 
 	//get zoomlevel if specified in url or post
-	if($_GET['zoom']) $newzoom = $_GET['zoom'];
+	if($cowobo->query->zoom) $newzoom = $cowobo->query->zoom;
 	else $newzoom = get_post_meta($postid, 'zoom', true);
 	if($newzoom) $data['zoom'] = $newzoom;
-	elseif($postcoordinates && $_GET['action'] != 'editpost' && !$_GET['new']) $data['zoom'] = 9;
+	elseif($postcoordinates && $cowobo->query->action != 'editpost' && ! $cowobo->query->new ) $data['zoom'] = 9;
 
 	//check if post has path
 	if($postpath = get_post_meta($postid, 'encpath', true)) $data['path'] = $postpath;
 	$path ='&path=weight:2%7Ccolor:0xffffffff%7Cenc:'.$data['path'];
 
 	//get map type if specified and adjust for different tile providers
-	if($_GET['maptype']) $data['type'] = $_GET['maptype'];
+	if( $cowobo->query->maptype ) $data['type'] = $cowobo->query->maptype;
 
 	if($data['zoom']<10): //mapquest
 		$maptype = $data['type'];
@@ -193,6 +194,7 @@ function cwb_loadmap() {
 	if($countarray) $max = max($countarray);
 
 	//find marker position and add it to map
+    $id = 0;
 	foreach($linkedmarkers as $markerpost): $id++;
 		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
 		$latlng = explode(',', $coordinates);

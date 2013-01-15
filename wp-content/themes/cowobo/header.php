@@ -43,7 +43,6 @@ extract ($current_category);
 
 //$feed_query = ($catid = get_query_var('cat')) ? "'c',$catid" : "'p',".$post->ID;
 $userid = wp_get_current_user()->ID;
-$feed_query .= ",".$userid;
 
 //include google translator plugin if required
 if($lang && $lang !='en'): $translate = true;?>

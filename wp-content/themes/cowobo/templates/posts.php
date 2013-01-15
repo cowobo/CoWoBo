@@ -8,10 +8,13 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include post title and data
 	echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
+
+    $index = 0;
 	foreach($cowobo->layouts->layout[$postcat->term_id] as $field):$index++;
-		$slug = $field['type'].$index++;
+		$slug = $field['type'].$index;
 		if($field['type'] == 'tags'):
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
+            $tagcount = 0;
 			foreach(get_the_category() as $cat): $tagcount++;
 				echo '<a href="'.get_category_link($cat->term_id).'">'.$cat->name.'</a>';
 				if($tagcount < count(get_the_category())) echo ', ';
@@ -117,7 +120,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 
 	//show linked posts
-	if($types):
+	if(isset ( $types ) && is_array ( $types ) ):
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
 			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
