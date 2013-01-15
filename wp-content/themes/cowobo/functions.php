@@ -12,11 +12,9 @@ define ( 'PERSONALFEEDSLUG', 'personal-feed' );
 define ( 'PERSONALFEEDURL', SITEURL . '/' . PERSONALFEEDSLUG );
 
 //LIBRARIES
-//include_once('lib/class-cowobo-feed.php');
 include_once('lib/class-cowobo-social.php');
 include_once('lib/class-cowobo-map.php');
 include_once('lib/class-cowobo-layouts.php');
-include_once('lib/class-cowobo-related.php');
 
 //SESSION
 if (!session_id()) session_start();
