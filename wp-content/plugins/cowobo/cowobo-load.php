@@ -81,6 +81,7 @@ if (!class_exists('CoWoBo')) :
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
             $this->users = new CoWoBo_Users;
+            $this->feed = new CoWoBo_Feed;
 
             $this->actions_and_filters();
         }
