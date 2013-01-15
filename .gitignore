@@ -104,3 +104,7 @@ wp-content/mysql.sql
 
 #iexpert
 *.plist
+wp-content/plugins/wordpress-importer/languages/wordpress-importer.pot
+wp-content/plugins/wordpress-importer/parsers.php
+wp-content/plugins/wordpress-importer/readme.txt
+wp-content/plugins/wordpress-importer/wordpress-importer.php
