@@ -40,6 +40,12 @@ require_once ( COWOBO_PLUGIN_LIB . 'query');
 
 if (!class_exists('CoWoBo')) :
 
+    /**
+     * CoWoBo Master Class
+     *
+     * @package CoWoBo
+     * @subpackage Plugin
+     */
     class CoWoBo    {
 
         /**
@@ -75,6 +81,7 @@ if (!class_exists('CoWoBo')) :
          */
         public function __construct() {
             $this->query = new CoWoBo_Query;
+            $this->users = new CoWoBo_Users;
 
             $this->actions_and_filters();
         }
@@ -98,9 +105,12 @@ if (!class_exists('CoWoBo')) :
          */
         public function controller() {
             $query = &$this->query;
+            $users = &$this->users;
 
-            if( $query->confirm ) cwb_create_user();
-            elseif( $query->userpw && !$_POST['user']) cwb_login_user();
+            if( $query->confirm ) $users->create_user();
+            elseif( $query->userpw && !$_POST['user']) $users->login_user();
+
+
             elseif( $query->sort ) cwb_filter_feed();
             elseif( $query->showall ) cwb_related_feed();
             elseif( $query->delete ) cwb_delete_post();
