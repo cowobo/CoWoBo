@@ -28,8 +28,8 @@ echo '<div class="tab">';
 echo '</div>';
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
-if($layouts->layout[$postcat->term_id]):
-	foreach($layouts->layout[$postcat->term_id] as $field): $index++;
+if($cowobo->layouts->layout[$postcat->term_id]):
+	foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
 		$slug = $field['type'].$index++;
 		echo '<div class="tab">';
 		echo '<h3>'.$field['label'].':';

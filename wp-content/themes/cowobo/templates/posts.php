@@ -8,7 +8,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include post title and data
 	echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	foreach($layouts->layout[$postcat->term_id] as $field):$index++;
+	foreach($cowobo->layouts->layout[$postcat->term_id] as $field):$index++;
 		$slug = $field['type'].$index++;
 		if($field['type'] == 'tags'):
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
