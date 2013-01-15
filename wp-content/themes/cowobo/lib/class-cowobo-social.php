@@ -47,7 +47,7 @@ class Cowobo_Social {
 		$userid = wp_get_current_user()->ID;
 
 		$this->profile_id = get_user_meta($userid, 'cowobo_profile', true);
-		
+
 		// RSS
 		add_filter('pre_get_posts',array( &$this, 'feed_filter' ));
 
@@ -305,10 +305,12 @@ class Cowobo_Social {
      * @param array $postids
      */
 	public function update_total_count( $postids = false ) {
+        global $cowobo;
+
 		$pubkey = "4a45176a-73d4-4e42-8be9-c015a589c031";
 		$accesskey = "b7766bcf68b38dc47009f4e8eec78957";
 		global $wpdb;
-		if ( ! $postids ) $postids = get_published_ids();
+		if ( ! $postids ) $postids = $cowobo->posts->get_published_ids();
 		foreach ( $postids as $postid ) {
 			$url = get_permalink ( $postid );
             $profile_shares = $this->get_profile_shares ( $postid );
@@ -344,7 +346,7 @@ class Cowobo_Social {
 	 */
 	public function get_total_shares ( $postids = false, $is_single = false ) {
 		if ( $postids && ! is_array ( $postids ) ) $postids = array ( $postids );
-		elseif ( ! $postids ) $postids = get_published_ids();
+		elseif ( ! $postids ) $postids = $cowobo->posts->get_published_ids();
 		$total_count = array();
 		foreach ( $postids as $postid ) {
 			$total_count [ $postid ] = get_post_meta ( $postid, 'cowobo_share_count', true );
@@ -363,7 +365,7 @@ class Cowobo_Social {
      */
 	public function get_popularity_count ( $postids = false, $is_single = false, $only_comments = false  ) {
 		if ( $postids && ! is_array ( $postids ) ) $postids = array ( $postids );
-		elseif ( ! $postids ) $postids = get_published_ids();
+		elseif ( ! $postids ) $postids = $cowobo->posts->get_published_ids();
 		$total_shares = ( $only_comments ) ? array() : $this->get_total_shares ( $postids );
 		$total_count = array();
 		foreach ( $postids as $postid ) {
