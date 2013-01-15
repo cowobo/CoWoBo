@@ -294,4 +294,71 @@ class CoWoBo_Posts
         return '';
     }
 
+    /**
+     * Return gallery with captions
+     */
+    public function loadgallery( $postid ) {
+
+        $slidenum = 1; //to limit the download burden
+
+        for ($x=0; $x<$slidenum; $x++):
+
+            //check if the slide has an image
+            if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
+                if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+                    $slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
+                endif;
+            endif;
+
+            foreach(get_children('post_parent='.$postid.'&numberposts=4&post_mime_type=image') as $image):
+                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'large');
+                $slides[$x] = '<div class="slide '.$state.'"><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
+            endforeach;
+
+            //check if the slide has a video
+            if($caption = get_post_meta($postid, 'caption'.$x, true)):
+                $videocheck = explode("?v=", $caption);
+                if($url = $videocheck[1]):
+                    $slides[$x] = '<div class="slide '.$state.'"><object>';
+                        $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
+                        $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
+                        $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
+                        $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
+                    $slides[$x] .= '</object></div>';
+                    $captions .= '<div class="caption '.$state.'"></div>';
+                else:
+                    $captions .= '<div class="caption '.$state.'">'.$caption.'</div>';
+                    unset($caption);
+                endif;
+            else:
+                $captions .= '<div class="caption '.$state.'"></div>';
+            endif;
+        endfor;
+
+        if($slides):
+            return '<div class="gallery">'.implode('', $slides).'</div>';
+        endif;
+    }
+
+    /**
+     * Return thumbnail of post
+     */
+    function the_thumbnail($postid, $catslug){
+        if($catslug == 'location'):
+            if($coordinates = get_post_meta($postid, 'coordinates', true)):
+                $zoom = '11';
+            else:
+                $coordinates = '0,40'; $zoom = '1';
+            endif;
+            $mapurl = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type=sat&scalebar=false&size=140,130&zoom='.$zoom.'&center='.$coordinates;
+            echo '<img src="'.$mapurl.'" width="100%" alt=""/>';
+        else:
+            foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
+                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
+                echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+            endforeach;
+        endif;
+    }
+
 }
+
