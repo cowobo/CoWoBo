@@ -40,6 +40,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-posts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-l10n.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -93,6 +94,19 @@ if (!class_exists('CoWoBo')) :
          */
         public $relations;
 
+        /**
+         * Var to contain the localization class
+         *
+         * @var CoWoBo_Localization
+         */
+        public $L10n;
+
+        /**
+         * Var to contain the layouts class
+         *
+         * @var CoWoBo_Localization
+         */
+        public $layouts;
 
 
         /**
@@ -137,6 +151,7 @@ if (!class_exists('CoWoBo')) :
             $this->relations = new Cowobo_Related_Posts;
             $this->L10n = new CoWoBo_Localization;
             $this->layouts = new Cowobo_Layouts;
+            //$this->map = new Cowobo_Map;
 
             $this->old_includes();
 

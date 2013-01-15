@@ -25,7 +25,10 @@
  /**
  * This class handles the custom map interface
  *
- * @package cowobo-social
+ * @package Cowobo
+ * @subpackage Plugin
+ *
+ * @todo Actually turn this into a class
  */
 
 //MAP FUNCTIONS
