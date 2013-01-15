@@ -38,18 +38,18 @@ class CoWoBo_Users
 
         $email = $cowobo->query->email;
         if ( ! $name = sanitize_user ( $email ) ) {
-            $cowobo->notifications[] = array ( "NOEMAIL" => "Please supply an e-mail address." );
+            $cowobo->notices[] = array ( "NOEMAIL" => "Please supply an e-mail address." );
             return ; // Userpw is posted, so login.php knows something is wrong
         }
         if ( ! is_email( $email ) ) {
-            $cowobo->notifications[] = array ( "INVALIDEMAIL" => "E-mail address not valid." );
+            $cowobo->notices[] = array ( "INVALIDEMAIL" => "E-mail address not valid." );
             return;
         }
 
         //add user to database
         $userid = wp_create_user ( $name, $cowobo->query->userpw, $email );
         if ( is_a ( $userid, 'WP_Error' ) ) {
-            $cowobo->notifications[] = array ( "USEREXISTS" => "User already exists." );
+            $cowobo->notices[] = array ( "USEREXISTS" => "User already exists." );
             return;
         }
 
