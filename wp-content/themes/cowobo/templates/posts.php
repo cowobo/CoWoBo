@@ -91,7 +91,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	echo '</div>';
 
 	//include gallery if post has images
-	if($images = cwb_loadgallery($post->ID)):
+	if($images = $cowobo->posts->loadgallery($post->ID)):
 		echo '<div class="tab">'.$images.'</div>';
 	endif;
 

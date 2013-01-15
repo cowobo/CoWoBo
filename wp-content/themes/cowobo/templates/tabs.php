@@ -12,7 +12,7 @@ if($tabtype == 'cat'):
 	endif;
 
 	echo '<div class="tabthumb left">';
-			cwb_the_thumbnail($catposts[0]->ID, $tabcat->slug);
+			$cowobo->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 	echo '</div>';
 
 	echo '<div class="tabtext right">';
@@ -50,7 +50,7 @@ else:
 	$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
 
 	echo '<div class="tabthumb left">';
-		cwb_the_thumbnail($tabpost->ID, $tabtype->slug);
+		$cowobo->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
 	echo '</div>';
 
 	echo '<div class="tabtext right">';
