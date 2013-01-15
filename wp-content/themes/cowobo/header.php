@@ -14,18 +14,10 @@
 <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php bloginfo('rss2_url'); ?>" />
 <link rel="alternate" type="text/xml" title="RSS .92" href="<?php bloginfo('rss_url'); ?>" />
 <link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="<?php bloginfo('atom_url'); ?>" />
-<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" /><?php 
+<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" /><?php
 
 // SETUP GLOBAL VARIABLES
-global $social;
-global $layouts;
-global $translate;
-global $lang;
-global $langnames;
-global $postmsg; 
-global $postid;
-global $currentcat;
-global $textdirect;
+global $cowobo, $translate, $lang;
 
 //check user language before loading anything else
 if(!$lang):?>
@@ -46,9 +38,9 @@ wp_enqueue_script('mainscript', get_bloginfo('template_url').'/js/script.js');
 if(is_single())	wp_enqueue_script('comment-reply');
 
 //get currentcat
-$current_category = cowobo_get_current_category();
+$current_category = $cowobo->get_current_category();
 extract ($current_category);
-	
+
 //$feed_query = ($catid = get_query_var('cat')) ? "'c',$catid" : "'p',".$post->ID;
 $userid = wp_get_current_user()->ID;
 $feed_query .= ",".$userid;
