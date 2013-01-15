@@ -27,33 +27,39 @@ class CoWoBo_Users
      * Create user and redirect them to profile
      */
     public function create_user(){
+        global $cowobo;
 
-        //combine first name and password to form unique username
-        $name = sanitize_user($_POST['username']);
-        $userpw = sanitize_user($_POST['userpw']);
-        $username = $name.$userpw;
+        $email = $cowobo->query->email;
+        if ( ! $name = sanitize_user ( $email ) ) {
+            $cowobo->notifications[] = array ( "error" => "Please supply an e-mail address." );
+            return ; // Userpw is posted, so login.php knows something is wrong
+        }
+        if ( ! is_email( $email ) ) {
+            $cowobo->notifications[] = array ( "error" => "E-mail address not valid." );
+            return;
+        }
 
         //add user to database
-        $tempemail = $username.'@cowobo.org';
-        $userid = wp_create_user($username, $userpw, $tempemail);
-        $usercount = count_users();
+        $userid = wp_create_user ( $name, $cowobo->query->userpw, $email );
+
         $profile = array(
             'post_author' => $userid,
-            'post_category' => array(get_cat_ID('Coders')),
-            'post_content' => " ",
+            'post_category' => array( get_cat_ID('Coders') ),
+            'post_content' => "",
             'post_status' => 'publish',
-            'post_title' => $name,
+            'post_title' => substr ($name, strpos ( '@', $name ) ),
             'post_type' => 'post'
         );
-        $profileid = wp_insert_post($profile);
-        update_user_meta($userid, 'cowobo_profile', $profileid);
-        cwb_login_user();
+
+        $profileid = wp_insert_post ( $profile ) ;
+        update_user_meta( $userid, 'cowobo_profile', $profileid );
+        $this->login_user();
     }
 
     /**
      * Login user
      */
-    public function cwb_login_user(){
+    public function login_user(){
         //combine first name and password to form unique user
         $name = sanitize_user($_POST['username']);
         $userpw = sanitize_user($_POST['userpw']);
