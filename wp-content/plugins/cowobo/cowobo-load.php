@@ -192,7 +192,7 @@ if (!class_exists('CoWoBo')) :
 
 //            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
-            elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
+            elseif( $query->emailtext && ! $query->user ) $notices = $this->send_email();
             elseif( $verify->request ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
         }
@@ -220,6 +220,59 @@ if (!class_exists('CoWoBo')) :
             } else wp_safe_redirect($_SERVER["REQUEST_URI"]);
         }
 
+        /**
+         * Returns an array with the current category (obj) and the category id (str)
+         *
+         * @return arr  current category (obj) and category id (str)
+         */
+        public function get_current_category() {
+            if (is_home()) {
+                $catid = 0;
+                $currentcat = false;
+            } elseif ($catid = get_query_var('cat')) {
+                $currentcat = get_category($catid);
+            } else {
+                $cat = get_the_category($post->ID);
+                $currentcat = $cat[0];
+                $catid = $currentcat->term_id;
+            }
+            return array ('currentcat' => $currentcat, 'catid' => $catid );
+        }
+
+        /**
+         * Send contact email
+         *
+         * @todo Email localization
+         * @global type $profile_id
+         * @return string
+         */
+        private function send_email() {
+            global $profile_id;
+            $profile = get_post( $profile_id );
+            $firstname = $_POST['user_firstname'];
+            $header  = 'MIME-Version: 1.0'."\r\n";
+            $header .= 'Content-type: text/html; charset=utf8'."\r\n";
+            $header .= 'From: Coders Without Borders <'.get_bloginfo('admin_email').'>' . "\r\n";
+
+            if($from = $_POST['user_email']):
+                $subject = 'New message from a visitor';
+                $message = $_POST['emailtext'].'<br/><br/>'.$firstname.'<br/><br/>';
+                $message .= '<a href="mailto:'.$from.'">Click here to reply</a>';
+                mail('balthazar@cowobo.org', $subject, $message, $header);
+            elseif($to = $_POST['user_friends']):
+                $subject = $firstname.' sent you this message via our site';
+                $message = $_POST['emailtext'].'<br/><br/>'.$firstname.'<br/><br/>';
+                $message .= '<a href="'.$_SERVER['REQUEST_URI'].'">'. $this->feed->feed_title() .'</a><br/>';
+                if(is_single()) $message .= get_the_excerpt(); else $message .= get_bloginfo('description');
+                mail('balthazar@cowobo.org,'.$to, $subject, $message, $header);
+            else:
+                $emailnotice = 'Please enter at least one email address';
+            endif;
+            $emailnotice = 'Your email has been sent successfully';
+
+            return $emailnotice;
+            // @todo: handle and return errors
+        }
 
     }
 
