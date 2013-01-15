@@ -177,7 +177,7 @@ if($layouts->layout[$postcat->term_id]):
 		echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
 		echo '<br/>';
 		echo '<a class="button" href="'.get_permalink($postid).'">Cancel</a>';
-		echo '<a class="button" href="'.get_bloginfo('url').'?delete='.$postid.'">Delete</a>';
+		echo '<a class="button" href="'.get_bloginfo('url').'?delete=' . wp_create_nonce( 'delete' ). '&id='.$postid.'">Delete</a>';
 		echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
 		echo '<button type="submit" class="button">Save</button>';
 		echo '<span class="loadicon"></span>';
