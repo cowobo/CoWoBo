@@ -105,7 +105,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 
 	//sort linked posts by type
-	if($linkedids = $related->cwob_get_related_ids($postid)):
+	if($linkedids = $cowobo->relations->get_related_ids($postid)):
 		foreach($linkedids as $linkedid):
 			$typecat = $cowobo->posts->get_category($linkedid);
 			$excludecats = array(get_cat_ID('Uncategorized'));
@@ -144,6 +144,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 					echo '<option value="'.$userpost->ID.'">'.cwb_the_title($userpost->ID).'</option>';
 				endforeach;
 				echo '</select>';
+                wp_nonce_field( 'linkposts' );
 				echo '<button type="submit" class="button">Add</button>';
 			echo '</form>';
 		echo '</div>';

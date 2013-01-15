@@ -21,44 +21,43 @@
  *
  *
  */
- 
+
  /**
  * This class handles the custom map interface
  *
  * @package cowobo-social
  */
- 
+
 //MAP FUNCTIONS
-global $offset;
-global $mapdata;
+global $offset, $mapdata, $cowobo;
 
 //define the center in pixels of google maps
-$offset = 268435456; 
+$offset = 268435456;
 
 function LonToX($lon) {
-	$offset = 268435456; 
+	$offset = 268435456;
 	$radius = $offset / pi();
-	return round($offset + $radius * $lon * pi() / 180);        
+	return round($offset + $radius * $lon * pi() / 180);
 }
 
 function LatToY($lat) {
-	$offset = 268435456; 
-	$radius = $offset / pi(); 
+	$offset = 268435456;
+	$radius = $offset / pi();
 	return round($offset - $radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
 }
 
 function XToLon($x) {
-	$offset = 268435456; 
+	$offset = 268435456;
 	$radius = $offset / pi();
-	return ((round($x) - $offset) / $radius) * 180/ pi();  
+	return ((round($x) - $offset) / $radius) * 180/ pi();
 }
-    
+
 function YToLat($y) {
-	$offset = 268435456; 
-	$radius = $offset / pi();       
-	return (pi() / 2 - 2 * atan(exp((round($y) - $offset) / $radius))) * 180 / pi(); 
+	$offset = 268435456;
+	$radius = $offset / pi();
+	return (pi() / 2 - 2 * atan(exp((round($y) - $offset) / $radius))) * 180 / pi();
 }
-    
+
 function adjustLonByPx($lon, $amount, $zoom) {
 	$newlon = XToLon(LonToX($lon) + ($amount << (21 - $zoom)));
 	if ($newlon < -180) $newlon = 360 + $newlon;
@@ -86,23 +85,23 @@ function cwb_geocode($address) {
 	$lng = $geometry['location']['lng'];
 	$lat = $geometry['location']['lat'];
 	//cityname = $geometry['location']['lat'];
-	$latlng = array('lat' => $lat, 'lng' => $lng);   
+	$latlng = array('lat' => $lat, 'lng' => $lng);
 	return $latlng;
 }
 
 function cwb_loadmap() {
-	global $related; global $post;
+	global $cowobo; global $post;
 	$linkedmarkers = array();
-	
+
 	//setup default map and tile size
 	$data = array('lat'=> '0', 'lng'=>'40', 'zoom'=>3, 'type'=>'sat');
 	$xmid = 500; $ymid = 250;
 	if($_POST['post_ID']) $postid = $_POST['post_ID'];
 	elseif(is_single()) $postid = $post->ID;
-	
+
 	//get coordinates if specified in url or post
 	$postcoordinates = get_post_meta($postid, 'coordinates', true);
-	
+
 	if($_GET['center']) $newcenter = $_GET['center'];
 	else $newcenter = $postcoordinates;
 	if($_POST['keywords']):
@@ -114,30 +113,30 @@ function cwb_loadmap() {
 		$data['lat'] = $postcoordinates['0'];
 		$data['lng'] = $postcoordinates['1'];
 	endif;
-	
+
 	//get zoomlevel if specified in url or post
 	if($_GET['zoom']) $newzoom = $_GET['zoom'];
 	else $newzoom = get_post_meta($postid, 'zoom', true);
 	if($newzoom) $data['zoom'] = $newzoom;
 	elseif($postcoordinates && $_GET['action'] != 'editpost' && !$_GET['new']) $data['zoom'] = 9;
-	
-	//check if post has path 
+
+	//check if post has path
 	if($postpath = get_post_meta($postid, 'encpath', true)) $data['path'] = $postpath;
 	$path ='&path=weight:2%7Ccolor:0xffffffff%7Cenc:'.$data['path'];
-	
+
 	//get map type if specified and adjust for different tile providers
 	if($_GET['maptype']) $data['type'] = $_GET['maptype'];
-	
+
 	if($data['zoom']<10): //mapquest
-		$maptype = $data['type']; 
+		$maptype = $data['type'];
 	else: //google
 		if($data['type'] == 'sat') $maptype = 'satellite';
 		elseif($data['type'] == 'hyb') $maptype = 'hybrid';
 	endif;
-	
+
 	//update global mapdata
 	$mapdata = $data;
-	
+
 	if(is_home() or is_category()):
 		$bufferurl =  get_bloginfo('template_url').'/images/buffer.jpg';
 		$tileurl =  get_bloginfo('template_url').'/images/tile.jpg';
@@ -148,15 +147,15 @@ function cwb_loadmap() {
 		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng'];
 		//$tileurl .= '&shapeformat=cmp&polyline=color:0x000000|width:5&shape=uajsFvh}qMlJsK??zKfQ??tk@urAbaEyiC??y]{|AaPsoDa~@wjEhUwaDaM{y@??t~@yY??DX';
 	endif;
-	
+
 	//add the navigation controls
 	$panleft = $data['lat'].','.adjustLonByPx($data['lng'], -$xmid, $data['zoom']);
 	$panright = $data['lat'].','.adjustLonByPx($data['lng'], $xmid, $data['zoom']-1);
-	$panup = adjustLatByPx($data['lat'], $ymid/2*-1, $data['zoom']).','.$data['lng'];		
+	$panup = adjustLatByPx($data['lat'], $ymid/2*-1, $data['zoom']).','.$data['lng'];
 	$pandown = adjustLatByPx($data['lat'], $ymid/2*1, $data['zoom']).','.$data['lng'];
 	if($data['zoom']<15) $zoomin = $data['zoom']+2; else $zoomin = 17;
 	if($data['zoom']>3) $zoomout = $data['zoom']-2; else $zoomout = 3;
-	
+
 	echo '<div class="navcontrols">';
 		echo '<a class="pan panleft" href="?rotate=left">&#60;</a>';
 		echo '<a class="pan panright" href="?rotate=right">&#62;</a>';
@@ -165,31 +164,31 @@ function cwb_loadmap() {
 		echo '<a class="zoom zoomin" href="?zoom=in">+</a>';
 		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
 	echo '</div>';
-	
+
 	//construct new maplayer
-	$map = '<div class="slide">'; 
+	$map = '<div class="slide">';
 	$map .= '<input type="hidden" class="mapdata" value="'.implode('*',$data).'"/>';
 	$map .= '<div class="mapholder">';
-	
+
 	$newlayer = '<div class="maplayer">';
 	$newlayer .= '<img class="buffer" src="'.$bufferurl.'" alt="">';
 	$newlayer .= '<img class="tile" src="'.$tileurl.'" alt="">';
-	
+
 	//sort $posts by related count
 	if(!$postcoordinates) $markerposts = get_posts(array('cat'=>get_cat_id('Locations'), 'numberposts'=>-1));
 	else $markerposts = array($post);
-	
+
 	foreach ($markerposts as $markerpost):
-		$linkedids = $related->cwob_get_related_ids($markerpost->ID);
-		$count = count($linkedids); 
+		$linkedids = $cowobo->relations->get_related_ids($markerpost->ID);
+		$count = count($linkedids);
 		//if($count>0): //only show linked locations
 			$countarray[$markerpost->ID] = $count;
 			$linkedmarkers[] = $markerpost;
 		//endif;
 	endforeach;
-	
+
 	if($countarray) $max = max($countarray);
-	
+
 	//find marker position and add it to map
 	foreach($linkedmarkers as $markerpost): $id++;
 		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
@@ -207,20 +206,20 @@ function cwb_loadmap() {
 		$markerlinks[] = '<a class="markerlink" id="link-'.$id.'" style="'.$markerstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
 	endforeach;
-	
+
 	$newlayer .= '</div>';
 	$map .= $newlayer;
 	$map .= '</div>';
 	$map .= '</div>';
-	
+
 	//now add the links to each marker in a div above the map
 	if(!$postcoordinates && $markerlinks):
 		$map .= '<div class="markerlinks"><div class="mapholder">';
 		foreach($markerlinks as $markerlink):
-			$map .= $markerlink;		
+			$map .= $markerlink;
 		endforeach;
 		$map .= '</div></div>';
 	endif;
-	
+
 	return $map;
 }

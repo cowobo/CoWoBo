@@ -21,7 +21,7 @@ if($tabtype == 'cat'):
 			foreach($catposts as $catpost):
 				$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'.cwb_the_title($catpost->ID).'</a></li>';
 				$comments = '<li>'.get_comments_number($catpost->ID).' Comments</li>';
-				$views = '<li>'.cwb_get_views($catpost->ID).' Views</li>';
+				$views = '<li>'.$cowobo->posts->get_views($catpost->ID).' Views</li>';
 				//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 				$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
 				$tabcat = get_the_category($catpost->ID);
@@ -42,7 +42,7 @@ if($tabtype == 'cat'):
 else:
 	$title = '<a href="'.get_permalink($tabpost->ID).'">'.cwb_the_title($tabpost->ID).'</a>';
 	$comments = '<li>'.get_comments_number($tabpost->ID).' Comments</li>';
-	$views = '<li>'.cwb_get_views($tabpost->ID).' Views</li>';
+	$views = '<li>'.$cowobo->posts->get_views($tabpost->ID).' Views</li>';
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 	$date = '<li>'.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tabcat = get_the_category($tabpost->ID);
