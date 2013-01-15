@@ -193,7 +193,7 @@ if (!class_exists('CoWoBo')) :
 //            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
             elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
-            elseif( $query->requesttype ) $notices = cwb_edit_request();
+            elseif( $query->requesttype ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
         }
 

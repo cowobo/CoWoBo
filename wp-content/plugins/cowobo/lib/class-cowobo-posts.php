@@ -360,5 +360,57 @@ class CoWoBo_Posts
         endif;
     }
 
+    //Handle requests to edit posts
+    public function edit_request(){
+        global $post, $cowobo, $profile_id;
+        $rqtype = $cowobo->query->requesttype;
+        $rquser = $cowobo->query->requestuser;
+        $rqpost = $cowobo->query->requestpost;
+        $rqmsg = $cowobo->query->requestmsg;
+
+        //if request is coming from a post use that data instead
+        if(!$rquser) $rquser = $profile_id;
+        if(!$rqpost) $rqpost = $post->ID;
+
+        //if we are dealing with an existing request get its meta
+        if($rqtype != 'add'):
+            $requests = get_post_meta($rqpost, 'request', false);
+            foreach($requests as $request):
+                $rqdata = explode('|', $request);
+                if($rqdata[0] == $rquser) $toedit = $request;
+            endforeach;
+        endif;
+
+        //handle the request
+        if($rqtype == 'add'):
+            add_post_meta($rqpost, 'request', $rquser.'|'.$rqmsg);
+            $notices = 'Thank you, your request has been sent.';
+        elseif($rqtype == 'accept'):
+            delete_post_meta($rqpost, 'request', $toedit);
+            add_post_meta($rqpost, 'author', $rquser);
+            $notices = 'Thank you, the request has been accepted.';
+        elseif($rqtype == 'deny'):
+            delete_post_meta($rqpost, 'request', $toedit);
+            add_post_meta($rqpost, 'request', $requestuser.'|deny');
+            $notices = 'Thank you, the request has been denied.';
+        elseif($rqtype == 'cancel'):
+            delete_post_meta($rqpost, 'request', $toedit);
+            $notices = 'Thank you, the request has been cancelled.';
+        endif;
+
+        return array ( "message", $notices );
+    }
+
+}
+
+//Get list of all published IDs
+function get_published_ids() {
+	global $wpdb;
+	$postobjs = $wpdb->get_results("SELECT ID FROM $wpdb->posts WHERE post_status = 'publish'");
+	$postids = array();
+	foreach ( $postobjs as $post ) {
+		$postids[] = $post->ID;
+	}
+	return $postids;
 }
 
