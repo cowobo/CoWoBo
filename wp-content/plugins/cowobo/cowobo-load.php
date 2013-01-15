@@ -76,7 +76,7 @@ if (!class_exists('CoWoBo')) :
         public function __construct() {
             $this->query = new CoWoBo_Query;
 
-            $this->controller();
+            $this->actions_and_filters();
         }
 
             /**
@@ -88,10 +88,15 @@ if (!class_exists('CoWoBo')) :
                 $this->__construct();
             }
 
+        private function actions_and_filters() {
+            add_action('template_redirect', array ( &$this, 'controller' ) );
+
+        }
+
         /**
          * @todo Add nonces
          */
-        private function controller() {
+        public function controller() {
             $query = &$this->query;
 
             if( $query->confirm ) cwb_create_user();
