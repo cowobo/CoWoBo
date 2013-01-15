@@ -45,8 +45,8 @@ class CoWoBo_Feed
      * Show all posts related to current post in requested category
      */
     public function related_feed(){
-        global $related, $post, $cowobo;
-        $postids = $related->cwob_get_related_ids($post->ID);
+        global $post, $cowobo;
+        $postids = $cowobo->relations->get_related_ids($post->ID);
         $catid = get_cat_ID( $cowobo->query->showall );
         query_posts( array( 'cat'=> $catid, 'post__in'=>$postids ) );
     }
