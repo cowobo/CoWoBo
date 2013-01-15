@@ -52,9 +52,54 @@ if (!class_exists('CoWoBo')) :
         /**
          * Var to contain the query class, for easy access to query vars
          *
-         * @var type
+         * @var CoWoBo_Query
          */
         public $query;
+
+        /**
+         * Var to contain the query class with nonce check
+         *
+         * @var CoWoBo_Query
+         */
+        public $verified_query;
+
+        /**
+         * Var to contain the users class with nonce check
+         *
+         * @var CoWoBo_Users
+         */
+        public $users;
+
+        /**
+         * Var to contain the feed class
+         *
+         * @var CoWoBo_Feed
+         */
+        public $feed;
+
+        /**
+         * Var to contain the posts class
+         *
+         * @var CoWoBo_Posts
+         */
+        public $posts;
+
+        /**
+         * Var to contain the related posts class
+         *
+         * @var CoWoBo_Related_Posts
+         */
+        public $relations;
+
+
+
+        /**
+         * Notifications
+         *
+         * Errors, messages, success, or other notifications to the user about what's going on here.
+         */
+        public $notifications = array();
+
 
         /**
          * Creates an instance of the CoWoBo class
@@ -130,7 +175,7 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
-            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
+//            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
 
             elseif( $query->emailtext && ! $query->user ) $notices = cwb_send_email();
             elseif( $query->requesttype ) $notices = cwb_edit_request();
