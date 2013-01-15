@@ -1,7 +1,7 @@
-<?php 
+<?php
 
 //check if the user has any pending author requests
-$requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$social->profile_id), array('key'=>'request')), )); 
+$requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$social->profile_id), array('key'=>'request')), ));
 
 if($requestposts):
 	foreach($requestposts as $requestpost):
@@ -12,15 +12,16 @@ if($requestposts):
 				$profile = get_post($requestdata[0]);
 				$msg .= '<form method="post" action="">';
 				$msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
-				$msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';		
+				$msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
 				$msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
-				$msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';									
+				$msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
 				$msg .= '<ul class="horlist">';
 				$msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
 				$msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
+                $msg .= wp_nonce_field( 'request', 'request' );
 				$msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
 				$msg .= '</ul>';
-				$msg .= '</form>';	
+				$msg .= '</form>';
 			endif;
 		endforeach;
 	endforeach;

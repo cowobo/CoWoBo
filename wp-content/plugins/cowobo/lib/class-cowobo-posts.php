@@ -360,7 +360,9 @@ class CoWoBo_Posts
         endif;
     }
 
-    //Handle requests to edit posts
+    /**
+     * Handle requests to edit posts
+     */
     public function edit_request(){
         global $post, $cowobo, $profile_id;
         $rqtype = $cowobo->query->requesttype;
