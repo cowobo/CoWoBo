@@ -254,13 +254,46 @@ class CoWoBo_Posts
         return $count;
     }
 
-    //returns the first image in a post
-    public function get_first_image( $postID ) {
-        foreach( get_children('post_parent='.$postID.'&numberposts=1&post_mime_type=image' ) as $image):
-            $src = wp_get_attachment_image_src($image->ID, $size = 'medium');
-        endforeach;
-        return $src[0];
+    /**
+     * Gets the featured image, or the first image of a post
+     *
+     * If no attachments are found, returns first img in source (external link)
+     *
+     * @param str|WP_Post $post
+     * @return string Image src
+     */
+    public function get_first_image ( $post ) {
+        $image_size = 'medium';
+
+        if ( is_numeric( $post ) )
+            $post = get_post ( $post );
+
+        if ( $post_thumbnail_id = get_post_thumbnail_id( $post->ID ) ) {
+            $image = wp_get_attachment_image_src( $post_thumbnail_id, $image_size, false );
+            return $image[0];
+        }
+
+        $images = get_children ( array (
+            'post_parent'    => $post->ID,
+            'numberposts'    => 1,
+            'post_mime_type' =>'image'
+        ) );
+
+        if( ! empty ( $images ) ) {
+            $images = current ( $images );
+            $src = wp_get_attachment_image_src ( $images->ID, $size = $image_size );
+            return $src[0];
+        }
+
+        if ( ! empty ( $post->post_content ) ) {
+            $xpath = new DOMXPath( @DOMDocument::loadHTML( $post->post_content ) );
+            $src = $xpath->evaluate( "string(//img/@src)" );
+            return $src;
+        }
+
+        return '';
     }
+
 
 }
 
