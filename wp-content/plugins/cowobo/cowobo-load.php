@@ -94,11 +94,11 @@ if (!class_exists('CoWoBo')) :
 
 
         /**
-         * Notifications
+         * Notices
          *
          * Errors, messages, success, or other notifications to the user about what's going on here.
          */
-        public $notifications = array();
+        public $notices = array();
 
 
         /**
@@ -175,7 +175,7 @@ if (!class_exists('CoWoBo')) :
 
             // User actions
             if( $verify->confirm ) $notices = $users->create_user();
-            elseif( $query->userpw && ! $query->user ) $notices = $users->login_user();
+            elseif( $verify->login && ! $query->user ) $notices = $users->login_user();
 
             // Feed actions
             elseif( $query->sort ) $notices = $feed->filter_feed();

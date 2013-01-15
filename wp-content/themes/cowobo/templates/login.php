@@ -35,6 +35,7 @@ else:
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
 		echo '<input type="password" name="userpw" class="smallfield" value=""/>';
 		echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
+        wp_nonce_field( 'login', 'login' );
 		echo '<button type="submit" class="button">Go</button>';
 		if ( $cowobo->query->relogin ) echo '<a href="">Help, I forgot my password</a>';
 	echo '</form>';
