@@ -126,12 +126,15 @@ if (!class_exists('CoWoBo')) :
          * @since 0.1
          */
         public function __construct() {
+
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
             $this->users = new CoWoBo_Users;
             $this->feed = new CoWoBo_Feed;
             $this->posts = new CoWoBo_Posts;
             $this->relations = new Cowobo_Related_Posts();
+            
+            $this->old_includes();
 
             $this->actions_and_filters();
         }
@@ -144,6 +147,15 @@ if (!class_exists('CoWoBo')) :
             public function CoWoBo() {
                 $this->__construct();
             }
+
+        private function old_includes() {
+            include_once( TEMPLATEPATH . '/lib/class-cowobo-social.php');
+            include_once( TEMPLATEPATH . '/lib/class-cowobo-map.php');
+            include_once( TEMPLATEPATH . '/lib/class-cowobo-layouts.php');
+            global $social, $layouts;
+            $social = new Cowobo_Social;
+            $layouts = new Cowobo_Layouts;
+        }
 
         private function actions_and_filters() {
             add_action('template_redirect', array ( &$this, 'controller' ) );

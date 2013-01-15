@@ -15,7 +15,7 @@ class CoWoBo_Users
 
     public function __construct() {
         global $profile_id;
-        $profile_id = get_user_profile_id();
+        $profile_id = $this->get_user_profile_id();
 
         $this->actions_and_filters();
     }
