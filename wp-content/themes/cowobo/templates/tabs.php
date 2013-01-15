@@ -19,7 +19,7 @@ if($tabtype == 'cat'):
 		echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 		if($catposts):
 			foreach($catposts as $catpost):
-				$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'.cwb_the_title($catpost->ID).'</a></li>';
+				$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'. $cowobo->L10n->the_title($catpost->ID).'</a></li>';
 				$comments = '<li>'.get_comments_number($catpost->ID).' Comments</li>';
 				$views = '<li>'.$cowobo->posts->get_views($catpost->ID).' Views</li>';
 				//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
@@ -40,7 +40,7 @@ if($tabtype == 'cat'):
 		endif;
 	echo '</div>';
 else:
-	$title = '<a href="'.get_permalink($tabpost->ID).'">'.cwb_the_title($tabpost->ID).'</a>';
+	$title = '<a href="'.get_permalink($tabpost->ID).'">'. $cowobo->L10n->the_title($tabpost->ID).'</a>';
 	$comments = '<li>'.get_comments_number($tabpost->ID).' Comments</li>';
 	$views = '<li>'.$cowobo->posts->get_views($tabpost->ID).' Views</li>';
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';

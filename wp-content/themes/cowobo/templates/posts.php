@@ -98,7 +98,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
-			echo apply_filters('the_content', cwb_the_content(get_the_ID()));
+			echo apply_filters('the_content',  $cowobo->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
 			if($author) echo '<br/><a href="?action=editpost">Edit Page</a>';
 		echo '</div>';
@@ -141,7 +141,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				echo '<option>Or link to your other posts:</option>';
 				echo '<option></option>';
 				foreach(get_posts('meta_key=author&meta_value='.$social->ID.'&numberposts=-1') as $userpost):
-					echo '<option value="'.$userpost->ID.'">'.cwb_the_title($userpost->ID).'</option>';
+					echo '<option value="'.$userpost->ID.'">' . $cowobo->L10n->the_title($userpost->ID).'</option>';
 				endforeach;
 				echo '</select>';
                 wp_nonce_field( 'linkposts' );
