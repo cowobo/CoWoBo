@@ -2,12 +2,12 @@
 global $cowobo, $post, $currlang;
 
 if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
-elseif(!$postid) $postid = $post->ID;
+elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
 
 $postcat = $cowobo->posts->get_category($postid);
 
 //if user is not author show become editor screen
-if( ! $author ):
+if( ! isset ( $author ) || ! $author ):
 	echo "<h2>You are not an author of this post yet &raquo;</h2>";
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
