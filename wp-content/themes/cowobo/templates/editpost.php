@@ -1,40 +1,41 @@
 <?php
-global $cowobo;
+global $cowobo, $post, $currlang;
 
-if($_POST['post_ID']) $postid = $_POST['post_ID'];
+if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
 elseif(!$postid) $postid = $post->ID;
 
 $postcat = $cowobo->posts->get_category($postid);
 
 //if user is not author show become editor screen
-if(!$author):
-	echo '<h2>To edit this post enter a first name and password &raquo;</h2>';
+if( ! $author ):
+	echo "<h2>You are not an author of this post yet &raquo;</h2>";
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	if(empty($postmsg)):
+	/*if(empty($postmsg)):
 		echo '<b>Please enter all text in ';
 		echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
 		echo 'so we can translate it to the other languages on our site.</b><br/>';
 		echo 'When you view the page in another language you can then click on <b>Correct Translation.</b>';
-	elseif($postmsg == 'saved'):
+	elseif( $postmsg == 'saved'):
 		echo 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a>';
 		unset($postmsg);
 	else:
 		echo '<span class="bold red">Check the error messages in red below</span></br>';
-	endif;
+	endif;*/
 echo '</div>';
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
 if($cowobo->layouts->layout[$postcat->term_id]):
+    $index = 0;
 	foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
 		$slug = $field['type'].$index++;
 		echo '<div class="tab">';
 		echo '<h3>'.$field['label'].':';
-			if($error = $postmsg[$field['type']]) echo '<span class="red bold">'.$error.'</span>';
-			elseif($field['type'] == 'checkboxes') echo '<span class="hint">Select those which apply</span><br/>';
+			//if($error = $postmsg[$field['type']]) echo '<span class="red bold">'.$error.'</span>';
+			if($field['type'] == 'checkboxes') echo '<span class="hint">Select those which apply</span><br/>';
 			elseif($field['type'] == 'dropdown') echo '<span class="hint">Choose one from the dropdown menu</span><br/>';
 			elseif($field['type'] == 'largetext') echo '<ul class="horlist right"><li class="makelink blue bold">Add Links</li><li class="makebold bold">Bold text</li></ul>';
 			else echo '<span class="hint">'.$field['hint'].'</span>';
@@ -142,6 +143,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			if($values == false) $values = array();
 			unset($counter);
 			echo '<ul class="horlist box">';
+            $counter = 0;
 			foreach($options as $option): $counter++;
 				if(in_array($slug.$counter, $values)) $state = 'checked'; else $state = '';
 				echo  '<li><input type="checkbox" name="'.$slug.'-checked[]" value="'.$slug.$counter.'" '.$state.'/>'.$option.'</li>';
@@ -173,7 +175,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 	endforeach;
 
 	echo '<div class="tab">';
-		if($_GET['new']) $state=''; else $state='checked="checked"';
+		$state = ($cowobo->query->new) ? '' : 'checked="checked"';
 		echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
 		echo '<br/>';
 		echo '<a class="button" href="'.get_permalink($postid).'">Cancel</a>';
