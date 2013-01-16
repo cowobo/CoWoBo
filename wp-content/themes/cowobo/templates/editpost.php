@@ -1,7 +1,8 @@
 <?php
 global $cowobo, $post, $currlang;
+$query = &$cowobo->query;
 
-if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
+if( $query->post_ID ) $postid = $query->post_ID;
 elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
 
 $postcat = $cowobo->posts->get_category($postid);
@@ -13,10 +14,11 @@ if( ! isset ( $author ) || ! $author ):
 else:
 
 $cowobo->print_notices( array ( 'savepost', 'saved' ) );
+if ( $cowobo->has_notice( 'savepost' ) ) $unsaved_data = true;
 
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	if( ! $cowobo->has_notice( 'savepost') ) {
+	if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
 		echo '<b>Please enter all text in ';
 		echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
 		echo 'so we can translate it to the other languages on our site.</b><br/>';
@@ -61,14 +63,18 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 				echo '</div>';
 			endfor;
 		elseif($field['type'] == 'tags'):
-			$tags = array();
-			foreach(get_the_category($postid) as $cat):
-				if($cat->term_id != $postcat->term_id) $tags[] = $cat->name;
-			endforeach;
-			$tags = implode(', ', $tags);
+            if ( ! $unsaved_data ) {
+                $tags = array();
+                foreach(get_the_category($postid) as $cat):
+                    if($cat->term_id != $postcat->term_id) $tags[] = $cat->name;
+                endforeach;
+                $tags = implode(', ', $tags);
+            } else {
+                $tags = $query->tags;
+            }
 			echo '<input type="text" name="tags" value="'.$tags.'"/>';
 		elseif($field['type'] == 'involvement'):
-			$value = get_post_meta($postid, 'involvement', true);
+			$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'involvement', true) : $query->involvement;
 			$options = array(
 				'none'=>'I am not currently involved in this project',
 				'founder'=>'I founded this project',
@@ -81,20 +87,20 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			endforeach;
 			echo '</select>';
 		elseif($field['type'] == 'dates'):
-			$startdate = get_post_meta($postid, 'startdate', true);
-			$enddate = get_post_meta($postid, 'enddate', true);
+			$startdate = ( ! $unsaved_data ) ? get_post_meta($postid, 'startdate', true) : $query->startdate;
+			$enddate = ( ! $unsaved_data ) ? get_post_meta($postid, 'enddate', true) : $query->enddate;
 			echo '<input tabindex="'.$index.'" type="text" name="startdate" class="half left" value="'.$startdate.'"/>';
 			echo '<input tabindex="'.$index.'" type="text" name="enddate" class="half right" value="'.$enddate.'"/>';
 		elseif($field['type'] == 'website'):
-			$websiteurl = get_post_meta($postid, 'website', true);
+			$websiteurl = ( ! $unsaved_data ) ? get_post_meta($postid, 'website', true) : $query->website;
 			echo '<input tabindex="'.$index.'" type="text" name="website" class="blue bold" value="'.$websiteurl.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'email'):
-			$email = get_post_meta($postid, 'email', true);
+			$email = ( ! $unsaved_data ) ? get_post_meta($postid, 'email', true) : $query->email;
 			echo '<input tabindex="'.$index.'" type="text" name="email" class="blue bold" value="'.$email.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'country'):
-			$cat = get_the_category($postid);
+			$cat = ( ! $unsaved_data ) ? get_the_category($postid) : $query->country;
 			echo '<select name="country" class="full">';
 			echo '<option></option>';
 			foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name&hide_empty=0') as $country):
@@ -104,9 +110,9 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			echo '</select>';
 			echo '<br/>';
 		elseif($field['type'] == 'location'):
-			$city = get_post_meta($postid, 'city', true);
-			$countryid = get_post_meta($postid, 'country', true);
-			$zoomlevel = get_post_meta($postid, 'zoomlevel', true);
+			$city = ( ! $unsaved_data ) ? get_post_meta($postid, 'city', true) : $query->city;
+			$countryid = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country;
+			$zoomlevel = ( ! $unsaved_data ) ? get_post_meta($postid, 'zoomlevel', true) : $query->zoomlevel;
 			echo '<div style="overflow:hidden">';
 			echo '<div class="half"><input type="text" tabindex="'.$index.'" name="city" value="'.$city.'"/></div>';
 			echo '<div class="half">';
@@ -129,14 +135,15 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			echo '</div>';
 		elseif($field['type'] == 'encpath'):
 			//echo '<a href="?action=encodepath">'.$field['hint'].'</a><br/>';
-			$value = get_post_meta($postid, 'encpath', true);
+			$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'encpath', true) : $query->encpath;
 			echo '<input type="text" tabindex="'.$index.'" name="encpath" value="'.$value.'"/>';
 		elseif($field['type'] == 'smalltext'):
-			$value = get_post_meta($postid, $slug, true);
+			$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 			echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';
 		elseif($field['type'] == 'checkboxes'):
 			$options = explode(',', $field['hint']);
-			$values = get_post_meta($postid, $slug.'-checked', false);
+            $slug_checked = "$slug-checked";
+			$values = ( ! $unsaved_data ) ? get_post_meta($postid, $slug.'-checked', false) : $query->$slug_checked;
 			if($values == false) $values = array();
 			unset($counter);
 			echo '<ul class="horlist box">';
@@ -149,20 +156,24 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 		elseif($field['type'] == 'dropdown'):
 			$options = explode(',',$field['hint']); unset($counter);
 			echo '<select name="'.$slug.'"><option></option>';
+            $value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 			foreach($options as $option): $counter++;
-				$value = get_post_meta($postid, $slug, true);
 				if($value == $slug.$counter) $state = 'selected'; else $state = '';
 				echo '<option value="'.$slug.$counter.'" '.$state.'> '.$option.'</option>';
 			endforeach;
 			echo '</select>';
 		elseif($field['type'] == 'slogan'):
-			if($error = $postmsg['slogan']) echo '<span class="red bold">'.$error.'</span>';
-			else echo '<span class="hint">'.$field['hint'].'</span><br/>';
-			$value = get_post_meta($postid, 'slogan', true);
+			//if($error = $postmsg['slogan']) echo '<span class="red bold">'.$error.'</span>';
+			echo '<span class="hint">'.$field['hint'].'</span><br/>';
+			$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'slogan', true) : $query->slogan;
 			echo '<input type="text" tabindex="'.$index.'" name="slogan" value="'.$value.'"/>';
 		elseif($field['type'] == 'largetext'):
-			$thispost = get_post($postid);
-			$post_content = $thispost->post_content;
+			if ( ! $unsaved_data ) {
+                $thispost = get_post($postid);
+                $post_content = $thispost->post_content;
+            } else {
+                $post_content = $query->post_content;
+            }
 			//hide extra formating so its easier to edit
 			$stripped = str_replace(array('<br/>','</p>'), '\n', $post_content);
 			$stripped = str_replace('<p>', '', $stripped);
@@ -175,7 +186,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 	endforeach;
 
 	echo '<div class="tab">';
-		$state = ($cowobo->query->new) ? '' : 'checked="checked"';
+		$state = ($query->new) ? '' : 'checked="checked"';
 		echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
 		echo '<br/>';
 		echo '<a class="button" href="'.get_permalink($postid).'">Cancel</a>';
