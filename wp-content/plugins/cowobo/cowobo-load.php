@@ -122,6 +122,8 @@ if (!class_exists('CoWoBo')) :
          */
         public $notices_loop;
 
+        private $notice_types;
+
 
         /**
          * Creates an instance of the CoWoBo class
@@ -303,6 +305,22 @@ if (!class_exists('CoWoBo')) :
 
         public function has_notices() {
             return ( !empty ( $this->notices ) );
+        }
+
+        public function is_notice( $notice_type ) {
+            if ( ! $this->has_notices() ) return false;
+            $notice_types = &$this->notice_types;
+
+            // Refresh notice_types array?
+            if ( empty ( $notice_types ) || ( count ( $notice_types ) < count( $this->notices ) ) ) {
+                $notice_types = array();
+                foreach ( $this->notices as $notice ) {
+                    if ( ! is_array ( $notice ) ) continue;
+                    $notice_types[] = key ( $notice );
+                }
+            }
+
+            return in_array ( $notice_type, $notice_types );
         }
 
     }
