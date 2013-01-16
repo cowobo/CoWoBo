@@ -104,6 +104,7 @@ form {margin:0 auto;}
 .notice.confirmenglish,
 .notice.country,
 .notice.location,
+.notice.savepost,
 .notice.tags { background: rgba(255,210,210,0.7); }
 .tab span.close { position: absolute; right: 0; padding-right: 10px; cursor: pointer; font-weight: normal; }
 
