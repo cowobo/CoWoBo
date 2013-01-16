@@ -12,19 +12,16 @@ if( ! isset ( $author ) || ! $author ):
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
+$cowobo->print_notices('savepost');
+
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	/*if(empty($postmsg)):
+	if( ! $cowobo->has_notice( 'savepost') ) {
 		echo '<b>Please enter all text in ';
 		echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
 		echo 'so we can translate it to the other languages on our site.</b><br/>';
 		echo 'When you view the page in another language you can then click on <b>Correct Translation.</b>';
-	elseif( $postmsg == 'saved'):
-		echo 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a>';
-		unset($postmsg);
-	else:
-		echo '<span class="bold red">Check the error messages in red below</span></br>';
-	endif;*/
+	}
 echo '</div>';
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
