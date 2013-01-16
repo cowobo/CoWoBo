@@ -12,7 +12,7 @@ if( ! isset ( $author ) || ! $author ):
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
-$cowobo->print_notices('savepost');
+$cowobo->print_notices( array ( 'savepost', 'saved' ) );
 
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
