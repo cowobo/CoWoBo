@@ -307,7 +307,7 @@ if (!class_exists('CoWoBo')) :
             return ( !empty ( $this->notices ) );
         }
 
-        public function is_notice( $notice_type ) {
+        public function has_notice( $notice_type ) {
             if ( ! $this->has_notices() ) return false;
             $notice_types = &$this->notice_types;
 
