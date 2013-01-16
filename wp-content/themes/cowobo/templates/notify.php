@@ -1,6 +1,16 @@
 <?php
 global $cowobo;
 
+if ( $cowobo->has_notices() ) {
+
+    while ( have_notices() ) : the_notice();
+        echo "<div class='tab notice'>";
+        echo "Type: " . get_the_notice_type() . ", content: " . get_the_notice_content();
+        echo "</div>";
+    endwhile;
+
+}
+
 //check if the user has any pending author requests
 $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$GLOBALS['profile_id']), array('key'=>'request')), ));
 
