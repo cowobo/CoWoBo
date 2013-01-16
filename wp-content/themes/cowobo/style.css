@@ -99,6 +99,7 @@ form {margin:0 auto;}
 .galthumbs a:hover {opacity:0.8; }
 .symbol {color:#888; margin-right:5px}
 .notice { border-radius: 2px; background: rgba(255,255,255,0.7); font-weight: bold; }
+.tab span.close { position: absolute; right: 0; padding-right: 10px; cursor: pointer; font-weight: normal; }
 
 /* Comment Styles */
 #respond p {margin:0;}

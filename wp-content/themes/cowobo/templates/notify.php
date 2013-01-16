@@ -3,9 +3,17 @@ global $cowobo;
 
 if ( $cowobo->has_notices() ) {
 
+    $allowed_notice_types = array(
+        "message",
+        "error",
+    );
+
     while ( have_notices() ) : the_notice();
-        echo "<div class='tab notice'>";
-        echo "Type: " . get_the_notice_type() . ", content: " . get_the_notice_content();
+        if ( ! in_array ( get_the_notice_type(), $allowed_notice_types ) ) continue;
+
+        echo "<div class='tab notice " . get_the_notice_type() . "'>";
+        the_notice_content();
+        echo "<span class='close hide-if-no-js'>dismiss</span>";
         echo "</div>";
     endwhile;
 
