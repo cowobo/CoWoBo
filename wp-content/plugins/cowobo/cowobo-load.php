@@ -193,6 +193,8 @@ if (!class_exists('CoWoBo')) :
          * @todo Add nonces
          */
         public function controller() {
+            if ( is_404() ) return;
+
             $query = &$this->query;
             $verify = &$this->verified_query;
             $users = &$this->users;
