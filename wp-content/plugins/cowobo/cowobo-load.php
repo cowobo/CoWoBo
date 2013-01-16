@@ -231,18 +231,25 @@ if (!class_exists('CoWoBo')) :
                     case 'profile' :
                         $profile_id = $this->users->get_current_user_profile_id();
                         wp_safe_redirect(get_permalink( $profile_id ) );
+                        exit;
                         break;
                     case 'contact' :
                         wp_safe_redirect('?action=contact');
+                        exit;
                         break;
                     case 'edit' :
                         wp_safe_redirect('?action=editpost');
-                        break;
-                    default :
-                        wp_safe_redirect($_SERVER["REQUEST_URI"]);
+                        exit;
                         break;
                 }
-            } else wp_safe_redirect($_SERVER["REQUEST_URI"]);
+            }
+            if ( $this->query->action == 'login' ) {
+                $profile_id = $this->users->get_current_user_profile_id();
+                wp_safe_redirect(get_permalink( $profile_id ) );
+                exit;
+            }
+            wp_safe_redirect($_SERVER["REQUEST_URI"]);
+            exit;
         }
 
         /**
@@ -321,6 +328,11 @@ if (!class_exists('CoWoBo')) :
             }
 
             return in_array ( $notice_type, $notice_types );
+        }
+
+        public function add_notice ( $message, $key = 'message' ) {
+            $this->notices[] = array ( $key => $message );
+            $this->notice_types[] = $key;
         }
 
     }
