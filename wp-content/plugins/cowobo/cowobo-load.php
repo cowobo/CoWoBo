@@ -41,6 +41,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-l10n.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'notices.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -116,6 +117,11 @@ if (!class_exists('CoWoBo')) :
          */
         public $notices = array();
 
+        /**
+         *
+         */
+        public $notices_loop;
+
 
         /**
          * Creates an instance of the CoWoBo class
@@ -146,6 +152,8 @@ if (!class_exists('CoWoBo')) :
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
 
+            $this->setup_notices_loop();
+
             $this->actions_and_filters();
         }
 
@@ -157,6 +165,12 @@ if (!class_exists('CoWoBo')) :
             public function CoWoBo() {
                 $this->__construct();
             }
+
+        private function setup_notices_loop() {
+            $this->notices_loop = new stdClass;
+            $this->notices_loop->count = 0;
+            $this->notices_loop->index = 0;
+        }
 
         private function actions_and_filters() {
             add_action('init', array ( &$this, 'setup' ) );
@@ -285,6 +299,10 @@ if (!class_exists('CoWoBo')) :
 
             return $emailnotice;
             // @todo: handle and return errors
+        }
+
+        public function has_notices() {
+            return ( !empty ( $this->notices ) );
         }
 
     }
