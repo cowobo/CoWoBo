@@ -116,11 +116,12 @@ class CoWoBo_Feed
     //Get primal category of feed category
     function get_type($catid) {
         $ancestors = get_ancestors($catid,'category');
-        if (empty($ancestors)):
-            return get_category($catid);
-        else:
-            return get_category(array_pop($ancestors));
-        endif;
+        if (empty($ancestors))
+            $cat = get_category($catid);
+        else
+            $cat =  get_category(array_pop($ancestors));
+
+        return $cat;
     }
 
     // Returns pagination for a feed

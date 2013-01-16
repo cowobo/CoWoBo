@@ -1,4 +1,4 @@
-<?php 
+<?php
 global $cowobo;
 
 $prefix = '';
@@ -9,16 +9,16 @@ if($tabtype == 'cat'):
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
 	if(is_single()):
 		if($postcat->slug !='coder') $prefix = 'Related ';
-		$catlink = '?showall='.$tabcat->name;						
+		$catlink = '?showall='.$tabcat->name;
 	else:
 		$catlink = get_category_link($tabcat->term_id);
 	endif;
-	
+
     if ( ! isset ( $catposts[0] ) ) return;
 	echo '<div class="tabthumb left">';
     $cowobo->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 	echo '</div>';
-	
+
 	echo '<div class="tabtext right">';
 		echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 		if($catposts):
@@ -28,13 +28,13 @@ if($tabtype == 'cat'):
 				$views = '<li>'.$cowobo->posts->get_views($catpost->ID).' Views</li>';
 				//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 				$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
-				$tabcat = get_the_category($catpost->ID); 
+				$tabcat = get_the_category($catpost->ID);
 				$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
 				if($tabcat[0]->slug == 'wiki'):
 					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
 				elseif($tabcat[0]->slug == 'news'):
 					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
-				
+
 				else:
 					echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
 				endif;
@@ -49,22 +49,28 @@ else:
 	$views = '<li>'.$cowobo->posts->get_views($tabpost->ID).' Views</li>';
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 	$date = '<li>'.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
-	$tabcat = get_the_category($tabpost->ID); 
-	$tabtype = $cowobo->feed->get_type($tabcat[0]->term_id);
-	$catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
-		
+	$tabcat = get_the_category($tabpost->ID);
+    if ( isset ( $tabcat[0] ) ) {
+        $tabtype = $cowobo->feed->get_type($tabcat[0]->term_id);
+        $catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
+    } else {
+        $tabtype = new stdClass();
+        $tabtype->slug = '';
+        $catlink = '';
+    }
+
 	echo '<div class="tabthumb left">';
 		$cowobo->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
 	echo '</div>';
-	
-	echo '<div class="tabtext right">';	
+
+	echo '<div class="tabtext right">';
 		if($tabtype->slug == 'wiki'):
 			echo $title.'<br/><ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		elseif($tabtype->slug == 'location'):
 			echo $title.', <a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a>';
 			echo '<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		elseif($tabtype->slug == 'news'):
-			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';							
+			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		else:
 			echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 		endif;

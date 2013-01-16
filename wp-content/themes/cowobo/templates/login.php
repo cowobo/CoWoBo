@@ -4,7 +4,7 @@ global $cowobo;
 echo '<div class="tab">';
 
 //Warn users trying to access via the google translate iframe.
-if($_SERVER['HTTP_VIA']):
+if( isset ( $_SERVER['HTTP_VIA'] ) && ! empty ( $_SERVER['HTTP_VIA'] ) ):
 
 	echo '<h2>To interact in your language you must have javascript enabled.</h2>';
 	echo 'Please check your browser settings or use another device to access our site';

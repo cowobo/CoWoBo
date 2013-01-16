@@ -237,6 +237,7 @@ if (!class_exists('CoWoBo')) :
         public function get_current_category() {
             global $post, $currentcat;
 
+            if ( ! is_a ( $post, 'WP_Post' ) ) return array();
             if (is_home()) {
                 $catid = 0;
                 $currentcat = false;
@@ -244,6 +245,7 @@ if (!class_exists('CoWoBo')) :
                 $currentcat = get_category($catid);
             } else {
                 $cat = get_the_category($post->ID);
+                if ( ! is_array ( $cat ) || ! isset ( $cat[0] ) ) return array();
                 $currentcat = $cat[0];
                 $catid = $currentcat->term_id;
             }
