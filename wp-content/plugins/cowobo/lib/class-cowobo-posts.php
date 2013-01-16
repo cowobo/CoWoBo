@@ -297,45 +297,49 @@ class CoWoBo_Posts
      */
     public function loadgallery( $postid ) {
 
-        $slidenum = 1; //to limit the download burden
+        $slidenum = 5; //to limit the download burden
 
         for ($x=0; $x<$slidenum; $x++):
 
-            //check if the slide has an image
-            if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
-                if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-                    $slides[$x] = '<div class="slide "><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
-                endif;
+            //store slide info
+            $caption = get_post_meta($postid, 'caption'.$x, true);
+            $imgid = get_post_meta($postid, 'imgid'.$x, true);
+            $videocheck = explode("?v=", $caption);
+             $state = ($x==0) ? 'hide' : '';
+            //check if the slide is video or image;
+            if($url = $videocheck[1]):
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
+                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
+                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
+                    $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
+                    $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
+                $slides[$x] .= '</object></div>';
+                $thumbs[$x] = '<a href="?img='.$x.'" class="'.$state.'"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+                $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+                    $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+                    if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
+                $slides[$x] .= '</div>';
+                $thumbs[$x] = '<a href="?img='.$x.'" class="'.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
             endif;
 
-            foreach(get_children('post_parent='.$postid.'&numberposts=4&post_mime_type=image') as $image):
-                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'large');
-                $slides[$x] = '<div class="slide "><img src="'.$imgsrc[0].'" width="100%" alt=""/></div>';
-            endforeach;
-
-            //check if the slide has a video
-            if($caption = get_post_meta($postid, 'caption'.$x, true)):
-                $videocheck = explode("?v=", $caption);
-                if($url = $videocheck[1]):
-                    $slides[$x] = '<div class="slide "><object>';
-                        $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
-                        $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
-                        $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
-                        $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
-                    $slides[$x] .= '</object></div>';
-                    $captions .= '<div class="caption "></div>';
-                else:
-                    $captions .= '<div class="caption ">'.$caption.'</div>';
-                    unset($caption);
-                endif;
-            else:
-                $captions = '<div class="caption "></div>';
-            endif;
         endfor;
 
-        if( isset ( $slides ) && is_array ( $slides ) ):
-            return '<div class="gallery">'.implode('', $slides).'</div>';
+
+        //construct gallery
+        if($slides):
+            $slides = array_reverse($slides); //so they appear in the correct order
+            $gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
         endif;
+
+        if(count($slides)<4 && count($slides)>1):
+            $remaining = 5 - count($slides);
+            for ($x=0; $x<$remaining; $x++) $thumbs[] = '<a href="#"></a>';
+            $gallery .= '<div class="tab"><div class="galthumbs">'.implode('',$thumbs).'</div></div>';
+        endif;
+
+        return $gallery;
     }
 
     /**
