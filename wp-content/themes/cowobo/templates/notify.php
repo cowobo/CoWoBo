@@ -1,25 +1,13 @@
 <?php
 global $cowobo;
 
-if ( $cowobo->has_notices() ) {
-
-    $allowed_notice_types = array(
-        "message",
-        "error",
-        "NOEMAIL",
-        "WRONGPASSWORD"
-    );
-
-    while ( have_notices() ) : the_notice();
-        if ( ! in_array ( get_the_notice_type(), $allowed_notice_types ) ) continue;
-
-        echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . "'>";
-        the_notice_content();
-        echo "<span class='close hide-if-no-js'>dismiss</span>";
-        echo "</div>";
-    endwhile;
-
-}
+$allowed_notice_types = array(
+    "message",
+    "error",
+    "NOEMAIL",
+    "WRONGPASSWORD",
+);
+$cowobo->print_notices( $allowed_notice_types );
 
 //check if the user has any pending author requests
 $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$GLOBALS['profile_id']), array('key'=>'request')), ));
