@@ -172,6 +172,9 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			echo '<textarea tabindex="'.$index.'" name="post_content" rows="12" class="richtext">'.$stripped.'</textarea>';
 		endif;
 		echo '</div>';
+
+        $cowobo->print_notices( $field['type'] );
+
 	endforeach;
 
 	echo '<div class="tab">';
