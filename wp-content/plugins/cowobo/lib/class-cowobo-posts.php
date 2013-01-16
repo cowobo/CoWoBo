@@ -79,7 +79,7 @@ class CoWoBo_Posts
         }
 
         //check if title filled correctly
-        if ($post_title == '') $postmsg['post_title'] = 'You forgot to add one.';
+        if ($post_title == '') $postmsg['title'] = 'You forgot to add one.';
 
         //check if the user entered all text in english
         if(!$cowobo->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
@@ -110,13 +110,13 @@ class CoWoBo_Posts
                     $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
                     //check if coordinates have already been added (avoids international spelling differences)
                     if($citypost && $citypost[0]->ID != $postid) {
-                        $postmsg['post_title'] = 'The location you are trying to add already exists';
+                        $postmsg['title'] = 'The location you are trying to add already exists';
                     } else {
                         add_post_meta($postid, 'coordinates', $coordinates);
                     }
                     if( ! empty( $linkedid ) ) $cowobo->relations->create_relations($postid, array($linkedid));
                 } else {
-                    $postmsg['post_title'] = 'We could not find that city. Check your spelling or internet connection.';
+                    $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
             } else {
                 $postmsg['country'] = 'Please select a country';
@@ -153,6 +153,7 @@ class CoWoBo_Posts
         }
 
         //get ids for each tag and create them if they dont already exist
+        $tagarray = array();
         if ( ! empty ( $tags ) ) {
             foreach(explode(',', $tags) as $tag) {
                 $tagid = term_exists(trim($tag), 'category', $postcat->term_id);
@@ -174,7 +175,9 @@ class CoWoBo_Posts
             $file = $_FILES['file'.$x]['name'];
             $videocheck = explode("?v=", $_POST['caption'.$x]);
             //delete image if selected or being replaced by something else
-            if($_POST['delete'.$x] or !empty($file) or !empty($videocheck[1])):
+            $deletex = "delete$x";
+            if($cowobo->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
+            //if($_POST['delete'.$x] or !empty($file) or !empty($videocheck[1])):
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
             endif;
@@ -186,15 +189,20 @@ class CoWoBo_Posts
         endfor;
 
         //update draft post
-        $postdata = array('ID' => $postid, 'post_title' => $post_title, 'post_content' => $post_content, 'post_status' => 'draft', 'post_category' => $tagarray);
-        wp_update_post($postdata);
+        // @todo does this work well with new posts?
+        //$postdata = array('ID' => $postid, 'post_title' => $post_title, 'post_content' => $post_content, 'post_status' => 'auto-draft', 'post_category' => $tagarray);
+        //wp_update_post($postdata);
 
         // if there are no errors publish post, add links, and show thanks for saving message
-        if(empty($postmsg)):
+        if(empty($postmsg)) {
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug));
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
             $postmsg = 'saved';
-        endif;
+        } else {
+            foreach ( $postmsg as $key => $msg ) {
+                $cowobo->add_notice ( $msg, $key );
+            }
+        }
 
         return $postmsg;
     }
