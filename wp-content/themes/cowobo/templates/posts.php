@@ -1,18 +1,19 @@
 <?php 
+global $cowobo;
 if (have_posts()) : while (have_posts()) : the_post(); 
-	$postcat = cwob_get_category($post->ID);
+	$postcat = $cowobo->posts->get_category($post->ID);
 	$postid = get_the_ID();
 
 	//include post title and data
 	echo '<div class="tab">';
-	echo '<div class="feedtitle">'.cwb_feed_title();
-	if($author) echo '<a class="feededit" href="?action=editpost">+edit</a>';	
-	echo '</div>';
-	
-	foreach($layouts->layout[$postcat->term_id] as $field):$index++;
-		$slug = $field['type'].$index++;
+	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
+
+    $index = 0;
+	foreach($cowobo->layouts->layout[$postcat->term_id] as $field):$index++;
+		$slug = $field['type'].$index;
 		if($field['type'] == 'tags'):
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
+            $tagcount = 0;
 			foreach(get_the_category() as $cat): $tagcount++; 
 				echo '<a href="'.get_category_link($cat->term_id).'">'.$cat->name.'</a>'; 
 				if($tagcount < count(get_the_category())) echo ', ';
@@ -92,20 +93,23 @@ if (have_posts()) : while (have_posts()) : the_post();
 	echo '</div>';
 	
 	//include gallery if post has images
-	echo cwb_loadgallery($post->ID);
-
+	if($images = $cowobo->posts->loadgallery($post->ID)):
+		echo '<div class="tab">'.$images.'</div>';
+	endif;
+	
 	//include main text if post has content
-	if(strlen($post->post_content)>5):
+	if(get_the_content()):
 		echo '<div class="tab">';
-			echo apply_filters('the_content', cwb_the_content(get_the_ID()));
+			echo apply_filters('the_content',  $cowobo->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
+			if($author) echo '<br/><a href="?action=editpost">Edit Page</a>';	
 		echo '</div>';
 	endif;
 	
 	//sort linked posts by type
-	if($linkedids = $related->cwob_get_related_ids($postid)):
+	if($linkedids = $cowobo->relations->get_related_ids($postid)):
 		foreach($linkedids as $linkedid):
-			$typecat = cwob_get_category($linkedid);
+			$typecat = $cowobo->posts->get_category($linkedid);
 			$excludecats = array(get_cat_ID('Uncategorized'));
 			if($postcat->slug == 'coder' or $postcat->slug == 'location') $excludecats[] = $postcat->term_id;
 			if($typecat && !in_array($typecat->term_id, $excludecats)):
@@ -115,7 +119,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 	
 	//show linked posts
-	if($types):
+	if(isset ( $types ) && is_array ( $types ) ):
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
 			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
@@ -123,10 +127,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 			include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
-	
-	//include next post
-	$tabpost = get_next_post();
-	$tabtype = 'next'; include(TEMPLATEPATH.'/templates/tabs.php');
 			
 	if($author):
 		echo '<div class="tabthumb right">+</div>';
@@ -135,17 +135,18 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<div class="horlist">';
 				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners').','.$postcat->term_id;
 				foreach(get_categories('parent=0&exclude='.$exclude.'&hide_empty=0') as $cat):
-					echo '<a href="?new='.$cat->name.'">'.$cat->name.'</a>';
+					echo '<a href="?new=' . wp_create_nonce( 'new' ). '&cat='.$cat->name.'">'.$cat->name.'</a>';
 				endforeach;
 			echo '</div>';
 			echo '<form method="post" action="">';					
 				echo '<select name="linkto" class="smallfield">';
 				echo '<option>Or link to your other posts:</option>';
 				echo '<option></option>';
-				foreach(get_posts('meta_key=author&meta_value='.$social->ID.'&numberposts=-1') as $userpost):
-					echo '<option value="'.$userpost->ID.'">'.cwb_the_title($userpost->ID).'</option>';
+				foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&numberposts=-1') as $userpost):
+					echo '<option value="'.$userpost->ID.'">' . $cowobo->L10n->the_title($userpost->ID).'</option>';
 				endforeach;
 				echo '</select>';
+                wp_nonce_field( 'linkposts' );
 				echo '<button type="submit" class="button">Add</button>';
 			echo '</form>';
 		echo '</div>';
