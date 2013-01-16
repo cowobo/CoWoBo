@@ -29,3 +29,9 @@ function cwb_time_passed($timestamp){
         return $diff == 1 ? $diff . ' day ago' : $diff . ' days ago';
     }
 }
+
+//Remove admin bar
+add_filter('show_admin_bar', 'cowobo_show_admin_bar');
+function cowobo_show_admin_bar(){
+    return false;
+}
