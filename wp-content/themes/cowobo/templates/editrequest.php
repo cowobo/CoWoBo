@@ -24,8 +24,8 @@ if(is_user_logged_in()):
 		endif;
 	endforeach;
 
-	if(!$pending):
-		if(!$denied) echo '<h2>Request to edit "'.$post->post_title.'"</h2>';
+	if( ! isset ( $pending ) || ! $pending ):
+		if( ! isset ( $denied) || ! $denied ) echo '<h2>Request to edit "'.$post->post_title.'"</h2>';
 		echo '<form method="post" action="">';
 		echo '<textarea name="requestmsg" rows="5">Dear Author, I would like to edit this post because..</textarea>';
 		echo '<input type="hidden" name="requesttype" value="add"/>';
