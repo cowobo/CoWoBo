@@ -76,15 +76,15 @@ class CoWoBo_Users
         $email = $cowobo->query->email;
 
         // Shouldn't happen, but hey..
-        if ( empty ( $email ) ) {
-            $cowobo->notifications[] = array ( "NOEMAIL" => "Please supply an e-mail address." );
+        if ( empty ( $email ) || ! is_email( $email ) ) {
+            $cowobo->notices[] = array ( "NOEMAIL" => "Please supply a valid e-mail address." );
             return;
         };
 
         // Get user and check if she exists
         $user = get_user_by( 'email', $email );
         if ( ! isset( $user, $user->user_login, $user->user_status ) ) {
-            $cowobo->notifications[] = array ( "INVALIDUSER" => "User does not exist." );
+            $cowobo->notices[] = array ( "INVALIDUSER" => "User does not exist." );
             return;
         }
 
@@ -92,7 +92,7 @@ class CoWoBo_Users
         $signed_in_user = wp_signon( array ( 'user_login'=> $username, 'user_password'=> $cowobo->query->userpw, 'remember'=> true ), false);
 
         if ( is_a ( $signed_in_user, 'WP_Error' ) ) {
-            $cowobo->notifications[] = array ( "WRONGPASSWORD" => "The supplied password is incorrect." );
+            $cowobo->notices[] = array ( "WRONGPASSWORD" => "The supplied password is incorrect." );
             return;
         }
 
