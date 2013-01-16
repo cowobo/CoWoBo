@@ -9,7 +9,7 @@ if( isset ( $_SERVER['HTTP_VIA'] ) && ! empty ( $_SERVER['HTTP_VIA'] ) ):
 	echo '<h2>To interact in your language you must have javascript enabled.</h2>';
 	echo 'Please check your browser settings or use another device to access our site';
 
-elseif ( $cowobo->query->userpw ) :
+elseif ( $cowobo->has_notice( 'INVALIDUSER' ) ) :
 
 	echo '<h2>We could not find your profile, are you new here?</h2><br/>';
 	echo '<form method="post" action="">';
