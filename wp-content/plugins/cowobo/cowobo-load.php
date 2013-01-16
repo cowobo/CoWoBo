@@ -327,12 +327,32 @@ if (!class_exists('CoWoBo')) :
                 }
             }
 
+            if ( is_array ( $notice_type ) ) {
+                foreach ( $notice_type as $type ) {
+                    if ( in_array ( $type, $notice_types ) ) return true;
+                }
+                return false;
+            }
+
             return in_array ( $notice_type, $notice_types );
         }
 
         public function add_notice ( $message, $key = 'message' ) {
             $this->notices[] = array ( $key => $message );
             $this->notice_types[] = $key;
+        }
+
+        public function print_notices( $notice_types ) {
+            if ( $this->has_notice( $notice_types ) ) {
+                while ( have_notices() ) : the_notice();
+                    if ( ! in_array ( get_the_notice_type(), $notice_types ) ) continue;
+
+                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . "'>";
+                    the_notice_content();
+                    echo "<span class='close hide-if-no-js'>dismiss</span>";
+                    echo "</div>";
+                endwhile;
+            }
         }
 
     }
