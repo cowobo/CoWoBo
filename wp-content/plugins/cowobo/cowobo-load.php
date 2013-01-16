@@ -343,6 +343,7 @@ if (!class_exists('CoWoBo')) :
         }
 
         public function print_notices( $notice_types ) {
+            if ( ! is_array ( $notice_types ) ) $notice_types = array ( $notice_types );
             if ( $this->has_notice( $notice_types ) ) {
                 while ( have_notices() ) : the_notice();
                     if ( ! in_array ( get_the_notice_type(), $notice_types ) ) continue;
