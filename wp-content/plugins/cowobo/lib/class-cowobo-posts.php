@@ -307,7 +307,7 @@ class CoWoBo_Posts
             $videocheck = explode("?v=", $caption);
              $state = ($x==0) ? 'hide' : '';
             //check if the slide is video or image;
-            if($url = $videocheck[1]):
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
                 $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
@@ -326,18 +326,19 @@ class CoWoBo_Posts
 
         endfor;
 
-
         //construct gallery
-        if($slides):
+        $gallery = '';
+        if( isset ( $slides ) && ! empty ( $slides ) ) {
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
-        endif;
 
-        if(count($slides)<4 && count($slides)>1):
-            $remaining = 5 - count($slides);
-            for ($x=0; $x<$remaining; $x++) $thumbs[] = '<a href="#"></a>';
-            $gallery .= '<div class="tab"><div class="galthumbs">'.implode('',$thumbs).'</div></div>';
-        endif;
+            if(count($slides)<4 && count($slides)>1) {
+                $remaining = 5 - count( $slides );
+                for ($x=0; $x<$remaining; $x++) $thumbs[] = '<a href="#"></a>';
+                $gallery .= '<div class="tab"><div class="galthumbs">'.implode('',$thumbs).'</div></div>';
+            }
+
+        }
 
         return $gallery;
     }
