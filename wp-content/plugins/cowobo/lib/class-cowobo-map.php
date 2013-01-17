@@ -145,9 +145,9 @@ function cwb_loadmap() {
 		$tileurl =  get_bloginfo('template_url').'/images/tile.jpg';
 	else:
 		if($data['zoom']<5) $mappath = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='.$maptype.'&scalebar=false&size=1000,500';
-		else $mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='.$maptype.'&sensor=false&size=640x390&format=jpg&size=1000x500'.$path;
+		else $mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='.$maptype.'&sensor=false&size=640x390&format=jpg&size=1000x500'; //.$path;
 		$bufferurl =  $mappath.'&zoom='.($data['zoom']-1).'&center='.$data['lat'].','.$data['lng'];
-		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng'].$path;
+		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng']; //.$path;
 	endif;
 
 	//add the navigation controls

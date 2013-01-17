@@ -262,17 +262,17 @@ if (!class_exists('CoWoBo')) :
         public function get_current_category() {
             global $post, $currentcat;
 
+            $catid = 0;
+            $currentcat = false;
             if ( ! is_a ( $post, 'WP_Post' ) ) return array();
-            if (is_home()) {
-                $catid = 0;
-                $currentcat = false;
-            } elseif ($catid = get_query_var('cat')) {
+            if ($catid = get_query_var('cat')) {
                 $currentcat = get_category($catid);
             } else {
-                $cat = get_the_category($post->ID);
-                if ( ! is_array ( $cat ) || ! isset ( $cat[0] ) ) return array();
-                $currentcat = $cat[0];
-                $catid = $currentcat->term_id;
+                $cat = get_the_category();
+                if ( is_array ( $cat ) && isset ( $cat[0] ) ) {
+                    $currentcat = $cat[0];
+                    $catid = $currentcat->term_id;
+                }
             }
             return array ('currentcat' => $currentcat, 'catid' => $catid );
         }
