@@ -72,13 +72,13 @@ form {margin:0 auto;}
 .zoomout {top:112px; left:17px; font-size:21px}
 
 /* Page Styles*/
-.feed {position:relative; width:640px; margin:20px auto 70px auto; z-index:20;}
+.feed {position:relative; width:640px; margin:20px auto 130px auto; z-index:20;}
 .feedtitle {font-size:34px; color:#fff; font-weight:bold; margin-top:70px;}
 .learnmore {display:block; font-size:21px; color:#fff; margin: -45px 0 40px 450px;}
 .feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
-.sitetitle {font-size:21px!important;}
-.feedlinks {position:relative; padding:5px 2px 0 15px; z-index: 20;}
-.feedlinks a {font-size:16px; margin-right:10px; color:#fff;}
+.sitetitle {font-size:22px!important;}
+.feedlinks {position:relative; padding:5px 2px 0 15px; z-index: 20; font-size:17px;}
+.feedlinks a {margin-right:10px; color:#fff;}
 .feedlinks a:hover {color:#ccc;}
 .maploading {padding-left:20px; height:22px; background:url(images/loading.gif) no-repeat right center;}
 .loading {width:20px; height: 20px; background:url(images/loading.gif) no-repeat center; display: inline-block;}
@@ -103,7 +103,7 @@ form {margin:0 auto;}
 .caption {color:#fff;}
 .captionback {background:#000; opacity: 0.5;}
 
-.thumb {overflow:hidden; background:#eee; margin-bottom:8px; opacity:0.8}
+.thumb {overflow:hidden; background:#eee; opacity:0.9; display:block;}
 .thirds {overflow:hidden; width:630px;}
 .third {float:left; width:200px; margin-right:10px;}
 .third .thumb {height:130px;}

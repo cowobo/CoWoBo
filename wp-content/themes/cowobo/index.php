@@ -109,15 +109,7 @@ else:
 			echo '<pre class="notranslate">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre>';
 		echo '</div>';
 		
-		echo '<div class="footer">';
-			echo '<a href="?action=contact">Disclaimer</a>';
-			echo '<a href="?action=translate'.'">English (UK)</a>';
-			if(is_user_logged_in()):
-				echo '<a href="'.wp_logout_url(get_bloginfo('url')).'">Logout</a>';
-			else: 
-				echo '<a href="?action=login'.'">Login</a>';				
-			endif;
-		echo '</div>';
+		include(TEMPLATEPATH.'/templates/footer.php');
 		
 	echo '</div>';
 	
