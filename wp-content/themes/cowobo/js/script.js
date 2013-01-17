@@ -8,7 +8,7 @@ var slideshow;
 //setup mouselisterner on document load
 jQuery(document).ready(function() {
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
-		
+
 	//update global vars of map
 	var newdata = jQuery('.mapdata').val();
 	if(typeof(newdata) !='undefined'){
@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 		data = {'lat':newdata[0], 'lng':newdata[1], 'zoom':newdata[2], 'type': newdata[3]};
 
 	}
-	
+
 	//cross browser check if page has finished translating
 	if(jQuery('.translating').length>0){
 		var title = jQuery(".description");
@@ -31,7 +31,14 @@ jQuery(document).ready(function() {
 	} else {
 		jQuery('.feeds').fadeIn();
 	}
-	
+
+});
+
+/// TAB FUNCTIONS ///
+jQuery(document).ready(function($) {
+    $(".tab span.close").click( function() {
+        $(this).parent('.tab').fadeOut();
+    })
 });
 
 //FEED FUNCTIONS//
@@ -95,14 +102,14 @@ function adjustLatByPx(lat, amount, zoom) {
 jQuery('.zoom, .pan, .labels').live('click', function(event){
 	event.preventDefault();
 	clearInterval(slideshow);
-	jQuery('.pauseshow').hide().next().show();		
-	
-	var xmid = 500; var ymid = 250;	
+	jQuery('.pauseshow').hide().next().show();
+
+	var xmid = 500; var ymid = 250;
 	var action = jQuery(this).attr('class').split(' ')[1];
 
 	//only start animating new map if the old map has finished loading
-	if(animate == false){	
-		//update global parameters 
+	if(animate == false){
+		//update global parameters
 		if(action == 'labels') {
 			var newstyle = 'labels';
 			if(data.type == 'hyb'){
@@ -111,7 +118,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 			} else {
 				data.type = 'hyb';
 				jQuery(this).addClass('grey');
-			}	
+			}
 		} else if(action == 'panleft') {
 			data.lng = adjustLonByPx(data.lng, -xmid, data.zoom);
 			var newstyle = {left:'25%'}
@@ -121,7 +128,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		} else if(action == 'panup') {
 			data.lat = adjustLatByPx(data.lat, -ymid, data.zoom);
 			var newstyle = {top:'25%'};
-		} else if(action == 'pandown') { 
+		} else if(action == 'pandown') {
 			data.lat = adjustLatByPx(data.lat, ymid, data.zoom);
 			var newstyle = {top:"-25%"};
 		} else if(action == 'zoomin') {
@@ -150,39 +157,39 @@ function loadnewmap(newstyle) {
 	var path = '';
 	animate = true;
 	if(typeof(data.path)!= 'undefined') path ='&path=weight:2%7Ccolor:0xffffffff%7Cenc:'+data.path;
-			
+
 	if(data.zoom<10){
 		var mappath = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='+data.type+'&scalebar=false&size=1000,500';
 	} else {
 		if(data.type = 'sat') var maptype = 'satellite'; else if(data.type = 'hyb') var maptype = 'hybrid';
-		var mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='+maptype+'&sensor=false&format=jpg&size=1000x500';		
+		var mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='+maptype+'&sensor=false&format=jpg&size=1000x500';
 	}
 	var bufferurl = mappath+'&zoom='+(data.zoom-1)+'&center='+data.lat+','+data.lng;
 	var tileurl = mappath+'&zoom='+data.zoom+'&center='+data.lat+','+data.lng;
-		
+
 	var newlayer = jQuery('<div class="maplayer"><img class="buffer" src="'+bufferurl+'" alt=""><img class="tile" src="'+tileurl+'" alt=""></div>');
 
 	jQuery('.maploading').show();
-	
+
 	//animage globe
 	if(newstyle == 'labels') {
 		newlayer.hide().children('.tile').load(function() { animate=false;
 			newlayer.insertAfter(currlayer).fadeIn(2000, function(){
 				currlayer.hide().appendTo(newlayer).children('.marker').appendTo(newlayer);
 			});
-			jQuery('.maploading').hide(); 
+			jQuery('.maploading').hide();
 		});
 	} else {
 		currlayer.animate(newstyle, 2000, function() { animate=false;
 			//add newlayer and append current so they can be animated together
 			newlayer.insertAfter(currlayer).append(currlayer);
-			
+
 			//hide old layer when buffer has finished loading
 			newlayer.children('.buffer').load(function() {
-				jQuery('.maploading').hide(); 
+				jQuery('.maploading').hide();
 				currlayer.hide();
 			});
-			
+
 			//move markers to positions on newlayer
 			currlayer.children('.marker').each(function(){
 				var marker = jQuery(this);
@@ -206,16 +213,16 @@ function loadnewmap(newstyle) {
 jQuery('.planet').live('click', function(e){
 	var currslide = jQuery('.slide:visible').last();
 	if(currslide.children('.mapholder').length>0){
-		if(animate == false && data.zoom < 16){	
+		if(animate == false && data.zoom < 16){
 			var mousex = e.clientX-jQuery(this).offset().left;
-			var mousey = e.clientY;			
+			var mousey = e.clientY;
 			var xpercent = 	mousex/1000;
 			var ypercent = mousey/500;
 			data.lat = adjustLatByPx(data.lat, mousey - 250, data.zoom);
-			data.lng = adjustLonByPx(data.lng, mousex - 500, data.zoom);	
+			data.lng = adjustLonByPx(data.lng, mousex - 500, data.zoom);
 			data.zoom = parseFloat(data.zoom)+1;
 			var newstyle = {width:"200%", height:"200%", top: (-ypercent*100) + "%", left: (-xpercent*100) + "%"};
-			loadnewmap(newstyle);	
+			loadnewmap(newstyle);
 		}
 	} else if (currslide.children('object').length>0) {
 		//play youtube video
@@ -273,7 +280,7 @@ function getInputSelection(el) {
         end = el.selectionEnd;
     } else {
         range = document.selection.createRange();
-		
+
         if (range && range.parentElement() == el) {
             len = el.value.length;
             normalizedValue = el.value.replace(/\r\n/g, "\n");

@@ -27,7 +27,7 @@ textarea {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; line-height
 input, select {height:30px; vertical-align: middle;}
 form {margin:0 auto;}
 
-/* Generic Styles*/ 
+/* Generic Styles*/
 .hide {display:none;}
 .left {float:left!important;}
 .right {float:right!important;}
@@ -109,6 +109,15 @@ form {margin:0 auto;}
 .fourth .thumb {height:95px;}}
 .fourth .thumb:hover {opacity:0.8;}
 .symbol {color:#888; margin-right:5px}
+.notice { border-radius: 2px; background: rgba(255,255,255,0.7); font-weight: bold; }
+.notice.error,
+.notice.title,
+.notice.confirmenglish,
+.notice.country,
+.notice.location,
+.notice.savepost,
+.notice.tags { background: rgba(255,210,210,0.7); }
+.tab span.close { position: absolute; right: 0; padding-right: 10px; cursor: pointer; font-weight: normal; }
 
 /* Comment Styles */
 #respond p {margin:0;}

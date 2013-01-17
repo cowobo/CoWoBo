@@ -23,15 +23,15 @@ else:
 		  'comment_notes_after' => '',
 		 ));
 	echo '</div>';
-endif;	
+endif;
 
-// Calback for comments (display) 
+// Calback for comments (display)
 if (!function_exists('cowobo_comments')) {
 	function cowobo_comments($comment, $args, $depth) {
-		global $author; global $social;
-		$GLOBALS['comment'] = $comment; 
+		global $author;
+		$GLOBALS['comment'] = $comment;
 		$commentmeta = get_comment_meta($comment->comment_ID, 'privatemsg', true);
-		$userprofile = get_post($social->profile_id);?>
+		$userprofile = get_post($profile_id);?>
 		<li class="tab" id="comment-<?php comment_ID();?>">
 			<div id="div-comment-<?php comment_ID() ?>" class="comment-body"><?php
 			echo '<a href="'.get_permalink($userprofile->ID).'">'.$userprofile->post_title.'</a>';?>
@@ -41,14 +41,14 @@ if (!function_exists('cowobo_comments')) {
 					<?php comment_reply_link(array_merge( $args, array('add_below' => 'div-comment', 'depth' => $depth,)));
 					if($author):?>
 						<a class="editmsg ajax" href="#">Edit</a>
-						<a class="deletemsg ajax" href="#">Delete</a><?php 
+						<a class="deletemsg ajax" href="#">Delete</a><?php
 					endif;?>
 					<a href="?time="><?php echo cwb_time_passed(strtotime($comment->comment_date));?></a>
 				</div>
 			</div>
 			</div>
-		</li><?php 
-	} 
+		</li><?php
+	}
 };
 
 

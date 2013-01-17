@@ -1,8 +1,9 @@
 <?php
+global $cowobo;
 
 //add tabs for each post in feed
 if(is_home()):
-	
+
 	echo '<img src="'.get_bloginfo('template_url').'/images/home.png" alt=""/>';
 	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
 	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';						
@@ -33,7 +34,7 @@ if(is_home()):
 else:
 
 	echo '<div class="tab">';
-		echo '<div class="feedtitle">'.cwb_feed_title().'</div>';
+		echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
 		echo '<div class="horlist">';
 			echo '<a href="?sort=modified">Recently Modified</a>';
 			echo '<a href="?sort=title">Title</a>';
@@ -41,17 +42,17 @@ else:
 			echo '<a href="?sort=rand">Random</a>';
 			echo '<a href="?sort=featured">Featured</a>';
 		echo '</div>';
-		
+
 	echo '</div>';
-	
+
 	if (have_posts()):
-		$sort = $sort[$cat->term_id];
+		//$sort = $sort[$cat->term_id];
 		while (have_posts()) : the_post();
 			$tabpost = $post;
 			$tabtype = 'post'; include(TEMPLATEPATH.'/templates/tabs.php');
-		endwhile; 
+		endwhile;
 	endif;
-	
+
 	echo '<div class="tabthumb right">+</div>';
 	echo '<div class="tabtext left">';
 		echo '<h2>Add more posts &raquo;</h2>';
@@ -65,7 +66,7 @@ else:
 	echo '</div>';
 
 	//include navigation links
-	echo '<div class="center">'; cwb_pagination(); echo '</div>';
-	
+	echo '<div class="center">'; $cowobo->feed->pagination(); echo '</div>';
+
 endif;
 ?>
