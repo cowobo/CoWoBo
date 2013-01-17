@@ -85,7 +85,10 @@ else:
 		endif;
 		
 		//include share forms below feeds
-		if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');
+		//if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');
+		
+		//clear floats in feed
+		echo '<div class="clear"></div>';
 		
 	echo '</div>';
 	

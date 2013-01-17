@@ -5,11 +5,19 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postid = get_the_ID();
 
 	//include post title and data
-	echo '<div class="tab">';
-	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
+	echo '<div class="feedtitle">'.$cowobo->feed->feed_title();
+		if($author) echo '<a class="feededit" href="?action=editpost">+edit</a>';	
+	echo '</div>';
+	
+	echo '<img class="angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+	include(TEMPLATEPATH.'/templates/search.php');	
+
+	//include gallery if post has images
+	echo $cowobo->posts->loadgallery($post->ID);
 
     $index = 0;
-	foreach($cowobo->layouts->layout[$postcat->term_id] as $field):$index++;
+	echo '<div class="tab">';
+	foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
 		$slug = $field['type'].$index;
 		if($field['type'] == 'tags'):
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
@@ -92,17 +100,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endforeach;
 	echo '</div>';
 	
-	//include gallery if post has images
-	if($images = $cowobo->posts->loadgallery($post->ID)):
-		echo '<div class="tab">'.$images.'</div>';
-	endif;
-	
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
 			echo apply_filters('the_content',  $cowobo->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
-			if($author) echo '<br/><a href="?action=editpost">Edit Page</a>';	
 		echo '</div>';
 	endif;
 	
