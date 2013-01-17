@@ -75,12 +75,9 @@ form {margin:0 auto;}
 .feed {position:relative; width:640px; margin:0 auto 130px auto; z-index:20;}
 .feedtitle {font-size:34px; color:#fff; font-weight:bold; margin-top:70px;}
 .feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
-.intro {position:relative; left:50%; cursor:pointer; font-family: 'Passion One', cursive; color:#fff; text-align:center; line-height:1em; z-index:20}
-.intro:hover, .learnmore:hover {color:#eee;}
-.title1 {font-size:60px; margin: 30px 0 0 -243px;}
-.title2 {font-size:70px; margin-left:-238px;}
-.title3 {font-size:130px; margin-left:-217px; line-height:0.7em;}
-.introimg {margin-top:-20px;}
+.introtitle {position:relative; margin:50px auto 0 auto; font-family: 'Passion One', cursive; color:#fff; font-size:60px; z-index:20; text-align:center; width:500px; line-height:1em;}
+.introtitle:hover, .learnmore:hover {color:#eee;}
+.introimg {margin-top:0;}
 .learnmore {position:absolute; top:15px; left:0; width:100%; text-align:center; color:#fff; font-size:21px;}
 
 .sitetitle {font-size:22px!important;}
