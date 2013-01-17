@@ -14,7 +14,7 @@ if( ! isset ( $author ) || ! $author ):
 else:
 
 $cowobo->print_notices( array ( 'savepost', 'saved' ) );
-if ( $cowobo->has_notice( 'savepost' ) ) $unsaved_data = true;
+$unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
 
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
