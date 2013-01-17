@@ -14,10 +14,10 @@ elseif ( $cowobo->has_notice( 'INVALIDUSER' ) ) :
 	echo '<h2>We could not find your profile, are you new here?</h2><br/>';
 	echo '<form method="post" action="">';
         wp_nonce_field('confirm', 'confirm');
-		echo '<input type="hidden" name="userpw" value="'.$_POST['userpw'].'"/>';
-		echo '<input type="hidden" name="email" value="'.$_POST['email'].'"/>';
+		echo '<input type="hidden" name="userpw" value="'.$cowobo->query->userpw.'"/>';
+		echo '<input type="hidden" name="email" value="'.$cowobo->query->email.'"/>';
 		echo '<button type="submit" class="button">Yes, add me</button>';
-		echo '<a class="button" href="?action=login&relogin='.$_POST['email'].'">No, I have logged in before</a>';
+		echo '<a class="button" href="?action=login&relogin='.$cowobo->query->email.'">No, I have logged in before</a>';
 	echo '</form>';
 
 else:
@@ -29,6 +29,9 @@ else:
 		echo ' simply enter your e-mail address and a password &raquo;';
 	echo '</h2>';
 
+    /**
+     * @todo is relogin still working?
+     */
 	$default = ( $cowobo->query->relogin ) ? $cowobo->query->relogin : 'ie john@doe.com';
 	echo '<form method="post" action="?action=login">';
 		echo '<input type="text" name="email" class="smallfield" value="'.$default.'" onfocus="this.value=\'\'" onblur="if(this.value==\'\') this.value=\'ie John\'" />';
