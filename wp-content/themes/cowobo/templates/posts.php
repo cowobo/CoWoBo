@@ -13,7 +13,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	include(TEMPLATEPATH.'/templates/search.php');	
 
 	//include gallery if post has images
-	$cowobo->posts->loadgallery($post->ID);
+	echo $cowobo->posts->loadgallery($post->ID);
 
     $index = 0;
 	echo '<div class="tab">';

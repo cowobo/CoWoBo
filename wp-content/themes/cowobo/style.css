@@ -75,7 +75,7 @@ form {margin:0 auto;}
 .feed {position:relative; width:640px; margin:20px auto 70px auto; z-index:20;}
 .feedtitle {font-size:34px; color:#fff; font-weight:bold; margin-top:70px;}
 .learnmore {display:block; font-size:21px; color:#fff; margin: -45px 0 40px 450px;}
-.feededit {font-size:20px; margin-left:10px;}
+.feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
 .sitetitle {font-size:21px!important;}
 .feedlinks {position:relative; padding:5px 2px 0 15px; z-index: 20;}
 .feedlinks a {font-size:16px; margin-right:10px; color:#fff;}
