@@ -6,13 +6,17 @@ $allowed_notice_types = array(
     "error",
     "NOEMAIL",
     "WRONGPASSWORD",
+    "editrequest_sent",
+    "editrequest_accepted",
+    "editrequest_denied",
+    "editrequest_cancelled",
 );
 $cowobo->print_notices( $allowed_notice_types );
 
 //check if the user has any pending author requests
 $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=>$GLOBALS['profile_id']), array('key'=>'request')), ));
 
-if($requestposts):
+if( ! empty ( $requestposts ) ):
 	foreach($requestposts as $requestpost):
 		$requests = get_post_meta($requestpost->ID, 'request', false);
 		foreach($requests as $request):

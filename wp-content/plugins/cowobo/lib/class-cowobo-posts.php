@@ -400,21 +400,21 @@ class CoWoBo_Posts
         //handle the request
         if($rqtype == 'add'):
             add_post_meta($rqpost, 'request', $rquser.'|'.$rqmsg);
-            $notices = 'Thank you, your request has been sent.';
+            $notices = 'editrequest_sent';
         elseif($rqtype == 'accept'):
             delete_post_meta($rqpost, 'request', $toedit);
             add_post_meta($rqpost, 'author', $rquser);
-            $notices = 'Thank you, the request has been accepted.';
+            $notices = 'editrequest_accepted';
         elseif($rqtype == 'deny'):
             delete_post_meta($rqpost, 'request', $toedit);
             add_post_meta($rqpost, 'request', $requestuser.'|deny');
-            $notices = 'Thank you, the request has been denied.';
+            $notices = 'editrequest_denied';
         elseif($rqtype == 'cancel'):
             delete_post_meta($rqpost, 'request', $toedit);
-            $notices = 'Thank you, the request has been cancelled.';
+            $notices = 'editrequest_cancelled';
         endif;
 
-        return array ( "message", $notices );
+        $cowobo->redirect( "message", $notices );
     }
 
     //Get list of all published IDs

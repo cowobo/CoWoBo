@@ -121,8 +121,13 @@ if (!class_exists('CoWoBo')) :
          *
          */
         public $notices_loop;
-
         private $notice_types;
+        public $default_notices = array (
+                "editrequest_sent"      =>  "Thank you, your request has been sent.",
+                "editrequest_accepted"  =>  "Thank you, your request has been accepted.",
+                "editrequest_denied"    =>  "Thank you, your request has been denied.",
+                "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
+            );
 
 
         /**
@@ -172,6 +177,10 @@ if (!class_exists('CoWoBo')) :
             $this->notices_loop = new stdClass;
             $this->notices_loop->count = 0;
             $this->notices_loop->index = 0;
+
+            if ( $this->query->message ) {
+                $this->add_notice_by_key ( $this->query->message );
+            }
         }
 
         private function actions_and_filters() {
@@ -226,31 +235,45 @@ if (!class_exists('CoWoBo')) :
 
         /**
          * Redirect users based on $_REQUEST['redirect']
+         *
+         * @param mixed $param1 Either newkey or an associative_array
+         * @param string $param2 (optional) Newvalue
+         *
          */
-        public function redirect() {
+        public function redirect( $query = false ) {
+            $redirect_url = '';
             if ( $redirect = $this->query->redirect ) {
                 switch ( $redirect ) {
                     case 'profile' :
                         $profile_id = $this->users->get_current_user_profile_id();
-                        wp_safe_redirect(get_permalink( $profile_id ) );
-                        exit;
+                        $redirect_url = get_permalink( $profile_id );
                         break;
                     case 'contact' :
-                        wp_safe_redirect('?action=contact');
-                        exit;
+                        $redirect_url = '?action=contact';
                         break;
                     case 'edit' :
-                        wp_safe_redirect('?action=editpost');
-                        exit;
+                        $redirect_url = '?action=editpost';
                         break;
                 }
             }
-            if ( $this->query->action == 'login' ) {
-                $profile_id = $this->users->get_current_user_profile_id();
-                wp_safe_redirect(get_permalink( $profile_id ) );
-                exit;
+            if ( empty ( $redirect_url ) ) {
+                if ( $this->query->action == 'login' ) {
+                    $profile_id = $this->users->get_current_user_profile_id();
+                    $redirect_url = get_permalink( $profile_id );;
+                } else {
+                    $redirect_url = $_SERVER["REQUEST_URI"];
+                }
             }
-            wp_safe_redirect($_SERVER["REQUEST_URI"]);
+
+            if ( func_num_args() > 1 ) {
+                $newkey = urlencode( func_get_arg(0) );
+                $newvalue = urlencode( func_get_arg(1) );
+                $redirect_url = add_query_arg( $newkey, $newvalue, $redirect_url );
+            } elseif ( is_array ( $query ) ) {
+                $redirect_url = add_query_arg( $query, $redirect_url );
+            }
+
+            wp_safe_redirect( $redirect_url );
             exit;
         }
 
@@ -355,6 +378,13 @@ if (!class_exists('CoWoBo')) :
                     echo "<span class='close hide-if-no-js'>dismiss</span>";
                     echo "</div>";
                 endwhile;
+            }
+        }
+
+        public function add_notice_by_key( $key ) {
+
+            if ( array_key_exists ( $key, $this->default_notices ) ) {
+                $this->add_notice( $this->default_notices[$key], $key );
             }
         }
 
