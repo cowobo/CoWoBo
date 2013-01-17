@@ -31,6 +31,7 @@ form {margin:0 auto;}
 .hide {display:none;}
 .left {float:left!important;}
 .right {float:right!important;}
+.clear {clear:both;}
 .bold {font-weight:bold;}
 .light {font-weight:normal!important;}
 .black {color:#555!important;}
@@ -72,7 +73,7 @@ form {margin:0 auto;}
 
 /* Page Styles*/
 .feed {position:relative; width:640px; margin:20px auto 70px auto; z-index:20;}
-.feedtitle {font-size:23px; line-height:1.3em; font-weight:bold; margin-bottom:8px;}
+.feedtitle {font-size:34px; color:#fff; font-weight:bold; margin-top:70px;}
 .learnmore {display:block; font-size:21px; color:#fff; margin: -45px 0 40px 450px;}
 .feededit {font-size:20px; margin-left:10px;}
 .sitetitle {font-size:21px!important;}
@@ -82,9 +83,11 @@ form {margin:0 auto;}
 .maploading {padding-left:20px; height:22px; background:url(images/loading.gif) no-repeat right center;}
 .loading {width:20px; height: 20px; background:url(images/loading.gif) no-repeat center; display: inline-block;}
 
-.lookingfor, .sortby {font-size:20px; color:#5c63b3; background:#fff; border:none;}
-.lookingfor {width:260px; margin-right:20px;}
-.sortby {width:240px; margin-right:20px;}
+.findlabel, .bylabel, .gobutton {font-size:20px; line-height:30px;}
+.findlabel {color:#4d913e;}
+.bylabel {color:#ed8c1a;}
+.findselect, .byselect {font-size:18px; color:#888; margin:0 10px 0 10px; width:240px; vertical-align: top; cursor:pointer;}
+.gobutton {color:#5c63b3; background:none; border:none; padding:0; cursor:pointer;}
 
 /* Tab Styles */
 .tab {overflow: hidden; padding:10px; background:#fff; margin-bottom:20px; clear:both; }
@@ -164,6 +167,7 @@ form {margin:0 auto;}
 .menuback {position:absolute; top:0; left:0; width:100%; height:40px; background:#ddd; z-index:0}
 .angel1 {position:absolute; left:-120px; top:160px; z-index:20}
 .angel2 {position:absolute; right:-60px; top:220px; z-index:20}
+.angel3 {position:absolute; right:-30px; top:-45px;}
 .angel1:hover {opacity:0.5;}
 
 .pagesource {position:relative; margin-top:-30px; text-align:left; direction:ltr; color:#ddd; z-index:3}
