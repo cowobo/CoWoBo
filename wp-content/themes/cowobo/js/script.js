@@ -52,7 +52,7 @@ jQuery('.showmap').live('click', function(event) {
 
 //hidemap
 jQuery('.hidemap').live('click', function(event) {
-	jQuery('.feed').animate({marginTop: 40}, 1000);
+	jQuery('.feed').animate({marginTop: 20}, 1000);
 	jQuery(this).attr('class', 'showmap').html('Show Map');;
 	event.preventDefault();
 });
