@@ -5,12 +5,12 @@ global $cowobo;
 if(is_home()):
 
 	echo '<img src="'.get_bloginfo('template_url').'/images/home.png" alt=""/>';
-	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
-	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';						
+	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
+	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
 	echo ' <a class="learnmore" href="/wikis">learn more &raquo;</a>';
-	
+
 	echo '<div class="tab">';
-		echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchbar">';		
+		echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchbar">';
 			echo '<select name="lookingfor" class="lookingfor">';
 				echo '<option>I am looking for..</option>';
 				foreach(get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat):
@@ -25,12 +25,12 @@ if(is_home()):
 				echo '<option value="rand">Random</option>';
 				echo '<option value="featured">Featured</option>';
 			echo '</select>';
-			
-			echo '<input type="hidden" name="q" value="'.$_GET['q'].'"/>';
+
+			echo '<input type="hidden" name="q" value="'.$cowobo->query->q.'"/>';
 			echo '<button type="submit" class="button">Go</button> ';
 		echo '</form>';
 	echo '</div>';
-	
+
 else:
 
 	echo '<div class="tab">';
