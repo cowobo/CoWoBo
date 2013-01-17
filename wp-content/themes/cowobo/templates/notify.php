@@ -6,6 +6,10 @@ $allowed_notice_types = array(
     "error",
     "NOEMAIL",
     "WRONGPASSWORD",
+    "editrequest_sent",
+    "editrequest_accepted",
+    "editrequest_denied",
+    "editrequest_cancelled",
 );
 $cowobo->print_notices( $allowed_notice_types );
 
