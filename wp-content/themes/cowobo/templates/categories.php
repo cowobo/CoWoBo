@@ -3,15 +3,33 @@
 //add tabs for each post in feed
 if(is_home()):
 	
+	echo '<img src="'.get_bloginfo('template_url').'/images/home.png" alt=""/>';
+	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
+	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';						
+	echo ' <a class="learnmore" href="/wikis">learn more &raquo;</a>';
+	
 	echo '<div class="tab">';
-		echo '<div class="feedtitle grey">We instruct technology to make the world a happy place</div>';
-		echo '<img src="'.get_bloginfo('template_url').'/images/intro.png" alt=""/>';	
-	echo '</div>';
+		echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchbar">';		
+			echo '<select name="lookingfor" class="lookingfor">';
+				echo '<option>I am looking for..</option>';
+				foreach(get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat):
+					echo '<option value="'.$cat->term_id.'">'.$cat->name.'</option>';
+				endforeach;
+			echo '</select>';
+			echo '<select name="sort" class="sortby">';
+				echo '<option>Sorted by..</option>';
+				echo '<option value="modified">Recently Modified</option>';
+				echo '<option value="title">Title</option>';
+				echo '<option value="comment_count">Number of Comments</option>';
+				echo '<option value="rand">Random</option>';
+				echo '<option value="featured">Featured</option>';
+			echo '</select>';
 			
-	foreach(get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $tabcat):
-			$sort = $sort[$cat->term_id];
-			$tabtype = 'cat'; include(TEMPLATEPATH.'/templates/tabs.php');
-	endforeach;
+			echo '<input type="hidden" name="q" value="'.$_GET['q'].'"/>';
+			echo '<button type="submit" class="button">Go</button> ';
+		echo '</form>';
+	echo '</div>';
+	
 else:
 
 	echo '<div class="tab">';
