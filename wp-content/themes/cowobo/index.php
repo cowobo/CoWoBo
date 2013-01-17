@@ -59,7 +59,7 @@ else:
 	
 	//include feed (hide if we are translating with javascript)
 	echo '<div class="feed" '.$state.'>';
-				
+		
 		//include any notifications to user
 		include( TEMPLATEPATH . '/templates/notify.php');
 		
@@ -93,7 +93,6 @@ else:
 	
 		echo '<div class="planet">';
 			echo '<img class="cloud" src="'.get_bloginfo('template_url').'/images/cloud.png" width="100%" alt=""/>';
-			echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
 			echo cwb_loadmap();
 		echo '</div>';
 		

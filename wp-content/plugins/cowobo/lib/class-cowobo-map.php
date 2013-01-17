@@ -125,8 +125,7 @@ function cwb_loadmap() {
 	elseif($postcoordinates && $cowobo->query->action != 'editpost' && ! $cowobo->query->new ) $data['zoom'] = 9;
 
 	//check if post has path
-	if($postpath = get_post_meta($postid, 'encpath', true)) $data['path'] = $postpath;
-	$path ='&path=weight:2%7Ccolor:0xffffffff%7Cenc:'.$data['path'];
+	//if($postpath = get_post_meta($postid, 'encpath', true)) $path = '&shapeformat=cmp&shape='.$postpath;
 
 	//get map type if specified and adjust for different tile providers
 	if( $cowobo->query->maptype ) $data['type'] = $cowobo->query->maptype;
@@ -145,11 +144,10 @@ function cwb_loadmap() {
 		$bufferurl =  get_bloginfo('template_url').'/images/buffer.jpg';
 		$tileurl =  get_bloginfo('template_url').'/images/tile.jpg';
 	else:
-		if($data['zoom']<10) $mappath = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='.$maptype.'&scalebar=false&size=1000,500';
-		else $mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='.$maptype.'&sensor=false&size=640x390&format=jpg&size=1000x500';
+		if($data['zoom']<5) $mappath = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='.$maptype.'&scalebar=false&size=1000,500';
+		else $mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype='.$maptype.'&sensor=false&size=640x390&format=jpg&size=1000x500'.$path;
 		$bufferurl =  $mappath.'&zoom='.($data['zoom']-1).'&center='.$data['lat'].','.$data['lng'];
-		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng'];
-		//$tileurl .= '&shapeformat=cmp&polyline=color:0x000000|width:5&shape=uajsFvh}qMlJsK??zKfQ??tk@urAbaEyiC??y]{|AaPsoDa~@wjEhUwaDaM{y@??t~@yY??DX';
+		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng'].$path;
 	endif;
 
 	//add the navigation controls

@@ -26,8 +26,8 @@ echo '<div class="tab">';
         wp_nonce_field( 'sendemail', 'sendemail' );
 		echo '<textarea name="emailtext" rows="3" class="emailtext"></textarea>';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
-		echo '<input type="input" class="half" name="user_firstname" value="Your name" onfocus="this.value=\'\'"/>';
-		echo '<input type="input" class="half" name="user_friends" value="Email addresses separate by commas" onfocus="this.value=\'\'"/>';
+		echo '<input type="input" class="half left" name="user_firstname" value="Your name" onfocus="this.value=\'\'"/>';
+		echo '<input type="input" class="half right" name="user_friends" value="Email addresses separate by commas" onfocus="this.value=\'\'"/>';
 		echo '<div class="clear" style="margin-top:5px">';
 		echo '<button type="submit" class="button">Send Email</button>';
 		echo '<a class="fbbutton" href="'.$fburl.'">Share on Facebook</a>';
