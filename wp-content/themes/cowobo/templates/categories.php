@@ -7,7 +7,7 @@ if(is_home() && !$cowobo->query->sort):
 	echo '<img src="'.get_bloginfo('template_url').'/images/home.png" alt=""/>';
 	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
 	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';						
-	echo ' <a class="learnmore" href="/wikis">learn more &raquo;</a>';
+	echo ' <a class="learnmore" href="/tags/wiki">learn more &raquo;</a>';
 	
 	include(TEMPLATEPATH.'/templates/search.php');		
 	
