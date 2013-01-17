@@ -9,7 +9,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 		if($author) echo '<a class="feededit" href="?action=editpost">+edit</a>';	
 	echo '</div>';
 	
-	echo '<img class="angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
+	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
+	
 	include(TEMPLATEPATH.'/templates/search.php');	
 
 	//include gallery if post has images

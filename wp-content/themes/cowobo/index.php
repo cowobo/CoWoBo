@@ -57,9 +57,13 @@ else:
 		$state='';
 	endif;
 	
+	if(is_home() && !$cowobo->query->sort):
+		include( TEMPLATEPATH . '/templates/home.php');
+	endif;
+	
 	//include feed (hide if we are translating with javascript)
 	echo '<div class="feed" '.$state.'>';
-		
+
 		//include any notifications to user
 		include( TEMPLATEPATH . '/templates/notify.php');
 		
@@ -80,7 +84,7 @@ else:
 			include(TEMPLATEPATH.'/templates/404.php');		
 		elseif(is_single()): 
 			include(TEMPLATEPATH.'/templates/posts.php');
-		else: 
+		elseif(is_category() or $cowobo->query->sort): 
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
 		

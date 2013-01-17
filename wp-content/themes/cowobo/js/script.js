@@ -45,14 +45,14 @@ jQuery(document).ready(function($) {
 
 //show map
 jQuery('.showmap').live('click', function(event) {
-	jQuery('.feed').animate({marginTop: jQuery('.planet').height()-60}, 1000);
+	jQuery('.feedlinks').animate({marginBottom: jQuery('.planet').height()-100}, 1000);
 	jQuery(this).attr('class', 'hidemap').html('Hide Map');
 	event.preventDefault();
 });
 
 //hidemap
 jQuery('.hidemap').live('click', function(event) {
-	jQuery('.feed').animate({marginTop: 20}, 1000);
+	jQuery('.feedlinks').animate({marginBottom: 30}, 1000);
 	jQuery(this).attr('class', 'showmap').html('Show Map');;
 	event.preventDefault();
 });
