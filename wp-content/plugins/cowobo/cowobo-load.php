@@ -226,31 +226,43 @@ if (!class_exists('CoWoBo')) :
 
         /**
          * Redirect users based on $_REQUEST['redirect']
+         *
+         * @param mixed $param1 Either newkey or an associative_array
+         * @param string $param2 (optional) Newvalue
+         *
          */
-        public function redirect() {
+        public function redirect( $query = false ) {
+            $redirect_url = '';
             if ( $redirect = $this->query->redirect ) {
                 switch ( $redirect ) {
                     case 'profile' :
                         $profile_id = $this->users->get_current_user_profile_id();
-                        wp_safe_redirect(get_permalink( $profile_id ) );
-                        exit;
+                        $redirect_url = get_permalink( $profile_id );
                         break;
                     case 'contact' :
-                        wp_safe_redirect('?action=contact');
-                        exit;
+                        $redirect_url = '?action=contact';
                         break;
                     case 'edit' :
-                        wp_safe_redirect('?action=editpost');
-                        exit;
+                        $redirect_url = '?action=editpost';
                         break;
                 }
             }
-            if ( $this->query->action == 'login' ) {
-                $profile_id = $this->users->get_current_user_profile_id();
-                wp_safe_redirect(get_permalink( $profile_id ) );
-                exit;
+            if ( empty ( $redirect_url ) ) {
+                if ( $this->query->action == 'login' ) {
+                    $profile_id = $this->users->get_current_user_profile_id();
+                    $redirect_url = get_permalink( $profile_id );;
+                } else {
+                    $redirect_url = $_SERVER["REQUEST_URI"];
+                }
             }
-            wp_safe_redirect($_SERVER["REQUEST_URI"]);
+
+            if ( func_num_args() > 1 ) {
+                $redirect_url = add_query_arg( func_get_arg(0), func_get_arg(1), $redirect_url );
+            } elseif ( is_array ( $query ) ) {
+                $redirect_url = add_query_arg( $query, $redirect_url );
+            }
+
+            wp_safe_redirect( $redirect_url );
             exit;
         }
 
