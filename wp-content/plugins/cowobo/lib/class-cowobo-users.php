@@ -157,4 +157,8 @@ class CoWoBo_Users
             return false;
         update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
     }
+
+    public function get_users_by_profile_id( $id ) {
+        return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+    }
 }
