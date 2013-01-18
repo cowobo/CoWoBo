@@ -124,8 +124,8 @@ if (!class_exists('CoWoBo')) :
         private $notice_types;
         public $default_notices = array (
                 "editrequest_sent"      =>  "Thank you, your request has been sent.",
-                "editrequest_accepted"  =>  "Thank you, your request has been accepted.",
-                "editrequest_denied"    =>  "Thank you, your request has been denied.",
+                "editrequest_accepted"  =>  "Thank you, you have accepted the request.",
+                "editrequest_denied"    =>  "Thank you, the edit request has been denied.",
                 "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
             );
 
