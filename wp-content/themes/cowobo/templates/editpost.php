@@ -34,10 +34,10 @@ else:
 $cowobo->print_notices( array ( 'savepost', 'saved' ) );
 
 echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
 echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
-echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
-		
+echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
+
 echo '<div class="tab">';
 	if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
 		echo '<b>Please enter all text in ';
@@ -205,7 +205,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 		endif;
 		echo '</div>';
 
-        $cowobo->print_notices( $field['type'] );
+        $cowobo->print_notices( $field['type'], 'error' );
 
 	endforeach;
 
