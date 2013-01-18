@@ -44,6 +44,8 @@ class CoWoBo_Posts
         $newslug = sanitize_title($post_title);
 
         $postcat = ( ! $cowobo->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( $cowobo->query->new ) );
+        $tagarray = array( $postcat->term_id );
+
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
         }
@@ -140,11 +142,11 @@ class CoWoBo_Posts
         }
 
         //get ids for each tag and create them if they dont already exist
-        $tagarray = array();
         if ( ! empty ( $tags ) ) {
             foreach(explode(',', $tags) as $tag) {
                 $tagid = term_exists(trim($tag), 'category', $postcat->term_id);
                 if(!$tagid) $tagid = wp_insert_term(trim($tag), 'category', array('parent'=> $postcat->term_id));
+                if ( is_a ( $tagid, 'WP_Error' ) ) continue;
                 $tagarray[] = $tagid['term_id'];
             }
             $tagarray = array_map('intval', $tagarray);
@@ -182,9 +184,10 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
+            //wp_set_post_categories( $postid, $postcat );
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
-            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another post', "saved" );
+            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
             $cowobo->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
