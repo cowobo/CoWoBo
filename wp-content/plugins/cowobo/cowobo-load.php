@@ -222,7 +222,6 @@ if (!class_exists('CoWoBo')) :
 
             // Post actions
             elseif( $verify->delete ) $notices = $posts->delete_post();
-            elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
