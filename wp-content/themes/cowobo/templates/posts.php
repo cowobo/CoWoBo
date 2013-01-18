@@ -1,19 +1,21 @@
-<?php 
+<?php
 global $cowobo;
-if (have_posts()) : while (have_posts()) : the_post(); 
+if (have_posts()) : while (have_posts()) : the_post();
 	$postcat = $cowobo->posts->get_category($post->ID);
 	$postid = get_the_ID();
 
 	//include post title and data
 	echo '<div class="feedtitle">'.$cowobo->feed->feed_title();
-		if($author) echo '<a class="feededit" href="?action=editpost">+edit</a>';	
+		echo '<a class="feededit" href="?action=editpost">';
+        echo ( $author ) ? '+edit' : "+contribute?";
+        echo '</a>';
 	echo '</div>';
-	
-	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+
+	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
 	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
-	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
-	
-	include(TEMPLATEPATH.'/templates/search.php');	
+	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
+
+	include(TEMPLATEPATH.'/templates/search.php');
 
 	//include gallery if post has images
 	echo $cowobo->posts->loadgallery($post->ID);
@@ -25,8 +27,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 		if($field['type'] == 'tags'):
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
             $tagcount = 0;
-			foreach(get_the_category() as $cat): $tagcount++; 
-				echo '<a href="'.get_category_link($cat->term_id).'">'.$cat->name.'</a>'; 
+			foreach(get_the_category() as $cat): $tagcount++;
+				echo '<a href="'.get_category_link($cat->term_id).'">'.$cat->name.'</a>';
 				if($tagcount < count(get_the_category())) echo ', ';
 			endforeach;
 			echo '</span>';
@@ -34,7 +36,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
 			$startdate = get_post_meta(get_the_ID(), 'startdate', true);
 			$enddate = get_post_meta(get_the_ID(), 'enddate', true);
-			if($enddate) $date = $startdate.' to '.$enddate; else $date = $startdate;		
+			if($enddate) $date = $startdate.' to '.$enddate; else $date = $startdate;
 			if($date):
 				echo $date;
 			else:
@@ -48,7 +50,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				if (!isset($checkurl["scheme"])) $value = 'http://'.$value;
 				$domain = str_replace('www.', '', parse_url($value, PHP_URL_HOST));
 				echo '<a href="'.$value.'">'.$domain.'</a>';
-			else: 
+			else:
 				echo '<span class="hint">not specified</span>';
 			endif;
 			echo '</span>';
@@ -56,7 +58,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
 			if($country = get_the_category()):
 				echo '<a href="'.get_category_link($country[0]->term_id).'">'.$country[0]->name.'</a><br/>';
-			else: 
+			else:
 				echo '<span class="hint">not specified</span>';
 			endif;
 			echo '</span>';
@@ -64,7 +66,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<span class="field"><h3>'.$field['label'].':</h3>';
 			if($value = get_post_meta(get_the_ID(), $slug, true)):
 				echo $value;
-			else: 
+			else:
 				echo '<span class="hint">not specified</span>';
 			endif;
 			echo '</span>';
@@ -79,7 +81,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 					$titles[] = '<a href="'.get_category_link($valuecat->term_id).'">'.$labels[$value].'</a>';
 				endforeach;
 				echo implode(', ',$titles);
-			else: 
+			else:
 				echo '<span class="hint">not specified</span>';
 			endif;
 			unset($counter);
@@ -102,7 +104,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 		endif;
 	endforeach;
 	echo '</div>';
-	
+
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
@@ -110,7 +112,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
 		echo '</div>';
 	endif;
-	
+
 	//sort linked posts by type
 	if($linkedids = $cowobo->relations->get_related_ids($postid)):
 		foreach($linkedids as $linkedid):
@@ -122,7 +124,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			endif;
 		endforeach;
 	endif;
-	
+
 	//show linked posts
 	if(isset ( $types ) && is_array ( $types ) ):
 		foreach($types as $typeid => $typeposts):
@@ -132,7 +134,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
-			
+
 	if($author):
 		echo '<div class="tabthumb right">+</div>';
 		echo '<div class="tabtext left">';
@@ -143,7 +145,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 					echo '<a href="?new=' . wp_create_nonce( 'new' ). '&cat='.$cat->name.'">'.$cat->name.'</a>';
 				endforeach;
 			echo '</div>';
-			echo '<form method="post" action="">';					
+			echo '<form method="post" action="">';
 				echo '<select name="linkto" class="smallfield">';
 				echo '<option>Or link to your other posts:</option>';
 				echo '<option></option>';
