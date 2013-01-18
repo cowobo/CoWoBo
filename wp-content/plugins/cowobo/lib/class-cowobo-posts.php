@@ -206,7 +206,9 @@ class CoWoBo_Posts
     /**
      * Get primal category of post
      */
-    public function get_category($postid) {
+    public function get_category( $postid = 0 ) {
+        if ( ! $postid ) $postid = get_the_ID();
+
         $cat = get_the_category($postid);
         $ancestors = get_ancestors($cat[0]->term_id,'category');
         if (empty($ancestors)) return $cat[0];
@@ -477,74 +479,74 @@ class CoWoBo_Posts
         return true;
     }
 
-        /**
-         * Converts the url to the right one
-          *
-          * @param str $url for the rss service with either %enc_feed% or %feed%
-          * @param str $feed_url url for the feed to be added
-          * @return str Url for the service with feed url
-        */
-        private function get_feed_url($url, $feed_url) {
-            $url = str_replace(
-                array('%enc_feed%', '%feed%'),
-                array(urlencode($feed_url), esc_url($feed_url),
-            ),$url);
-            return $url;
+    /**
+     * Converts the url to the right one
+      *
+      * @param str $url for the rss service with either %enc_feed% or %feed%
+      * @param str $feed_url url for the feed to be added
+      * @return str Url for the service with feed url
+    */
+    private function get_feed_url($url, $feed_url) {
+        $url = str_replace(
+            array('%enc_feed%', '%feed%'),
+            array(urlencode($feed_url), esc_url($feed_url),
+        ),$url);
+        return $url;
+    }
+
+    /**
+     * Returns the RSS URL for the current feed in the feederbar
+     *
+     * @return str RSS URL for the current feed in the feederbar
+     */
+    private function current_feed_url() {
+        $url = 'http';
+        if ( isset ( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on") {$url .= "s";}
+        $url .= "://";
+        if ($_SERVER["SERVER_PORT"] != "80") {
+            $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        } else {
+            $url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
         }
 
-        /**
-         * Returns the RSS URL for the current feed in the feederbar
-         *
-         * @return str RSS URL for the current feed in the feederbar
-         */
-        private function current_feed_url() {
-            $url = 'http';
-            if ( isset ( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on") {$url .= "s";}
-            $url .= "://";
-            if ($_SERVER["SERVER_PORT"] != "80") {
-                $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-            } else {
-                $url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-            }
+        if ( substr ( $url, -1 ) != '/' ) $url .= '/';
 
-            if ( substr ( $url, -1 ) != '/' ) $url .= '/';
+        $url .= "feed";
+        return $url;
+    }
 
-            $url .= "feed";
-            return $url;
-        }
+    private function has_requests() {
+        global $profile_id, $cowobo;
+        //check if the user has any pending author requests
+        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
 
-        private function has_requests() {
-            global $profile_id, $cowobo;
-            //check if the user has any pending author requests
-            $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
-
-            if( ! empty ( $requestposts ) ) {
-                foreach($requestposts as $requestpost) {
-                    $requests = get_post_meta($requestpost->ID, 'request', false);
-                    $msg = '';
-                    foreach($requests as $request) {
-                        $requestdata = explode('|', $request);
-                        if($requestdata[1] != 'deny') {
-                            $profile = get_post($requestdata[0]);
-                            $msg .= '<form method="post" action="">';
-                            $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
-                            $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
-                            $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
-                            $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
-                            $msg .= '<ul class="horlist">';
-                            $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
-                            $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
-                            $msg .= wp_nonce_field( 'request', 'request', true, false );
-                            $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
-                            $msg .= '</ul>';
-                            $msg .= '</form>';
-                        }
+        if( ! empty ( $requestposts ) ) {
+            foreach($requestposts as $requestpost) {
+                $requests = get_post_meta($requestpost->ID, 'request', false);
+                $msg = '';
+                foreach($requests as $request) {
+                    $requestdata = explode('|', $request);
+                    if($requestdata[1] != 'deny') {
+                        $profile = get_post($requestdata[0]);
+                        $msg .= '<form method="post" action="">';
+                        $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
+                        $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
+                        $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
+                        $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
+                        $msg .= '<ul class="horlist">';
+                        $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
+                        $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
+                        $msg .= wp_nonce_field( 'request', 'request', true, false );
+                        $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
+                        $msg .= '</ul>';
+                        $msg .= '</form>';
                     }
                 }
-                if ( ! empty ( $msg ) ) {
-                    $cowobo->add_notice( $msg, 'editrequest' );
-                }
+            }
+            if ( ! empty ( $msg ) ) {
+                $cowobo->add_notice( $msg, 'editrequest' );
             }
         }
+    }
 }
 
