@@ -1,5 +1,5 @@
 <?php
-global $cowobo, $post, $currlang, $post;
+global $cowobo, $post, $currlang;
 $query = &$cowobo->query;
 
 if ( $query->new ) {
@@ -15,7 +15,7 @@ if ( $query->new ) {
     $post->post_category = $postcat->term_id;
 
     // Should we insert query data?
-    $unsaved_data = ( $query->save ) ? true : false;
+    $unsaved_data = ( $query->save && ! $cowobo->has_notice ( 'saved' ) ) ? true : false;
 
 } else {
     if( $query->post_ID ) $postid = $query->post_ID;
@@ -36,7 +36,6 @@ echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
 echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
 echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
 echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
-
 
 if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '<div class="tab">';

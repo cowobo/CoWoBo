@@ -184,7 +184,8 @@ class CoWoBo_Posts
         if(empty($postmsg)) {
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug, 'post_content' => $post_content ) );
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
-            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a>', "saved" );
+            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another post below.', "saved" );
+            $GLOBALS['newpostid'] = null;
         } else {
             $cowobo->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
             foreach ( $postmsg as $key => $msg ) {
