@@ -289,6 +289,7 @@ class CoWoBo_Posts
     public function loadgallery( $postid ) {
 
         $slidenum = 5; //to limit the download burden
+        $slides = array();
 
         for ($x=0; $x<$slidenum; $x++):
 
@@ -306,31 +307,32 @@ class CoWoBo_Posts
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
                	$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a></div>';
-		elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-			$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
-			$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
-				$slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-				if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
-			$slides[$x] .= '</div>';
-			$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
-		endif;
+            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+                $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+                    $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+                    if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
+                $slides[$x] .= '</div>';
+                $thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
+            endif;
 
-		unset($caption); unset($imgid);
+            unset($caption); unset($imgid);
 
-	endfor;
+        endfor;
 
 
-	//construct gallery
-	if($slides) {
-		$slides = array_reverse($slides); //so they appear in the correct order
-		$gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
-	}
+        //construct gallery
+        $gallery = '';
+        if( ! empty ( $slides ) ) {
+            $slides = array_reverse($slides); //so they appear in the correct order
+            $gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
+        }
 
-	if(count($slides)<4 && count($slides)>1){
-		$remaining = 5 - count($slides);
-		for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-		$gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
-	}
+        if(count($slides)<4 && count($slides)>1){
+            $remaining = 5 - count($slides);
+            for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
+            $gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
+        }
 
 
         return $gallery;
