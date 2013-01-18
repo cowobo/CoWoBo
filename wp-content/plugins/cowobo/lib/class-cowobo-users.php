@@ -182,8 +182,14 @@ class CoWoBo_Users
     }
 
     public function get_user_domain ( $user_id = 0 ) {
-        $profile_id = $this->get_user_profile_id( $user_id );
-        return get_permalink( $profile_id );
+
+        if ( ! $domain = wp_cache_get( 'cowobo_user_domain_' . $user_id, 'cowobo' ) ) {
+            $profile_id = $this->get_user_profile_id( $user_id );
+            $domain = get_permalink( $profile_id );
+            wp_cache_set( 'cowobo_user_domain_' . $user_id, $domain, 'cowobo' );
+        }
+        return $domain;
+
     }
 
 }
