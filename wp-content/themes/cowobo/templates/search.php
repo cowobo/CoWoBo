@@ -15,13 +15,14 @@ echo '<div class="tab">';
 		echo '<span class="bylabel">by</span>';			
 			
 		echo '<select name="sort" class="byselect">';
-			echo '<option value="modified">Recently Modified</option>';
-			echo '<option value="title">Title</option>';
+			echo '<option value="featured">Awesome Index</option>';
+			echo '<option value="modified">Recently Updated</option>';
+			echo '<option value="title">Alphabet A-Z</option>';
+			echo '<option value="title">Alphabet Z-A</option>';
 			echo '<option value="comment_count">Number of Comments</option>';
-			echo '<option value="rand">Random</option>';
-			echo '<option value="featured">Featured</option>';
+			echo '<option value="rand">Something random</option>';
 		echo '</select>';
 			
-		echo '<button type="submit" class="gobutton">Go!</button> ';
+		echo '<button type="submit" class="gobutton">Go</button> ';
 	echo '</form>';
 echo '</div>';

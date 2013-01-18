@@ -1,20 +1,11 @@
 <?php
 global $cowobo;
 
-//add tabs for each post in feed
-if(is_home() && !$cowobo->query->sort):
-
-	echo '<img src="'.get_bloginfo('template_url').'/images/home.png" alt=""/>';
-	echo '<img class="angel1" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';				
-	echo '<img class="angel2" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';						
-	echo ' <a class="learnmore" href="/wikis">learn more &raquo;</a>';
-	
-	include(TEMPLATEPATH.'/templates/search.php');		
-	
-else:
-
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	echo '<img class="angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
+	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
+	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
+
 	include(TEMPLATEPATH.'/templates/search.php');		
 
 	if (have_posts()):
@@ -40,5 +31,4 @@ else:
 	//include navigation links
 	echo '<div class="center">'; $cowobo->feed->pagination(); echo '</div>';
 
-endif;
 ?>
