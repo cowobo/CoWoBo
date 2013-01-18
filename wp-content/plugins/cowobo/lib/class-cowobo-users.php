@@ -192,4 +192,8 @@ class CoWoBo_Users
 
     }
 
+    public function is_current_user_profile() {
+        return ( get_the_ID() == $this->current_user_profile_id );
+    }
+
 }
