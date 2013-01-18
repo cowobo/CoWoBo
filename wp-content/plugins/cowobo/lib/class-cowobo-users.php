@@ -12,6 +12,7 @@ if (!defined('ABSPATH'))
 class CoWoBo_Users
 {
     public $current_user_profile_id = 0;
+    public $displayed_user_id = 0;
 
     public function __construct() {
         global $profile_id;
@@ -163,4 +164,20 @@ class CoWoBo_Users
     public function get_users_by_profile_id( $id ) {
         return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
     }
+
+
+    public function is_profile() {
+        global $cowobo;
+
+        $category = $this->get_category();
+
+        if ( $category->slug != 'coder' ) return false;
+
+        $users = $cowobo->users->get_users_by_profile_id( get_the_ID() );
+        if ( empty ( $users ) ) return false;
+
+        $this->displayed_user = current ( $users );
+        return $this->displayed_user;
+    }
+
 }
