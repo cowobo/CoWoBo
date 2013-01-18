@@ -52,6 +52,11 @@ class CoWoBo_Posts
         //check if post is created from within another post
         if($postid != $post->ID) $linkedid = $post->ID;
 
+        if ( empty ( $post_content ) ) {
+            $postmsg['largetext'] = "Please add some content to your post!";
+            $post_content = ' ';
+        }
+
         //if the user is not involved don't link it to their profile
         if($involvement == 'none') {
             $cowobo->relations->delete_relations($postid, $profile_id); //existing posts
