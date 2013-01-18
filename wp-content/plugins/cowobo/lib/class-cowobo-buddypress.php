@@ -17,8 +17,23 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
-        // @todo
-        //remove_filter( 'bp_ajax_querystring', 'bp_dtheme_ajax_querystring');
+        $this->filter_querystring();
+        $this->content_filters();
+
+    }
+
+    private function content_filters() {
+        add_filter ( 'bp_core_get_user_domain', array ( &$this, 'cowobo_user_domain' ), 12, 2 );
+    }
+
+    public function cowobo_user_domain( $domain, $user_id ) {
+        global $cowobo;
+        return $cowobo->users->get_user_domain ( $user_id );
+    }
+
+    private function filter_querystring() {
+        // @todo Is remove filter working?
+        remove_filter( 'bp_ajax_querystring', 'bp_dtheme_ajax_querystring');
         add_filter ( 'bp_ajax_querystring', array ( &$this, 'ajax_querystring' ), 11, 2 );
     }
 
@@ -42,4 +57,4 @@ class CoWoBo_BuddyPress
     }
 
 }
-add_action( 'bp_include', array( 'CoWoBo_BuddyPress', 'init' ) );
+add_action( 'bp_init', array( 'CoWoBo_BuddyPress', 'init' ) );
