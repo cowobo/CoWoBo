@@ -6,6 +6,10 @@ if (!defined('ABSPATH'))
 class CoWoBo_Posts
 {
 
+    public function __construct() {
+        $this->has_requests();
+    }
+
     /**
      * Delete post and all links associated with it
      */
@@ -505,6 +509,40 @@ class CoWoBo_Posts
 
             $url .= "feed";
             return $url;
+        }
+
+        private function has_requests() {
+            global $profile_id, $cowobo;
+            //check if the user has any pending author requests
+            $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
+
+            if( ! empty ( $requestposts ) ) {
+                foreach($requestposts as $requestpost) {
+                    $requests = get_post_meta($requestpost->ID, 'request', false);
+                    $msg = '';
+                    foreach($requests as $request) {
+                        $requestdata = explode('|', $request);
+                        if($requestdata[1] != 'deny') {
+                            $profile = get_post($requestdata[0]);
+                            $msg .= '<form method="post" action="">';
+                            $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
+                            $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
+                            $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
+                            $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
+                            $msg .= '<ul class="horlist">';
+                            $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
+                            $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
+                            $msg .= wp_nonce_field( 'request', 'request', true, false );
+                            $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
+                            $msg .= '</ul>';
+                            $msg .= '</form>';
+                        }
+                    }
+                }
+                if ( ! empty ( $msg ) ) {
+                    $cowobo->add_notice( $msg, 'editrequest' );
+                }
+            }
         }
 }
 
