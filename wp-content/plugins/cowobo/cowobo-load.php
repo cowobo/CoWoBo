@@ -198,9 +198,6 @@ if (!class_exists('CoWoBo')) :
             $this->layouts = new Cowobo_Layouts;
         }
 
-        /**
-         * @todo Add nonces
-         */
         public function controller() {
             if ( is_404() ) return;
 
