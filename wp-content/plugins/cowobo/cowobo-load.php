@@ -363,13 +363,13 @@ if (!class_exists('CoWoBo')) :
             $this->notice_types[] = $key;
         }
 
-        public function print_notices( $notice_types ) {
+        public function print_notices( $notice_types, $class = '' ) {
             if ( ! is_array ( $notice_types ) ) $notice_types = array ( $notice_types );
             if ( $this->has_notice( $notice_types ) ) {
                 while ( have_notices() ) : the_notice();
                     if ( ! in_array ( get_the_notice_type(), $notice_types ) ) continue;
 
-                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . "'>";
+                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . " $class'>";
                     the_notice_content();
                     echo "<span class='close hide-if-no-js'>dismiss</span>";
                     echo "</div>";
