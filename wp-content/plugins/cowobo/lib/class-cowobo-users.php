@@ -12,7 +12,7 @@ if (!defined('ABSPATH'))
 class CoWoBo_Users
 {
     public $current_user_profile_id = 0;
-    public $displayed_user_id = 0;
+    public $displayed_user = null;
 
     public function __construct() {
         global $profile_id;
@@ -169,7 +169,7 @@ class CoWoBo_Users
     public function is_profile() {
         global $cowobo;
 
-        $category = $this->get_category();
+        $category = $cowobo->posts->get_category();
 
         if ( $category->slug != 'coder' ) return false;
 
