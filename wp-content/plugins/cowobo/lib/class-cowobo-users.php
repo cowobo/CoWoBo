@@ -152,7 +152,9 @@ class CoWoBo_Users
     /**
      * Save profile id field
      */
-    public function save_extra_profile_fields( $user_id ) {
+    public function save_extra_profile_fields( $user_id = false ) {
+        if ( ! $user_id ) $user_id = get_current_user_id();
+
         if ( !current_user_can( 'edit_user', $user_id ) )
             return false;
         update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
