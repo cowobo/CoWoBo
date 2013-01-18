@@ -48,8 +48,8 @@ class CoWoBo_Posts
 
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
+            add_post_meta( $postid, 'author', $profile_id);
         }
-
 
         //check if post is created from within another post
         if($postid != $post->ID) $linkedid = $post->ID;
