@@ -46,7 +46,8 @@ if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '</div>';
 }
 
-$cowobo->print_notices( array ( 'savepost', 'saved' ) );
+$cowobo->print_notices( 'savepost', 'error' );
+$cowobo->print_notices( 'saved' );
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
 echo '<input type="hidden" name="postcat" value="' . $postcat->term_id . '">';
@@ -210,7 +211,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 
 	endforeach;
 
-    $cowobo->print_notices( 'confirmenglish' );
+    $cowobo->print_notices( 'confirmenglish', 'error' );
 
 	echo '<div class="tab">';
 		$state = ($query->new) ? '' : 'checked="checked"';
