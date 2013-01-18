@@ -14,7 +14,6 @@ else:
 		$feedtitle = $langnames[$lang][1]; 
 		$subtitle = $langnames[$lang][2];
 	elseif(is_single()):
-        $post = get_post();
 		$userid = $profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);	
