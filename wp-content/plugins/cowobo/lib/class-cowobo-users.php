@@ -128,8 +128,9 @@ class CoWoBo_Users
     }
 
         public function get_user_profile_id ( $user_id = 0 ) {
-            if ( is_a ( $user_id, 'WP_User' ) )
-                $user_id = $user->ID;
+            if ( ! $user_id ) $user_id = wp_get_current_user()->ID;
+            elseif ( is_a ( $user_id, 'WP_User' ) )
+                $user_id = $user_id->ID;
 
             if ( ! $user_id ) return false;
 
@@ -178,6 +179,11 @@ class CoWoBo_Users
 
         $this->displayed_user = current ( $users );
         return $this->displayed_user;
+    }
+
+    public function get_user_domain ( $user_id = 0 ) {
+        $profile_id = $this->get_user_profile_id( $user_id );
+        return get_permalink( $profile_id );
     }
 
 }
