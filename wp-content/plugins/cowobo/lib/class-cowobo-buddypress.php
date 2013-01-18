@@ -5,10 +5,21 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_BuddyPress
 {
+
+    public static function &init() {
+        static $instance = false;
+
+        if ( !$instance ) {
+            $instance = new CoWoBo_BuddyPress;
+        }
+
+        return $instance;
+    }
+
     public function __construct() {
         // @todo
-        remove_filter( 'bp_ajax_querystring', 'bp_dtheme_ajax_querystring');
-        add_filter ( 'bp_ajax_querystring', array ( &$this, 'ajax_querystring' ) );
+        //remove_filter( 'bp_ajax_querystring', 'bp_dtheme_ajax_querystring');
+        add_filter ( 'bp_ajax_querystring', array ( &$this, 'ajax_querystring' ), 11, 2 );
     }
 
     public function ajax_querystring( $query_string, $object ) {
@@ -17,9 +28,9 @@ class CoWoBo_BuddyPress
         $qs = array();
         switch ( $object ) {
             case 'activity' :
-                if ( $cowobo->posts->is_profile() ) {
-                    $current_profile = $cowobo->users->displayed_user_id;
-                    $new_qs[] = "user_id=$current_profile";
+                if ( $cowobo->users->is_profile() ) {
+                    $current_profile = $cowobo->users->displayed_user;
+                    $qs[] = "user_id={$current_profile->ID}";
                 }
                 break;
         }
@@ -31,3 +42,4 @@ class CoWoBo_BuddyPress
     }
 
 }
+add_action( 'bp_include', array( 'CoWoBo_BuddyPress', 'init' ) );
