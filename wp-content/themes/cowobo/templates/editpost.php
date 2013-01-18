@@ -1,11 +1,29 @@
 <?php
-global $cowobo, $post, $currlang;
+global $cowobo, $post, $currlang, $post;
 $query = &$cowobo->query;
 
-if( $query->post_ID ) $postid = $query->post_ID;
-elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
+if ( $query->new ) {
+    $postid = ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  ) ? $newpostid : 0;
 
-$postcat = $cowobo->posts->get_category($postid);
+    // Set the category
+    $postcat = get_category ( get_cat_ID( $query->new ) );
+
+    // Create dummy post
+    $post = new stdClass;
+    $post->ID = 0;
+    $post->post_content = '';
+    $post->post_category = $postcat->term_id;
+
+    // Should we insert query data?
+    $unsaved_data = ( $query->save ) ? true : false;
+
+} else {
+    if( $query->post_ID ) $postid = $query->post_ID;
+    elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
+
+    $postcat = $cowobo->posts->get_category($postid);
+    $unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
+}
 
 //if user is not author show become editor screen
 if( ! isset ( $author ) || ! $author ):
@@ -14,7 +32,6 @@ if( ! isset ( $author ) || ! $author ):
 else:
 
 $cowobo->print_notices( array ( 'savepost', 'saved' ) );
-$unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
 
 echo '<div class="tab">';
 	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
@@ -27,6 +44,9 @@ echo '<div class="tab">';
 echo '</div>';
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
+echo '<input type="hidden" name="postcat" value="' . $postcat->term_id . '">';
+if ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  )
+    echo '<input type="hidden" name="postid" value="' . $newpostid . '">';
 if($cowobo->layouts->layout[$postcat->term_id]):
     $index = 0;
 	foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
@@ -40,7 +60,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			else echo '<span class="hint">'.$field['hint'].'</span>';
 		echo '</h3>';
 		if($field['type'] == 'title'):
-			$post_title = get_the_title($postid);
+			$post_title = ( ! $unsaved_data ) ? get_the_title($postid) : $query->post_title;
 			echo '<input type="text" name="post_title" value="'.$post_title.'"/>';
 		elseif($field['type'] == 'gallery'): unset($thumbs);
 			echo '<div class="headerrow">';
@@ -100,7 +120,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			echo '<input tabindex="'.$index.'" type="text" name="email" class="blue bold" value="'.$email.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'country'):
-			$cat = ( ! $unsaved_data ) ? get_the_category($postid) : $query->country;
+			$cat = ( ! $unsaved_data ) ? get_the_category($postid) : array ( get_category( $query->country ) );
 			echo '<select name="country" class="full">';
 			echo '<option></option>';
 			foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name&hide_empty=0') as $country):
@@ -169,8 +189,8 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			echo '<input type="text" tabindex="'.$index.'" name="slogan" value="'.$value.'"/>';
 		elseif($field['type'] == 'largetext'):
 			if ( ! $unsaved_data ) {
-                $thispost = get_post($postid);
-                $post_content = $thispost->post_content;
+                //$thispost = get_post($postid);
+                $post_content = $post->post_content;
             } else {
                 $post_content = $query->post_content;
             }
@@ -184,6 +204,8 @@ if($cowobo->layouts->layout[$postcat->term_id]):
         $cowobo->print_notices( $field['type'] );
 
 	endforeach;
+
+    $cowobo->print_notices( 'confirmenglish' );
 
 	echo '<div class="tab">';
 		$state = ($query->new) ? '' : 'checked="checked"';

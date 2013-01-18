@@ -5,29 +5,6 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Posts
 {
-    /**
-     * Create a new post
-     */
-    public function create_post(){
-        global $cowobo, $profile_id;
-
-        $newcat = $cowobo->query->cat;
-        $catid = get_cat_ID( $newcat );
-
-        //insert the post
-        $current_user = wp_get_current_user();
-        $postid = wp_insert_post( array(
-            'post_status' => 'auto-draft',
-            'post_title' => ' ',
-            'post_category' => array( $catid ),
-            'post_author' => $current_user->ID,
-        ));
-
-        //add the user to the authors list (used for multiple author checks)
-        add_post_meta( $postid, 'author', $profile_id );
-
-        return $postid;
-    }
 
     /**
      * Delete post and all links associated with it
@@ -53,7 +30,7 @@ class CoWoBo_Posts
      * @todo This is one beast of a method - can we make some subroutines?
      */
     public function save_post(){
-        global $post, $social, $cowobo, $profile_id;
+        global $post, $cowobo, $profile_id;
 
         //store all data
         $postid = $cowobo->query->post_ID;
@@ -65,7 +42,12 @@ class CoWoBo_Posts
         //$oldslug = $post->post_name;
         $involvement = $cowobo->query->involvement;
         $newslug = sanitize_title($post_title);
-        $postcat = $this->get_category($postid);
+
+        $postcat = ( ! $cowobo->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( $cowobo->query->new ) );
+        if ( ! $postid ) {
+            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
+        }
+
 
         //check if post is created from within another post
         if($postid != $post->ID) $linkedid = $post->ID;
@@ -105,7 +87,7 @@ class CoWoBo_Posts
         if( $postcat->slug == 'location' ) {
             if( $countryid = $cowobo->query->country ) {
                 $tagarray = array( $countryid );
-                if($latlng = cwb_geocode( $post_title.', '.$country ) ) {
+                if($latlng = cwb_geocode( $post_title.', '.$countryid ) ) {
                     $coordinates = $latlng['lat'].','.$latlng['lng'];
                     $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
                     //check if coordinates have already been added (avoids international spelling differences)
@@ -195,7 +177,7 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
-            wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug));
+            wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug, 'post_content' => $post_content ) );
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
             $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a>', "saved" );
         } else {
@@ -332,9 +314,9 @@ class CoWoBo_Posts
 			$slides[$x] .= '</div>';
 			$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
 		endif;
-		
+
 		unset($caption); unset($imgid);
-		
+
 	endfor;
 
 
@@ -343,13 +325,13 @@ class CoWoBo_Posts
 		$slides = array_reverse($slides); //so they appear in the correct order
 		$gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
 	}
-	
+
 	if(count($slides)<4 && count($slides)>1){
 		$remaining = 5 - count($slides);
 		for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
 		$gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
 	}
-	
+
 
         return $gallery;
     }
