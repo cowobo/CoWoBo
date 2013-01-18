@@ -373,6 +373,8 @@ class CoWoBo_Posts
 
     /**
      * Handle requests to edit posts
+     *
+     * @todo add BP notifications
      */
     public function edit_request(){
         global $post, $cowobo, $profile_id;
