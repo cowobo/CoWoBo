@@ -164,7 +164,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 
 	//show comments
-	comments_template();
+    if ( ! $postcat->slug == 'coder' )
+        comments_template();
 endwhile;
 endif;
 ?>
