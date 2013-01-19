@@ -156,14 +156,16 @@ class CoWoBo_BuddyPress
     public function cowobo_activity_context() {
         global $cowobo;
 
-        $target = ( $cowobo->users->is_current_user_profile() ) ? 'user' : 'mentions';
-        echo "<input type='hidden' name='target' id='cowobo-form-target' value='$target'>";
 
         if ( $cowobo->users->is_profile() ) {
-            //echo "<input type='hidden' name='context' value='user_id'>";
-            echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
-            echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$cowobo->users->displayed_user->ID}'>";
-            echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$cowobo->users->displayed_user->user_nicename}'>";
+            $target = ( $cowobo->users->is_current_user_profile() ) ? 'user' : 'mentions';
+            echo "<input type='hidden' name='target' id='cowobo-form-target' value='$target'>";
+
+            if ( ! $cowobo->users->is_current_user_profile() ) {
+                echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
+                echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$cowobo->users->displayed_user->ID}'>";
+                echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$cowobo->users->displayed_user->user_nicename}'>";
+            }
         }
     }
 
