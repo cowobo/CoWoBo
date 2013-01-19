@@ -30,6 +30,9 @@ class CoWoBo_Feed
         if($country != 'all')
             $metaquery[] = array( 'key' => 'country', 'value' => $country );
 
+
+		//todo: handle multiple sort values
+		$sort = $sortby[0];
         if ( empty ( $sort ) ) $sort = 'modified';
         elseif( $sort == 'rating' ) {
             $sort = 'meta_value';
@@ -39,7 +42,7 @@ class CoWoBo_Feed
 		} elseif ( $sort == 'z-a' ) {
 			$sort = 'title';
 			$direction = 'ASC';
-		} elseif ( $sort == 'location' ) {
+		} elseif ( $sort == 'location') {
 			//to do sort by location
 		}
 
