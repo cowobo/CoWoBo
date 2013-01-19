@@ -211,7 +211,12 @@ class CoWoBo_Posts
      * Get primal category of post
      */
     public function get_category( $postid = 0 ) {
-        if ( ! $postid ) $postid = get_the_ID();
+        if ( ! $postid ) {
+            $post = get_post();
+            if ( ! $post ) return false;
+            $postid = $post->ID;
+        }
+        if ( ! $postid ) return false;
 
         $cat = get_the_category($postid);
         $ancestors = get_ancestors($cat[0]->term_id,'category');
