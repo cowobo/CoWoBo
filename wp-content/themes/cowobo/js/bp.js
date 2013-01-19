@@ -5,6 +5,17 @@ var jq = jQuery;
 
 jq(document).ready( function () {
 
+	/* Textarea focus */
+	jq('#whats-new').focus( function(){
+		jq("#whats-new-options").animate({
+			height:'40px'
+		});
+		jq("#whats-new-form textarea").animate({
+			height:'50px'
+		});
+		jq("#aw-whats-new-submit").prop("disabled", false);
+	});
+
 	/* New posts */
 	jq("#aw-whats-new-submit").on( 'click', function() {
 		var button = jq(this);
@@ -24,7 +35,7 @@ jq(document).ready( function () {
 		var object = '';
 		var item_id = jq("#whats-new-post-in").val();
 		var content = jq("#whats-new").val();
-        var target = jq("#cowobo-form-target").val();
+        var formTarget = jq("#cowobo-form-target").val();
 
 		/* Set object for non-profile posts */
 		if ( item_id > 0 ) {
@@ -59,14 +70,14 @@ jq(document).ready( function () {
 					jq("div.activity").append( '<ul id="activity-stream" class="activity-list item-list">' );
 				}
 
-				jq( ".activity-stream-" + target ).prepend(response);
-				jq(".activity-stream-" + target + " li:first").addClass('new-update');
+				jq( ".activity-stream-" + formTarget ).prepend(response);
+				jq(".activity-stream-" + formTarget + " li:first").addClass('new-update');
 
 				if ( 0 != jq("#latest-update").length ) {
-					var l = jq(".activity-stream-" + target + " li.new-update .activity-content .activity-inner p").html();
-					var v = jq(".activity-stream-" + target + " li.new-update .activity-content .activity-header p a.view").attr('href');
+					var l = jq(".activity-stream-" + formTarget + " li.new-update .activity-content .activity-inner p").html();
+					var v = jq(".activity-stream-" + formTarget + " li.new-update .activity-content .activity-header p a.view").attr('href');
 
-					var ltext = jq(".activity-stream-" + target + " li.new-update .activity-content .activity-inner p").text();
+					var ltext = jq(".activity-stream-" + formTarget + " li.new-update .activity-content .activity-inner p").text();
 
 					var u = '';
 					if ( ltext != '' )
@@ -208,27 +219,26 @@ jq(document).ready( function () {
 
 		/* Load more updates at the end of the page */
 		if ( target.parent().hasClass('load-more') ) {
-			jq("#content li.load-more").addClass('loading');
+			target.parent().addClass('loading');
 
-			if ( null == jq.cookie('bp-activity-oldestpage') )
-				jq.cookie('bp-activity-oldestpage', 1, {
-					path: '/'
-				} );
-
-			var oldest_page = ( jq.cookie('bp-activity-oldestpage') * 1 ) + 1;
+            var parent_activities = target.parents('ul.activity-list');
+            var inputs = target.parent();
+			var oldest_page = inputs.find("#cowobo-activity-page").val();
+            var scope = inputs.find("#cowobo-activity-scope").val();
+            var user_id = inputs.find("#cowobo-activity-user-id").val();
 
 			jq.post( ajaxurl, {
 				action: 'activity_get_older_updates',
 				'cookie': encodeURIComponent(document.cookie),
-				'page': oldest_page
+				'page': oldest_page,
+                'scope' : scope,
+                'user_id' : user_id,
+                'object'  : 'activity'
 			},
 			function(response)
 			{
-				jq("#content li.load-more").removeClass('loading');
-				jq.cookie( 'bp-activity-oldestpage', oldest_page, {
-					path: '/'
-				} );
-				jq("#content ul.activity-list").append(response.contents);
+				parent_activities.find("li.load-more").removeClass('loading');
+				parent_activities.append(response.contents);
 
 				target.parent().hide();
 			}, 'json' );
