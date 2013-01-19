@@ -29,6 +29,9 @@ class CoWoBo_BuddyPress
 
     private function content_filters() {
         add_filter ( 'bp_core_get_user_domain', array ( &$this, 'cowobo_user_domain' ), 12, 2 );
+
+        // Add context to BP Activity form
+        add_action ( 'bp_activity_post_form_options', array ( &$this, 'cowobo_activity_context' ) );
     }
 
     public function cowobo_user_domain( $domain, $user_id ) {
@@ -68,6 +71,12 @@ class CoWoBo_BuddyPress
             $query_string = join( '&', (array) $qs );
 
         return $query_string;
+    }
+
+    public function cowobo_activity_context() {
+        global $cowobo;
+        if ( $cowobo->users->is_profile() )
+            echo "<input type='hidden' name='user_id' value='{$cowobo->users->displayed_user->ID}'>";
     }
 
 }
