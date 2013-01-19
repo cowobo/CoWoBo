@@ -33,6 +33,7 @@ class CoWoBo_Feed
 
 		//todo: handle multiple sort values
 		$sort = $sortby[0];
+        $direction = '';
         if ( empty ( $sort ) ) $sort = 'modified';
         elseif( $sort == 'rating' ) {
             $sort = 'meta_value';
@@ -75,7 +76,7 @@ class CoWoBo_Feed
             $feedtitle = 'Welcome to the club';
         elseif( $cowobo->query->showall )
             $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'. $cowobo->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
-        elseif( $cowobo->query->s ) 
+        elseif( $cowobo->query->s )
 			$feedtitle = 'Search Results';
 		elseif( $cowobo->query->action == 'login')
             $feedtitle = 'Who are you?';

@@ -14,7 +14,7 @@ else:
 		$feedtitle = $langnames[$lang][1];
 		$subtitle = $langnames[$lang][2];
 	elseif(is_single()):
-        $post = get_post($post->ID);
+        $post = get_post();
 		$userid = $profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);
@@ -34,7 +34,7 @@ else:
 	//include site-wide links
 	echo '<div class="feedlinks">';
 		echo '<a class="sitetitle" href="'.home_url().'">Coders Without Borders</a>';
-		echo '<a href="?action=contact">Contact</a>';
+		echo '<a href="/?action=contact">Contact</a>';
 		if(is_user_logged_in()):
 			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
 		else:
@@ -84,6 +84,10 @@ else:
 			include(TEMPLATEPATH.'/templates/posts.php');
 		elseif(is_category() or $cowobo->query->s): 
 			include(TEMPLATEPATH.'/templates/categories.php');
+		endif;
+
+        if ( $cowobo->users->is_profile() ) :
+			include(TEMPLATEPATH.'/templates/useractivities.php');
 		endif;
 
 		//include share forms below feeds

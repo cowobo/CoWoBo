@@ -12,6 +12,7 @@ if (!defined('ABSPATH'))
 class CoWoBo_Users
 {
     public $current_user_profile_id = 0;
+    public $displayed_user = null;
 
     public function __construct() {
         global $profile_id;
@@ -127,8 +128,9 @@ class CoWoBo_Users
     }
 
         public function get_user_profile_id ( $user_id = 0 ) {
-            if ( is_a ( $user_id, 'WP_User' ) )
-                $user_id = $user->ID;
+            if ( ! $user_id ) $user_id = wp_get_current_user()->ID;
+            elseif ( is_a ( $user_id, 'WP_User' ) )
+                $user_id = $user_id->ID;
 
             if ( ! $user_id ) return false;
 
@@ -152,9 +154,50 @@ class CoWoBo_Users
     /**
      * Save profile id field
      */
-    public function save_extra_profile_fields( $user_id ) {
+    public function save_extra_profile_fields( $user_id = false ) {
+        if ( ! $user_id ) $user_id = get_current_user_id();
+
         if ( !current_user_can( 'edit_user', $user_id ) )
             return false;
         update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
     }
+
+    public function get_users_by_profile_id( $id ) {
+        return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+    }
+
+
+    public function is_profile() {
+        global $cowobo;
+
+        if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
+            return $this->displayed_user;
+
+        if ( ! is_single () ) return false;
+        $category = $cowobo->posts->get_category();
+
+        if ( ! is_object ( $category ) || $category->slug != 'coder' ) return false;
+
+        $users = $cowobo->users->get_users_by_profile_id( get_the_ID() );
+        if ( empty ( $users ) ) return false;
+
+        $this->displayed_user = current ( $users );
+        return $this->displayed_user;
+    }
+
+    public function get_user_domain ( $user_id = 0 ) {
+
+        if ( ! $domain = wp_cache_get( 'cowobo_user_domain_' . $user_id, 'cowobo' ) ) {
+            $profile_id = $this->get_user_profile_id( $user_id );
+            $domain = get_permalink( $profile_id );
+            wp_cache_set( 'cowobo_user_domain_' . $user_id, $domain, 'cowobo' );
+        }
+        return $domain;
+
+    }
+
+    public function is_current_user_profile() {
+        return ( get_the_ID() == $this->current_user_profile_id );
+    }
+
 }
