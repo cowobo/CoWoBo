@@ -58,6 +58,10 @@ class CoWoBo_BuddyPress
         $qf = &$this->query_filter;
 
         $qs = array();
+
+        // Defaults
+        $qs[] = "per_page=3";
+
         switch ( $object ) {
             case 'activity' :
                 if ( $cowobo->users->is_profile() ) {
