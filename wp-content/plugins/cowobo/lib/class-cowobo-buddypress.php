@@ -43,7 +43,7 @@ class CoWoBo_BuddyPress
 		$actions = array(
 
 			// Activity
-			'activity_get_older_updates'  => 'bp_legacy_theme_activity_template_loader',
+			'activity_get_older_updates'  => 'cowobo_activity_template_loader',
 //			'activity_mark_fav'           => 'bp_legacy_theme_mark_activity_favorite',
 //			'activity_mark_unfav'         => 'bp_legacy_theme_unmark_activity_favorite',
 			'activity_widget_filter'      => 'bp_legacy_theme_activity_template_loader',
@@ -114,6 +114,7 @@ class CoWoBo_BuddyPress
 
     public function ajax_querystring( $query_string, $object ) {
         global $cowobo;
+        if ( $cowobo->query->scope ) $this->query_filter = $cowobo->query->scope;
         $qf = &$this->query_filter;
 
         $qs = array();
@@ -121,10 +122,17 @@ class CoWoBo_BuddyPress
         // Defaults
         $qs[] = "per_page=3";
 
+        if ( ! empty( $_POST['page'] ) && '-1' != $_POST['page'] )
+                $qs[] = 'page=' . $_POST['page'];
+
         switch ( $object ) {
             case 'activity' :
-                if ( $cowobo->users->is_profile() ) {
-                    $current_profile = $cowobo->users->displayed_user;
+                if ( $cowobo->users->is_profile() || $cowobo->query->user_id ) {
+                    if ( $cowobo->query->user_id )
+                        $current_profile = get_userdata ( $cowobo->query->user_id );
+                    else
+                        $current_profile = $cowobo->users->displayed_user;
+
                     switch ( $qf ) {
                         case 'mentions' :
                             $qs[] = "search_terms=@{$current_profile->user_nicename}<";
