@@ -124,8 +124,8 @@ if (!class_exists('CoWoBo')) :
         private $notice_types;
         public $default_notices = array (
                 "editrequest_sent"      =>  "Thank you, your request has been sent.",
-                "editrequest_accepted"  =>  "Thank you, your request has been accepted.",
-                "editrequest_denied"    =>  "Thank you, your request has been denied.",
+                "editrequest_accepted"  =>  "Thank you, you have accepted the request.",
+                "editrequest_denied"    =>  "Thank you, the edit request has been denied.",
                 "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
             );
 
@@ -198,9 +198,6 @@ if (!class_exists('CoWoBo')) :
             $this->layouts = new Cowobo_Layouts;
         }
 
-        /**
-         * @todo Add nonces
-         */
         public function controller() {
             if ( is_404() ) return;
 
@@ -222,7 +219,6 @@ if (!class_exists('CoWoBo')) :
 
             // Post actions
             elseif( $verify->delete ) $notices = $posts->delete_post();
-            elseif( $verify->new ) $GLOBALS['postid'] = $posts->create_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
@@ -367,15 +363,15 @@ if (!class_exists('CoWoBo')) :
             $this->notice_types[] = $key;
         }
 
-        public function print_notices( $notice_types ) {
+        public function print_notices( $notice_types, $class = '' ) {
             if ( ! is_array ( $notice_types ) ) $notice_types = array ( $notice_types );
             if ( $this->has_notice( $notice_types ) ) {
                 while ( have_notices() ) : the_notice();
                     if ( ! in_array ( get_the_notice_type(), $notice_types ) ) continue;
 
-                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . "'>";
-                    the_notice_content();
+                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . " $class'>";
                     echo "<span class='close hide-if-no-js'>dismiss</span>";
+                    the_notice_content();
                     echo "</div>";
                 endwhile;
             }

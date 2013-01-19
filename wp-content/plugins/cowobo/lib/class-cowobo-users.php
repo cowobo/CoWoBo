@@ -16,6 +16,7 @@ class CoWoBo_Users
     public function __construct() {
         global $profile_id;
         $profile_id = $this->get_current_user_profile_id();
+        $this->has_sent_email();
 
         $this->actions_and_filters();
     }
@@ -27,6 +28,14 @@ class CoWoBo_Users
         add_action('edit_user_profile_update', array ( &$this, 'save_extra_profile_fields' ) );
     }
 
+    private function has_sent_email() {
+        global $cowobo;
+
+        //check if the user sent an email
+        if( $cowobo->query->emailmsg ) {
+            $cowobo->add_notice( 'Your email has been sent. We will get back to you shortly!', 'emailsent' );
+        }
+    }
 
     /**
      * Create user and redirect them to profile

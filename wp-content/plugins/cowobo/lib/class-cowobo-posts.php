@@ -5,28 +5,9 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Posts
 {
-    /**
-     * Create a new post
-     */
-    public function create_post(){
-        global $cowobo, $profile_id;
 
-        $newcat = $cowobo->query->cat;
-        $catid = get_cat_ID( $newcat );
-
-        //insert the post
-        $current_user = wp_get_current_user();
-        $postid = wp_insert_post( array(
-            'post_status' => 'auto-draft',
-            'post_title' => ' ',
-            'post_category' => array( $catid ),
-            'post_author' => $current_user->ID,
-        ));
-
-        //add the user to the authors list (used for multiple author checks)
-        add_post_meta( $postid, 'author', $profile_id );
-
-        return $postid;
+    public function __construct() {
+        $this->has_requests();
     }
 
     /**
@@ -53,7 +34,7 @@ class CoWoBo_Posts
      * @todo This is one beast of a method - can we make some subroutines?
      */
     public function save_post(){
-        global $post, $social, $cowobo, $profile_id;
+        global $post, $cowobo, $profile_id;
 
         //store all data
         $postid = $cowobo->query->post_ID;
@@ -65,10 +46,22 @@ class CoWoBo_Posts
         //$oldslug = $post->post_name;
         $involvement = $cowobo->query->involvement;
         $newslug = sanitize_title($post_title);
-        $postcat = $this->get_category($postid);
+
+        $postcat = ( ! $cowobo->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( $cowobo->query->new ) );
+        $tagarray = array( $postcat->term_id );
+
+        if ( ! $postid ) {
+            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
+            add_post_meta( $postid, 'author', $profile_id);
+        }
 
         //check if post is created from within another post
         if($postid != $post->ID) $linkedid = $post->ID;
+
+        if ( empty ( $post_content ) ) {
+            $postmsg['largetext'] = "Please add some content to your post!";
+            $post_content = ' ';
+        }
 
         //if the user is not involved don't link it to their profile
         if($involvement == 'none') {
@@ -105,7 +98,7 @@ class CoWoBo_Posts
         if( $postcat->slug == 'location' ) {
             if( $countryid = $cowobo->query->country ) {
                 $tagarray = array( $countryid );
-                if($latlng = cwb_geocode( $post_title.', '.$country ) ) {
+                if($latlng = cwb_geocode( $post_title.', '.$countryid ) ) {
                     $coordinates = $latlng['lat'].','.$latlng['lng'];
                     $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
                     //check if coordinates have already been added (avoids international spelling differences)
@@ -153,11 +146,11 @@ class CoWoBo_Posts
         }
 
         //get ids for each tag and create them if they dont already exist
-        $tagarray = array();
         if ( ! empty ( $tags ) ) {
             foreach(explode(',', $tags) as $tag) {
                 $tagid = term_exists(trim($tag), 'category', $postcat->term_id);
                 if(!$tagid) $tagid = wp_insert_term(trim($tag), 'category', array('parent'=> $postcat->term_id));
+                if ( is_a ( $tagid, 'WP_Error' ) ) continue;
                 $tagarray[] = $tagid['term_id'];
             }
             $tagarray = array_map('intval', $tagarray);
@@ -195,9 +188,11 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
-            wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_name' =>$newslug));
+            //wp_set_post_categories( $postid, $postcat );
+            wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
-            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a>', "saved" );
+            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
+            $GLOBALS['newpostid'] = null;
         } else {
             $cowobo->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
             foreach ( $postmsg as $key => $msg ) {
@@ -307,6 +302,7 @@ class CoWoBo_Posts
     public function loadgallery( $postid ) {
 
         $slidenum = 5; //to limit the download burden
+        $slides = array();
 
         for ($x=0; $x<$slidenum; $x++):
 
@@ -324,32 +320,33 @@ class CoWoBo_Posts
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
                	$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a></div>';
-		elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-			$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
-			$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
-				$slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-				if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
-			$slides[$x] .= '</div>';
-			$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
-		endif;
-		
-		unset($caption); unset($imgid);
-		
-	endfor;
+            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+                $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+                    $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+                    if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
+                $slides[$x] .= '</div>';
+                $thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
+            endif;
+
+            unset($caption); unset($imgid);
+
+        endfor;
 
 
-	//construct gallery
-	if($slides) {
-		$slides = array_reverse($slides); //so they appear in the correct order
-		$gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
-	}
-	
-	if(count($slides)<4 && count($slides)>1){
-		$remaining = 5 - count($slides);
-		for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-		$gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
-	}
-	
+        //construct gallery
+        $gallery = '';
+        if( ! empty ( $slides ) ) {
+            $slides = array_reverse($slides); //so they appear in the correct order
+            $gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
+        }
+
+        if(count($slides)<4 && count($slides)>1){
+            $remaining = 5 - count($slides);
+            for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
+            $gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
+        }
+
 
         return $gallery;
     }
@@ -376,6 +373,8 @@ class CoWoBo_Posts
 
     /**
      * Handle requests to edit posts
+     *
+     * @todo add BP notifications
      */
     public function edit_request(){
         global $post, $cowobo, $profile_id;
@@ -512,6 +511,40 @@ class CoWoBo_Posts
 
             $url .= "feed";
             return $url;
+        }
+
+        private function has_requests() {
+            global $profile_id, $cowobo;
+            //check if the user has any pending author requests
+            $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
+
+            if( ! empty ( $requestposts ) ) {
+                foreach($requestposts as $requestpost) {
+                    $requests = get_post_meta($requestpost->ID, 'request', false);
+                    $msg = '';
+                    foreach($requests as $request) {
+                        $requestdata = explode('|', $request);
+                        if($requestdata[1] != 'deny') {
+                            $profile = get_post($requestdata[0]);
+                            $msg .= '<form method="post" action="">';
+                            $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
+                            $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
+                            $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
+                            $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
+                            $msg .= '<ul class="horlist">';
+                            $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
+                            $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
+                            $msg .= wp_nonce_field( 'request', 'request', true, false );
+                            $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
+                            $msg .= '</ul>';
+                            $msg .= '</form>';
+                        }
+                    }
+                }
+                if ( ! empty ( $msg ) ) {
+                    $cowobo->add_notice( $msg, 'editrequest' );
+                }
+            }
         }
 }
 

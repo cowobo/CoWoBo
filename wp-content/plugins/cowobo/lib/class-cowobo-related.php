@@ -89,7 +89,7 @@ class Cowobo_Related_Posts {
         global $wpdb;
         $results = array();
         foreach($relatedpostids as $relatedpostid) {
- 			//$this->delete_relations($postid, $relatedpostid);
+ 			$this->delete_relations($postid, $relatedpostid);
 			$query = $wpdb->prepare ( "INSERT INTO ".$wpdb->prefix."post_relationships VALUES(%s, %s)", $postid, $relatedpostid );
 			$results[] = $wpdb->query($query);
         }

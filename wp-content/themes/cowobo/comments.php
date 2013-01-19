@@ -1,5 +1,4 @@
 <?php
-
 // ##########  Do not delete these lines
 if (isset($_SERVER['SCRIPT_FILENAME']) && 'comments.php' == basename($_SERVER['SCRIPT_FILENAME'])){
 	die ('Please do not load this page directly. Thanks!'); }
@@ -28,7 +27,7 @@ endif;
 // Calback for comments (display)
 if (!function_exists('cowobo_comments')) {
 	function cowobo_comments($comment, $args, $depth) {
-		global $author;
+		global $author, $profile_id;
 		$GLOBALS['comment'] = $comment;
 		$commentmeta = get_comment_meta($comment->comment_ID, 'privatemsg', true);
 		$userprofile = get_post($profile_id);?>

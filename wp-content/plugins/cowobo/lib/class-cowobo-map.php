@@ -194,6 +194,7 @@ function cwb_loadmap() {
     $id = 0;
 	foreach($linkedmarkers as $markerpost): $id++;
 		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
+        if ( empty ( $coordinates ) ) continue;
 		$latlng = explode(',', $coordinates);
 		$delta_x  = (LonToX($latlng[1]) - LonToX($data['lng'])) >> (21 - $data['zoom']);
 		$delta_y  = (LatToY($latlng[0]) - LatToY($data['lat'])) >> (21 - $data['zoom']);

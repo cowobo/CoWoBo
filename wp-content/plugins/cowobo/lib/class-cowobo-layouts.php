@@ -35,8 +35,7 @@ if (!defined('ABSPATH'))
 
 class Cowobo_Layouts {
 
-	public $layout;
-	public $langnames;
+	public $layout = array();
 
 	public function __construct() {
 

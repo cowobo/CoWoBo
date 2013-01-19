@@ -64,4 +64,7 @@ wp_head();?>
 
 </head>
 
-<body>
+<body class="no-js">
+    <script type="text/javascript">
+        document.body.className = document.body.className.replace('no-js','js');
+    </script>
