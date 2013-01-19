@@ -170,6 +170,9 @@ class CoWoBo_Users
     public function is_profile() {
         global $cowobo;
 
+        if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
+            return $this->displayed_user;
+
         $category = $cowobo->posts->get_category();
 
         if ( $category->slug != 'coder' ) return false;
