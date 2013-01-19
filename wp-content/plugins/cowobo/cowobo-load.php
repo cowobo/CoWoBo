@@ -106,10 +106,16 @@ if (!class_exists('CoWoBo')) :
         /**
          * Var to contain the layouts class
          *
-         * @var CoWoBo_Localization
+         * @var CoWoBo_Layouts
          */
         public $layouts;
 
+        /**
+         * Var to contain the BuddyPress class
+         *
+         * @var CoWoBo_BuddyPres
+         */
+        public $buddypress;
 
         /**
          * Notices
