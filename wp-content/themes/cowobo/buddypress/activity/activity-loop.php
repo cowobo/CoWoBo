@@ -1,3 +1,6 @@
+<?php global $cowobo;
+$query_filter = $cowobo->buddypress->query_filter; ?>
+
 <?php do_action( 'bp_before_activity_loop' ); ?>
 
 <?php if ( bp_has_activities( bp_ajax_querystring( 'activity' ) ) ) : ?>
@@ -12,7 +15,7 @@
 
 	<?php if ( empty( $_POST['page'] ) ) : ?>
 
-		<ul id="activity-stream" class="activity-list item-list activity-stream-<?php echo $GLOBALS['cowobo']->buddypress->query_filter; ?>">
+		<ul id="activity-stream" class="activity-list item-list activity-stream-<?php echo $query_filter ?>">
 
 	<?php endif; ?>
 
@@ -25,6 +28,10 @@
 	<?php if ( bp_activity_has_more_items() ) : ?>
 
 		<li class="load-more">
+            <input type="hidden" id="cowobo-activity-page" value="<?php echo ( isset ( $_POST['page'] ) ) ? $_POST['page'] + 1 : 2 ?>">
+            <input type="hidden" id="cowobo-activity-scope" value="<?php echo ( $cowobo->query->scope ) ? $cowobo->query->scope : $query_filter ?>">
+            <input type="hidden" id="cowobo-activity-user-id" value="<?php echo ( $cowobo->query->user_id ) ? $cowobo->query->user_id : $cowobo->users->displayed_user->ID ?>">
+
 			<a href="#more"><?php _e( 'Load More', 'buddypress' ); ?></a>
 		</li>
 
