@@ -82,7 +82,8 @@ class CoWoBo_BuddyPress
 	}
 
     public function enqueue_scripts() {
-        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/js/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
+        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/buddypress/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
+        wp_enqueue_style( 'cowobo-buddypress', get_template_directory_uri() . '/buddypress/bp.css', null, COWOBO_PLUGIN_VERSION );
     }
 
     private function content_filters() {

@@ -10,9 +10,6 @@ jq(document).ready( function () {
 		jq("#whats-new-options").animate({
 			height:'40px'
 		});
-		jq("#whats-new-form textarea").animate({
-			height:'50px'
-		});
 		jq("#aw-whats-new-submit").prop("disabled", false);
 	});
 
