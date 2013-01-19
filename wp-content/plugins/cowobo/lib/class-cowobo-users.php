@@ -175,7 +175,7 @@ class CoWoBo_Users
 
         $category = $cowobo->posts->get_category();
 
-        if ( $category->slug != 'coder' ) return false;
+        if ( ! is_object ( $category ) || $category->slug != 'coder' ) return false;
 
         $users = $cowobo->users->get_users_by_profile_id( get_the_ID() );
         if ( empty ( $users ) ) return false;
