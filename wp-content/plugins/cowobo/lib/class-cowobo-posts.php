@@ -188,8 +188,12 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
-            //wp_set_post_categories( $postid, $postcat );
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
+
+            if ( ! isset ( $GLOBALS['newpostid'] ) || empty ( $GLOBALS['newpostid'] ) ) {
+                do_action( 'cowobo_post_updated', $postid, $post_title );
+            }
+
             if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
             $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
