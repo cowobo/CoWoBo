@@ -6,6 +6,8 @@ if (!defined('ABSPATH'))
 class CoWoBo_BuddyPress
 {
 
+    public $query_filter;
+
     public static function &init() {
         static $instance = false;
 
@@ -17,6 +19,9 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
+        global $cowobo;
+        $cowobo->buddypress = &$this;
+
         $this->filter_querystring();
         $this->content_filters();
 
@@ -45,6 +50,10 @@ class CoWoBo_BuddyPress
             case 'activity' :
                 if ( $cowobo->users->is_profile() ) {
                     $current_profile = $cowobo->users->displayed_user;
+                    if ( $this->query_filter == 'mentions' ) {
+                        $qs[] = 'search_terms=@' . $current_profile->user_nicename . '<';
+                        $qs[] = "user_id=0";
+                    } else
                     $qs[] = "user_id={$current_profile->ID}";
                 }
                 break;
