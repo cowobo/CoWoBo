@@ -28,6 +28,25 @@ class CoWoBo_BuddyPress
         $this->filter_querystring();
         $this->content_filters();
 
+		add_action( 'bp_enqueue_scripts', array( $this, 'enqueue_scripts'  ) ); // Enqueue theme JS
+		add_action( 'bp_head',            array( $this, 'head_scripts'     ) ); // Output some extra JS in the <head>
+
+    }
+
+	public function head_scripts() {
+	?>
+
+		<script type="text/javascript" charset="utf-8">
+			/* <![CDATA[ */
+			var ajaxurl = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
+			/* ]]> */
+		</script>
+
+	<?php
+	}
+
+    public function enqueue_scripts() {
+        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/js/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
     }
 
     private function content_filters() {
@@ -91,11 +110,16 @@ class CoWoBo_BuddyPress
 
     public function cowobo_activity_context() {
         global $cowobo;
-        if ( $cowobo->users->is_profile() )
+
+        $target = ( $cowobo->users->is_current_user_profile() ) ? 'user' : 'mentions';
+        echo "<input type='hidden' name='target' id='cowobo-form-target' value='$target'>";
+
+        if ( $cowobo->users->is_profile() ) {
             //echo "<input type='hidden' name='context' value='user_id'>";
             echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
             echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$cowobo->users->displayed_user->ID}'>";
             echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$cowobo->users->displayed_user->user_nicename}'>";
+        }
     }
 
     public function update_filter( $object = '', $item_id = '', $content = '' ) {
