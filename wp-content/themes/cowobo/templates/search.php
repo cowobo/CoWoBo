@@ -3,16 +3,20 @@ global $cowobo;
 
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab searchform">';		
 	
-	echo '<input type="text" class="searchbar blue" name="s" placeholder="I am looking for .."/>';
+	echo '<input type="text" class="searchbar blue" name="s" value="'.$cowobo->query->s.'" placeholder="I am looking for .."/>';
 	echo '<input type="text" class="sortbar green" name="sortbar" disabled placeholder="Sorted by .."/>';
 	echo '<input type="submit" class="gobutton" value="" title="Search"/>';
 
 	echo '<div class="dropmenu">';	
 		
 		echo '<div id="searchbar" class="half shade left blue">';
-			$default = array('Coders', 'Jobs');
+			if(!$cowobo->query->cats) $default = array('Coders', 'Jobs'); else $default = array();
 			foreach(get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat):
-				if(in_array($cat->name, $default)) $state = 'checked'; else $state='';
+				if(in_array($cat->name, $default) or in_array($cat->term_id, $cowobo->query->cats)) {
+					$state = 'checked'; 
+				} else {
+					$state='';
+				}
 				echo '<span class="'.$state.'"><input type="checkbox" name="cats[]" value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</span>';
 			endforeach;
 		echo '</div>';

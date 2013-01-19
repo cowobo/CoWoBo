@@ -74,7 +74,7 @@ form {margin:0 auto;}
 
 /* Page Styles*/
 .feed {position:relative; width:640px; margin:0 auto 130px auto; z-index:20;}
-.feedtitle {font-size:34px; color:#fff; font-weight:bold; margin-top:70px;}
+.feedtitle {font-size:34px; color:#fff; font-weight:bold; height:24px; margin: 70px 70px 0 0; overflow:hidden;}
 .feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
 .introtitle {position:relative; margin:50px auto 0 auto; font-family: 'Passion One', cursive; color:#fff; font-size:60px; z-index:20; text-align:center; width:500px; line-height:1em;}
 .introtitle:hover, .learnmore:hover {color:#eee;}
