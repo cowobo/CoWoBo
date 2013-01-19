@@ -56,7 +56,7 @@ else:
 		$state='';
 	endif;
 	
-	if(is_home() && !$cowobo->query->sort):
+	if(is_home() && !$cowobo->query->s):
 		include( TEMPLATEPATH . '/templates/home.php');
 	endif;
 	
@@ -83,7 +83,7 @@ else:
 			include(TEMPLATEPATH.'/templates/404.php');		
 		elseif(is_single()): 
 			include(TEMPLATEPATH.'/templates/posts.php');
-		elseif(is_category() or $cowobo->query->sort): 
+		elseif(is_category() or $cowobo->query->s): 
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
 		

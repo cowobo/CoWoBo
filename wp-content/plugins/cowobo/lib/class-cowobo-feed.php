@@ -16,7 +16,7 @@ class CoWoBo_Feed
         //store variables from browse form
         $cats = $cowobo->query->cats;
         $sortby = $cowobo->query->sort;
-        $keywords = $cowobo->query->keywords;
+        $keywords = $cowobo->query->s;
         $country = $cowobo->query->country;
 
         //store cats to filter
@@ -31,13 +31,20 @@ class CoWoBo_Feed
             $metaquery[] = array( 'key' => 'country', 'value' => $country );
 
         if ( empty ( $sort ) ) $sort = 'modified';
-        elseif( $sort == 'featured' ) {
+        elseif( $sort == 'rating' ) {
             $sort = 'meta_value';
-            $metaquery[] = array( 'metakey'=>'featured' );
-        }
+			$metaquery[] = array( 'metakey'=>'rating' );
+		} elseif ( $sort == 'a-z' ) {
+			$sort = 'title';
+		} elseif ( $sort == 'z-a' ) {
+			$sort = 'title';
+			$direction = 'ASC';
+		} elseif ( $sort == 'location' ) {
+			//to do sort by location
+		}
 
         //query filtered posts
-        query_posts( array( 'orderby'=>$sort, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' => $metaquery ) );
+        query_posts( array( 'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' => $metaquery ) );
 
     }
 

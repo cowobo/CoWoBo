@@ -32,6 +32,45 @@ jQuery(document).ready(function() {
 		jQuery('.feeds').fadeIn();
 	}
 
+
+	//Drop menu functions for javascript enabled devices
+	jQuery('.dropmenu').hide();
+	jQuery('.dropmenu input').live('click', function(event){
+		event.stopPropagation();
+		jQuery(this).parent().toggleClass('checked');
+	});
+	
+	jQuery('.dropmenu span').live('click', function(event){
+		var checkbox = jQuery(this).children('input');
+		var type = jQuery(this).parents('.dropmenu').attr('id');
+		checkbox.prop("checked", !checkbox.prop("checked"));
+		jQuery(this).toggleClass('checked');
+	});
+	
+	jQuery('.searchform').live('click', function(){
+		jQuery('.dropmenu').slideDown();
+	});
+	
+	jQuery('.closebutton').live('click', function(event){
+		event.stopPropagation();
+		jQuery('.dropmenu').slideUp();
+	});
+		
+	if(jQuery('.translating').length>0){
+		var title = jQuery(".description");
+		title.data('original', title.text());
+		var checktitle = setInterval(function(){
+			if(title.data('original') != title.text()) {
+				jQuery('.feeds').fadeIn();
+				jQuery('.translating').fadeOut();
+				clearInterval(checktitle);
+			}
+		}, 500);
+	} else {
+		jQuery('.feeds').fadeIn();
+	}
+
+
 });
 
 /// TAB FUNCTIONS ///
