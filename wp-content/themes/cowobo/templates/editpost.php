@@ -47,9 +47,6 @@ if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '</div>';
 }
 
-$cowobo->print_notices( 'savepost', 'error' );
-$cowobo->print_notices( 'saved' );
-
 echo '<form method="post" action="" enctype="multipart/form-data">';
 echo '<input type="hidden" name="postcat" value="' . $postcat->term_id . '">';
 if ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  )
@@ -63,7 +60,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			//if($error = $postmsg[$field['type']]) echo '<span class="red bold">'.$error.'</span>';
 			if($field['type'] == 'checkboxes') echo '<span class="hint">Select those which apply</span><br/>';
 			elseif($field['type'] == 'dropdown') echo '<span class="hint">Choose one from the dropdown menu</span><br/>';
-			elseif($field['type'] == 'largetext') echo '<ul class="horlist right"><li class="makelink blue bold">Add Links</li><li class="makebold bold">Bold text</li></ul>';
+			elseif($field['type'] == 'largetext') echo '<span class="hint">Enter or paste in text here</span>';
 			else echo '<span class="hint">'.$field['hint'].'</span>';
 		echo '</h3>';
 		if($field['type'] == 'title'):
@@ -204,7 +201,17 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 			//hide extra formating so its easier to edit
 			$stripped = str_replace(array('<br/>','</p>'), '\n', $post_content);
 			$stripped = str_replace('<p>', '', $stripped);
-			echo '<textarea tabindex="'.$index.'" name="post_content" rows="12" class="richtext">'.$stripped.'</textarea>';
+			echo '<span class="richbuttons">';
+				echo '<a class="makebold" href="#">Bold</a>';
+				echo '<a class="makeitalic" href="#">Italic</a>';
+				echo '<a class="makeunderline" href="#">Underline</a>';
+				echo '<a class="makelink" href="#">Link</a>';
+				echo '<a class="htmlmode" href="#">HTML</a>';
+				echo '<a class="richmode" href="#">WYSIWYG</a>';
+			echo '</span>';
+			echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.$stripped.'</div>';
+			echo '<textarea name="post_content" rows="12" class="htmlbox"></textarea>';
+
 		endif;
 		echo '</div>';
 
@@ -222,7 +229,7 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 		echo '<a class="button" href="'.get_bloginfo('url').'?delete=' . wp_create_nonce( 'delete' ). '&id='.$postid.'">Delete</a>';
 		echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
         wp_nonce_field( 'save', 'save' );
-		echo '<button type="submit" class="button">Save</button>';
+		echo '<button id="formsubmit" type="submit" class="button">Save</button>';
 		echo '<span class="loadicon"></span>';
 	echo '</div>';
 endif;
