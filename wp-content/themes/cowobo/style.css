@@ -96,6 +96,7 @@ form {margin:0 auto;}
 .gobutton:hover {background:#707bc5 url(images/searchbutton.png) center center no-repeat;}
 .closebutton {position:absolute; bottom:0; right:0; width:15px; height:15px; background:url(images/arrowup.png) no-repeat; cursor:pointer;}
 .dropmenu {position:relative; overflow:hidden; margin-top:10px;}
+.js .dropmenu {display:none}
 .dropmenu .half {font-size:16px; font-weight:bold; }
 .dropmenu span {float:left; width:50%; cursor:pointer; opacity:0.8}
 .dropmenu span:hover, .checked {opacity:1!important; font-size:17px}

@@ -33,8 +33,7 @@ jQuery(document).ready(function() {
 	}
 
 
-	//Drop menu functions for javascript enabled devices
-	jQuery('.dropmenu').hide();
+	//Search form listerners
 	jQuery('.dropmenu input').live('click', function(event){
 		event.stopPropagation();
 		jQuery(this).parent().toggleClass('checked');
