@@ -179,3 +179,6 @@ body.js.notice { padding-right: 60px; }
 /* Google Translate Styles */
 #google-infowindow, #goog-gt-tt .gmnoprint, .skiptranslate {display:none!important}
 .goog-text-highlight {background:none; -webkit-box-shadow:none; -moz-box-shadow: none; box-shadow: none; box-sizing: none; -webkit-box-sizing: none; -moz-box-sizing: none;}
+
+/* TEMP BUDDYPRESS */
+body #buddypress form#whats-new-form textarea { height: 50px; }
