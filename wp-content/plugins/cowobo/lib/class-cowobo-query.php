@@ -39,7 +39,7 @@ class CoWoBo_Query
     }
 
     private function strip_magic_quotes($value) {
-        if (get_magic_quotes_gpc()) {
+        if (get_magic_quotes_gpc() && is_string($value)) {
             return stripslashes($value);
         } else {
             return $value;
