@@ -50,7 +50,7 @@ form {margin:0 auto;}
 
 /* Map Styles*/
 .background {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;}
-.planet {position:relative; cursor: pointer; z-index:1;}
+.planet {position:relative; cursor: pointer; z-index:1; background:#1a4780;}
 .mapholder, .maplayer, .marker, .markerlink, .tile, .buffer {position:absolute;}
 .mapholder {top:-50%; left:-50%; width:200%; height:200%;}
 .maplayer {top:0; left:0; width:100%; height:100%;}
@@ -111,7 +111,8 @@ form {margin:0 auto;}
 .tabtext {width:440px; height:100px; background:#fff; border: 10px solid white; overflow:hidden; margin-bottom:20px}
 .nextthumb {float:left; width:40px; height:30px; overflow:hidden; background:#eee;}
 .gallery {position:relative; height:350px; overflow:hidden; opacity:0.9; cursor:pointer;}
-.slide {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; background:#fff; z-index:1}
+.slide {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:1}
+.gallery .slide {background:#eee;}
 .caption, .captionback {position:absolute; bottom:0; left:0; width:610px; padding:0 5px 5px 5px; height:20px; overflow:hidden; z-index:1}
 .caption {color:#fff;}
 .captionback {background:#000; opacity: 0.5;}
