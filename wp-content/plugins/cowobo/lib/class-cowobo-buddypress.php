@@ -3,6 +3,8 @@
 if (!defined('ABSPATH'))
     exit;
 
+require_once ( COWOBO_PLUGIN_LIB . 'buddypress-ajax.php' );
+
 /**
  * @todo make sure user nicename is more appropriate
  */
@@ -31,6 +33,40 @@ class CoWoBo_BuddyPress
 		add_action( 'bp_enqueue_scripts', array( $this, 'enqueue_scripts'  ) ); // Enqueue theme JS
 		add_action( 'bp_head',            array( $this, 'head_scripts'     ) ); // Output some extra JS in the <head>
 
+        $this->add_ajax();
+
+    }
+
+    private function add_ajax() {
+		/** Ajax **************************************************************/
+
+		$actions = array(
+
+			// Activity
+			'activity_get_older_updates'  => 'bp_legacy_theme_activity_template_loader',
+//			'activity_mark_fav'           => 'bp_legacy_theme_mark_activity_favorite',
+//			'activity_mark_unfav'         => 'bp_legacy_theme_unmark_activity_favorite',
+			'activity_widget_filter'      => 'bp_legacy_theme_activity_template_loader',
+			'delete_activity'             => 'bp_legacy_theme_delete_activity',
+			'delete_activity_comment'     => 'bp_legacy_theme_delete_activity_comment',
+			'get_single_activity_content' => 'bp_legacy_theme_get_single_activity_content',
+			'new_activity_comment'        => 'bp_legacy_theme_new_activity_comment',
+			'post_update'                 => 'bp_legacy_theme_post_update',
+			'bp_spam_activity'            => 'bp_legacy_theme_spam_activity',
+			'bp_spam_activity_comment'    => 'bp_legacy_theme_spam_activity',
+
+		);
+
+		/**
+		 * Register all of these AJAX handlers
+		 *
+		 * The "wp_ajax_" action is used for logged in users, and "wp_ajax_nopriv_"
+		 * executes for users that aren't logged in. This is for backpat with BP <1.6.
+		 */
+		foreach( $actions as $name => $function ) {
+			add_action( 'wp_ajax_'        . $name, $function );
+			add_action( 'wp_ajax_nopriv_' . $name, $function );
+		}
     }
 
 	public function head_scripts() {
