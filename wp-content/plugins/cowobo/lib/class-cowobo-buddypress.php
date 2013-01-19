@@ -177,7 +177,7 @@ class CoWoBo_BuddyPress
         $user = get_userdata( $item_id );
         $nicename = $user->user_nicename;
         // Are we already mentioning?
-        if ( strpos ( $content, "@$nicename" ) )
+        if ( strpos ( $content, "@$nicename" ) !== false )
             $post = $content;
 
         // Name mentioned, no mention yet
