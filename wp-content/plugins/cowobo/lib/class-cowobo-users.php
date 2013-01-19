@@ -173,6 +173,7 @@ class CoWoBo_Users
         if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
             return $this->displayed_user;
 
+        if ( ! is_single () ) return false;
         $category = $cowobo->posts->get_category();
 
         if ( ! is_object ( $category ) || $category->slug != 'coder' ) return false;
