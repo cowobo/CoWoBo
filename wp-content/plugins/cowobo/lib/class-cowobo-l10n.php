@@ -16,7 +16,7 @@ class CoWoBo_Localization
 
         $this->set_langnames();
         //Update language session
-        if ( $lang = $cowobo->query->lang ) $this->set_lang_cookie ( $lang );
+        if ( $lang = cowobo()->query->lang ) $this->set_lang_cookie ( $lang );
         else $lang = $this->get_lang_cookie();
     }
 
@@ -58,16 +58,16 @@ class CoWoBo_Localization
      * @param string $lang
      */
     public function set_lang_cookie ( $lang = '' ) {
-        global $cowobo;
+        
 
         if ( empty ( $lang ) ) return;
-        $cowobo->query->set_cookie( 'cowobo_lang', $lang );
+        cowobo()->query->set_cookie( 'cowobo_lang', $lang );
 
     }
 
     public function get_lang_cookie() {
-        global $cowobo;
-        if ( ! $lang = $cowobo->query->get_cookie('cowobo_lang') )
+        
+        if ( ! $lang = cowobo()->query->get_cookie('cowobo_lang') )
             $lang = 'en';
 
         return $lang;

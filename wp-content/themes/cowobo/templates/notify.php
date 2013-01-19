@@ -1,5 +1,5 @@
 <?php
-global $cowobo;
+
 
 $allowed_notice_types = array(
     "message",
@@ -13,7 +13,7 @@ $allowed_notice_types = array(
     'editrequest',
     'email_sent'
 );
-$cowobo->print_notices( $allowed_notice_types );
+cowobo()->print_notices( $allowed_notice_types );
 
 //TODO
 //check if user has setup an email and explain why its needed

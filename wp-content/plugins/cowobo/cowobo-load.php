@@ -137,6 +137,8 @@ if (!class_exists('CoWoBo')) :
             );
 
 
+        static $instance = false;
+
         /**
          * Creates an instance of the CoWoBo class
          *
@@ -148,12 +150,21 @@ if (!class_exists('CoWoBo')) :
             global $cowobo;
             //static $instance = false;
 
+            if ( self::$instance && ! $cowobo ) $cowobo = self::$instance;
             if (!$cowobo) {
                 load_plugin_textdomain('cowobo', false, basename(COWOBO_PLUGIN_DIR) . '/languages/');
-                $cowobo = new CoWoBo;
+                $cowobo = self::$instance = new CoWoBo;
             }
 
             return $cowobo;
+        }
+
+        public static function &instance() {
+            if ( ! self::$instance ) {
+                self::$instance = new CoWoBo;
+            }
+
+            return self::$instance;
         }
 
         /**
@@ -395,3 +406,7 @@ if (!class_exists('CoWoBo')) :
 
     add_action('plugins_loaded', array('CoWoBo', 'init'));
 endif;
+
+function cowobo() {
+    return CoWoBo::instance();
+}

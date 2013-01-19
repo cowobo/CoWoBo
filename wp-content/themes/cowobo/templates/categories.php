@@ -1,7 +1,7 @@
 <?php
-global $cowobo;
 
-	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
+
+	echo '<div class="feedtitle">'. cowobo()->feed->feed_title() .'</div>';
 	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
 	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
 	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
@@ -29,6 +29,6 @@ global $cowobo;
 	echo '</div>';
 
 	//include navigation links
-	echo '<div class="center">'; $cowobo->feed->pagination(); echo '</div>';
+	echo '<div class="center">'; cowobo()->feed->pagination(); echo '</div>';
 
 ?>

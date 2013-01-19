@@ -24,8 +24,8 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
-        global $cowobo;
-        $cowobo->buddypress = &$this;
+        
+        cowobo()->buddypress = &$this;
 
         $this->filter_querystring();
         $this->content_filters();
@@ -103,8 +103,8 @@ class CoWoBo_BuddyPress
     }
 
     public function cowobo_user_domain( $domain, $user_id ) {
-        global $cowobo;
-        return $cowobo->users->get_user_domain ( $user_id );
+        
+        return cowobo()->users->get_user_domain ( $user_id );
     }
 
     private function filter_querystring() {
@@ -114,8 +114,8 @@ class CoWoBo_BuddyPress
     }
 
     public function ajax_querystring( $query_string, $object ) {
-        global $cowobo;
-        if ( $cowobo->query->scope ) $this->query_filter = $cowobo->query->scope;
+        
+        if ( cowobo()->query->scope ) $this->query_filter = cowobo()->query->scope;
         $qf = &$this->query_filter;
 
         $qs = array();
@@ -128,11 +128,11 @@ class CoWoBo_BuddyPress
 
         switch ( $object ) {
             case 'activity' :
-                if ( $cowobo->users->is_profile() || $cowobo->query->user_id ) {
-                    if ( $cowobo->query->user_id )
-                        $current_profile = get_userdata ( $cowobo->query->user_id );
+                if ( cowobo()->users->is_profile() || cowobo()->query->user_id ) {
+                    if ( cowobo()->query->user_id )
+                        $current_profile = get_userdata ( cowobo()->query->user_id );
                     else
-                        $current_profile = $cowobo->users->displayed_user;
+                        $current_profile = cowobo()->users->displayed_user;
 
                     switch ( $qf ) {
                         case 'mentions' :
@@ -154,23 +154,23 @@ class CoWoBo_BuddyPress
     }
 
     public function cowobo_activity_context() {
-        global $cowobo;
+        
 
 
-        if ( $cowobo->users->is_profile() ) {
-            $target = ( $cowobo->users->is_current_user_profile() ) ? 'user' : 'mentions';
+        if ( cowobo()->users->is_profile() ) {
+            $target = ( cowobo()->users->is_current_user_profile() ) ? 'user' : 'mentions';
             echo "<input type='hidden' name='target' id='cowobo-form-target' value='$target'>";
 
-            if ( ! $cowobo->users->is_current_user_profile() ) {
+            if ( ! cowobo()->users->is_current_user_profile() ) {
                 echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
-                echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$cowobo->users->displayed_user->ID}'>";
-                echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$cowobo->users->displayed_user->user_nicename}'>";
+                echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{cowobo()->users->displayed_user->ID}'>";
+                echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{cowobo()->users->displayed_user->user_nicename}'>";
             }
         }
     }
 
     public function update_filter( $object = '', $item_id = '', $content = '' ) {
-        global $cowobo;
+        
 
         // Sanity check
         if ( empty ( $item_id ) || empty ( $content ) ) return $object;

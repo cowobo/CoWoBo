@@ -1,14 +1,14 @@
 <?php
-global $cowobo, $profile_id, $langnames, $lang;
+global $profile_id, $langnames, $lang;
 
-if( $cowobo->query->q ) :
+if( cowobo()->query->q ) :
 	//if translating without javascript load page in google translate iframe
 	include(TEMPLATEPATH.'/iframe.php');
 else:
 	get_header();
 
 	//VARIABLES
-	$action = $cowobo->query->action;
+	$action = cowobo()->query->action;
 	$feedtitle = $langnames[$lang][2];
 	if(is_home()):
 		$feedtitle = $langnames[$lang][1];
@@ -20,11 +20,11 @@ else:
 		$profiles = get_post_meta($post->ID, 'author', false);
 		$canedit = current_user_can('edit_settings');
 		if(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
-		if( $cowobo->query->post_ID ) $postid = $_POST['post_ID'];
+		if( cowobo()->query->post_ID ) $postid = $_POST['post_ID'];
 		if( $post->ID == $userid || $canedit ) $author = true;
 		else $author = false;
 		if($profiles && $userid && in_array($userid, $profiles))$author = true;
-		$cowobo->posts->update_views($post->ID);
+		cowobo()->posts->update_views($post->ID);
 		$coordinates = get_post_meta($post->ID, 'coordinates', true);
 	endif;
 
@@ -56,7 +56,7 @@ else:
 		$state='';
 	endif;
 
-	if(is_home() && !$cowobo->query->s && !$cowobo->query->new ):
+	if(is_home() && ! cowobo()->query->s && !cowobo()->query->new ):
 		include( TEMPLATEPATH . '/templates/home.php');
 	endif;
 	//include feed (hide if we are translating with javascript)
@@ -72,7 +72,7 @@ else:
 			else:
 				include(TEMPLATEPATH.'/templates/'.$action.'.php');
 			endif;
-		elseif( $cowobo->query->new ): $author = true;
+		elseif( cowobo()->query->new ): $author = true;
 			if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
 				 include(TEMPLATEPATH.'/templates/login.php');
 			else:
@@ -82,16 +82,16 @@ else:
 			include(TEMPLATEPATH.'/templates/404.php');
 		elseif(is_single()):
 			include(TEMPLATEPATH.'/templates/posts.php');
-		elseif(is_category() or $cowobo->query->s): 
+		elseif(is_category() or cowobo()->query->s):
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
 
-        if ( $cowobo->users->is_profile() ) :
+        if ( cowobo()->users->is_profile() ) :
 			include(TEMPLATEPATH.'/templates/useractivities.php');
 		endif;
 
 		//include share forms below feeds
-		//if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');
+		//if( ! $action && ! cowobo()->query->new ) include( TEMPLATEPATH . '/templates/share.php');
 
 		//clear floats in feed
 		echo '<div class="clear"></div>';

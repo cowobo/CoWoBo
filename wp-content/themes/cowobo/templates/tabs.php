@@ -1,5 +1,5 @@
 <?php
-global $cowobo;
+
 
 $prefix = '';
 $sort = ( isset ( $sort ) ) ? $sort : '';
@@ -16,16 +16,16 @@ if($tabtype == 'cat'):
 
     if ( ! isset ( $catposts[0] ) ) return;
 	echo '<div class="tabthumb left">';
-    $cowobo->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
+    cowobo()->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 	echo '</div>';
 
 	echo '<div class="tabtext right">';
 		echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 		if($catposts):
 			foreach($catposts as $catpost):
-				$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'. $cowobo->L10n->the_title($catpost->ID).'</a></li>';
+				$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'. cowobo()->L10n->the_title($catpost->ID).'</a></li>';
 				$comments = '<li>'.get_comments_number($catpost->ID).' Comments</li>';
-				$views = '<li>'.$cowobo->posts->get_views($catpost->ID).' Views</li>';
+				$views = '<li>'.cowobo()->posts->get_views($catpost->ID).' Views</li>';
 				//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 				$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
 				$tabcat = get_the_category($catpost->ID);
@@ -44,14 +44,14 @@ if($tabtype == 'cat'):
 		endif;
 	echo '</div>';
 else:
-	$title = '<a href="'.get_permalink($tabpost->ID).'">'. $cowobo->L10n->the_title($tabpost->ID).'</a>';
+	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).'</a>';
 	$comments = '<li>'.get_comments_number($tabpost->ID).' Comments</li>';
-	$views = '<li>'.$cowobo->posts->get_views($tabpost->ID).' Views</li>';
+	$views = '<li>'.cowobo()->posts->get_views($tabpost->ID).' Views</li>';
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 	$date = '<li>'.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tabcat = get_the_category($tabpost->ID);
     if ( isset ( $tabcat[0] ) ) {
-        $tabtype = $cowobo->feed->get_type($tabcat[0]->term_id);
+        $tabtype = cowobo()->feed->get_type($tabcat[0]->term_id);
         $catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
     } else {
         $tabtype = new stdClass();
@@ -60,7 +60,7 @@ else:
     }
 
 	echo '<div class="tabthumb left">';
-		$cowobo->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
+		cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
 	echo '</div>';
 
 	echo '<div class="tabtext right">';

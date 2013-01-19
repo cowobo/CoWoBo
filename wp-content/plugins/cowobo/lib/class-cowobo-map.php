@@ -100,16 +100,16 @@ function cwb_loadmap() {
 	//setup default map and tile size
 	$data = array('lat'=> '0', 'lng'=>'40', 'zoom'=>3, 'type'=>'sat', 'path' => '', 'type' => 'sat' );
 	$xmid = 500; $ymid = 250;
-	if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
+	if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
 	elseif(is_single()) $postid = $post->ID;
 
 	//get coordinates if specified in url or post
 	$postcoordinates = get_post_meta($postid, 'coordinates', true);
 
-	if($cowobo->query->center) $newcenter = $cowobo->query->center;
+	if(cowobo()->query->center) $newcenter = cowobo()->query->center;
 	else $newcenter = $postcoordinates;
-	if($cowobo->query->keywords):
-		$geocode = cwb_geocode($cowobo->query->keywords);
+	if(cowobo()->query->keywords):
+		$geocode = cwb_geocode(cowobo()->query->keywords);
 		$data['lat'] = $geocode['lat'];
 		$data['lng'] = $geocode['lng'];
 	elseif($newcenter):
@@ -119,16 +119,16 @@ function cwb_loadmap() {
 	endif;
 
 	//get zoomlevel if specified in url or post
-	if($cowobo->query->zoom) $newzoom = $cowobo->query->zoom;
+	if(cowobo()->query->zoom) $newzoom = cowobo()->query->zoom;
 	else $newzoom = get_post_meta($postid, 'zoom', true);
 	if($newzoom) $data['zoom'] = $newzoom;
-	elseif($postcoordinates && $cowobo->query->action != 'editpost' && ! $cowobo->query->new ) $data['zoom'] = 9;
+	elseif($postcoordinates && cowobo()->query->action != 'editpost' && ! cowobo()->query->new ) $data['zoom'] = 9;
 
 	//check if post has path
 	//if($postpath = get_post_meta($postid, 'encpath', true)) $path = '&shapeformat=cmp&shape='.$postpath;
 
 	//get map type if specified and adjust for different tile providers
-	if( $cowobo->query->maptype ) $data['type'] = $cowobo->query->maptype;
+	if( cowobo()->query->maptype ) $data['type'] = cowobo()->query->maptype;
 
 	if($data['zoom']<10): //mapquest
 		$maptype = $data['type'];
@@ -180,7 +180,7 @@ function cwb_loadmap() {
 	else $markerposts = array($post);
 
 	foreach ($markerposts as $markerpost):
-		$linkedids = $cowobo->relations->get_related_ids($markerpost->ID);
+		$linkedids = cowobo()->relations->get_related_ids($markerpost->ID);
 		$count = count($linkedids);
 		//if($count>0): //only show linked locations
 			$countarray[$markerpost->ID] = $count;

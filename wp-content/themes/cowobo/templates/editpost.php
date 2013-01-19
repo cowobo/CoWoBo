@@ -1,6 +1,6 @@
 <?php
-global $cowobo, $post, $currlang;
-$query = &$cowobo->query;
+global $post, $currlang;
+$query = &cowobo()->query;
 
 if ( $query->new ) {
     $postid = ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  ) ? $newpostid : 0;
@@ -15,14 +15,14 @@ if ( $query->new ) {
     $post->post_category = $postcat->term_id;
 
     // Should we insert query data?
-    $unsaved_data = ( $query->save && ! $cowobo->has_notice ( 'saved' ) ) ? true : false;
+    $unsaved_data = ( $query->save && ! cowobo()->has_notice ( 'saved' ) ) ? true : false;
 
 } else {
     if( $query->post_ID ) $postid = $query->post_ID;
     elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
 
-    $postcat = $cowobo->posts->get_category($postid);
-    $unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
+    $postcat = cowobo()->posts->get_category($postid);
+    $unsaved_data = ( cowobo()->has_notice( 'savepost' ) ) ? true : false;
 }
 
 //if user is not author show become editor screen
@@ -31,14 +31,14 @@ if( ! isset ( $author ) || ! $author ):
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
-echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
+echo '<div class="feedtitle">'. cowobo()->feed->feed_title() .'</div>';
 echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
 echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
 echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
 
-	$cowobo->print_notices( array ( 'savepost', 'saved' ) );
-	$unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
-if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
+	cowobo()->print_notices( array ( 'savepost', 'saved' ) );
+	$unsaved_data = ( cowobo()->has_notice( 'savepost' ) ) ? true : false;
+if( ! cowobo()->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '<div class="tab">';
             echo '<b>Please enter all text in ';
             echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
@@ -47,16 +47,16 @@ if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '</div>';
 }
 
-$cowobo->print_notices( 'savepost', 'error' );
-$cowobo->print_notices( 'saved' );
+cowobo()->print_notices( 'savepost', 'error' );
+cowobo()->print_notices( 'saved' );
 
 echo '<form method="post" action="" enctype="multipart/form-data">';
 echo '<input type="hidden" name="postcat" value="' . $postcat->term_id . '">';
 if ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  )
     echo '<input type="hidden" name="postid" value="' . $newpostid . '">';
-if($cowobo->layouts->layout[$postcat->term_id]):
+if(cowobo()->layouts->layout[$postcat->term_id]):
     $index = 0;
-	foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
+	foreach(cowobo()->layouts->layout[$postcat->term_id] as $field): $index++;
 		$slug = $field['type'].$index++;
 		echo '<div class="tab">';
 		echo '<h3>'.$field['label'].':';
@@ -208,11 +208,11 @@ if($cowobo->layouts->layout[$postcat->term_id]):
 		endif;
 		echo '</div>';
 
-        $cowobo->print_notices( $field['type'], 'error' );
+        cowobo()->print_notices( $field['type'], 'error' );
 
 	endforeach;
 
-    $cowobo->print_notices( 'confirmenglish', 'error' );
+    cowobo()->print_notices( 'confirmenglish', 'error' );
 
 	echo '<div class="tab">';
 		$state = ($query->new) ? '' : 'checked="checked"';

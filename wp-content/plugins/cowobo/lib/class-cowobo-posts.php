@@ -14,16 +14,16 @@ class CoWoBo_Posts
      * Delete post and all links associated with it
      */
     public function delete_post() {
-        global $cowobo;
+        
 
-        $deleteid = $cowobo->query->id;
-        $cowobo->relations->delete_relations($deleteid);
+        $deleteid = cowobo()->query->id;
+        cowobo()->relations->delete_relations($deleteid);
         if ( wp_delete_post($deleteid) ) {
-            $cowobo->notifications[] = array (
+            cowobo()->notifications[] = array (
                 "error" => "An error occurred deleting your post."
             );
         } else {
-            $cowobo->notifications[] = array (
+            cowobo()->notifications[] = array (
                 "success" => "Post succesfully deleted."
             );
         }
@@ -37,21 +37,21 @@ class CoWoBo_Posts
         global $post, $cowobo, $profile_id;
 
         //store all data
-        $postid = $cowobo->query->post_ID;
+        $postid = cowobo()->query->post_ID;
 
-        $post_title  = ( $cowobo->query->post_title ) ? trim(strip_tags( $cowobo->query->post_title ) ) : null;
-        $post_content = ( $cowobo->query->post_content ) ? trim( $cowobo->query->post_content ) : null;
-        $tags  = ( $cowobo->query->tags ) ? trim(strip_tags( $cowobo->query->tags ) ) : null;
+        $post_title  = ( cowobo()->query->post_title ) ? trim(strip_tags( cowobo()->query->post_title ) ) : null;
+        $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
+        $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcity = get_post_meta( $postid, 'cityid', true );
         //$oldslug = $post->post_name;
-        $involvement = $cowobo->query->involvement;
+        $involvement = cowobo()->query->involvement;
         $newslug = sanitize_title($post_title);
 
-        $postcat = ( ! $cowobo->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( $cowobo->query->new ) );
+        $postcat = ( ! cowobo()->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( cowobo()->query->new ) );
         $tagarray = array( $postcat->term_id );
 
         if ( ! $postid ) {
-            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
+            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
             add_post_meta( $postid, 'author', $profile_id);
         }
 
@@ -65,7 +65,7 @@ class CoWoBo_Posts
 
         //if the user is not involved don't link it to their profile
         if($involvement == 'none') {
-            $cowobo->relations->delete_relations($postid, $profile_id); //existing posts
+            cowobo()->relations->delete_relations($postid, $profile_id); //existing posts
             $linkedid = false;
         } else {
             $linkedid = $profile_id;
@@ -75,7 +75,7 @@ class CoWoBo_Posts
         if ($post_title == '') $postmsg['title'] = 'You forgot to add one.';
 
         //check if the user entered all text in english
-        if(!$cowobo->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
+        if(!cowobo()->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
 
         /**
          * update all the custom fields
@@ -96,7 +96,7 @@ class CoWoBo_Posts
 
         //if its a new location post geocode its location
         if( $postcat->slug == 'location' ) {
-            if( $countryid = $cowobo->query->country ) {
+            if( $countryid = cowobo()->query->country ) {
                 $tagarray = array( $countryid );
                 if($latlng = cwb_geocode( $post_title.', '.$countryid ) ) {
                     $coordinates = $latlng['lat'].','.$latlng['lng'];
@@ -107,7 +107,7 @@ class CoWoBo_Posts
                     } else {
                         add_post_meta($postid, 'coordinates', $coordinates);
                     }
-                    if( ! empty( $linkedid ) ) $cowobo->relations->create_relations($postid, array($linkedid));
+                    if( ! empty( $linkedid ) ) cowobo()->relations->create_relations($postid, array($linkedid));
                 } else {
                     $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
@@ -117,7 +117,7 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $city = $cowobo->query->city ) {
+        if( $city = cowobo()->query->city ) {
             if($city != $oldcity ) {
                 if($countryid = $_POST['country']) {
                     $countrycat = get_category($countryid);
@@ -132,8 +132,8 @@ class CoWoBo_Posts
                             $cityid = wp_insert_post(array('post_title'=>$city, 'post_category'=>array($countryid), 'post_status'=>'Publish'));
                             add_post_meta($cityid, 'coordinates', $coordinates);
                         endif;
-                        $cowobo->relations->delete_relations($postid, $oldcity);
-                        $cowobo->relations->create_relations($postid, array($cityid));
+                        cowobo()->relations->delete_relations($postid, $oldcity);
+                        cowobo()->relations->create_relations($postid, array($cityid));
                         add_post_meta($postid, 'cityid', $cityid);  //save ID to check city next time
                         update_post_meta($postid, 'coordinates', $coordinates);
                     else:
@@ -169,7 +169,7 @@ class CoWoBo_Posts
             $videocheck = explode("?v=", $_POST['caption'.$x]);
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
-            if($cowobo->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
+            if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
             //if($_POST['delete'.$x] or !empty($file) or !empty($videocheck[1])):
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
@@ -194,13 +194,13 @@ class CoWoBo_Posts
                 do_action( 'cowobo_post_updated', $postid, $post_title );
             }
 
-            if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
-            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
+            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, array($linkedid));
+            cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
-            $cowobo->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
+            cowobo()->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
             foreach ( $postmsg as $key => $msg ) {
-                $cowobo->add_notice ( $msg, $key );
+                cowobo()->add_notice ( $msg, $key );
             }
         }
 
@@ -389,10 +389,10 @@ class CoWoBo_Posts
      */
     public function edit_request(){
         global $post, $cowobo, $profile_id;
-        $rqtype = $cowobo->query->requesttype;
-        $rquser = $cowobo->query->requestuser;
-        $rqpost = $cowobo->query->requestpost;
-        $rqmsg = $cowobo->query->requestmsg;
+        $rqtype = cowobo()->query->requesttype;
+        $rquser = cowobo()->query->requestuser;
+        $rqpost = cowobo()->query->requestpost;
+        $rqmsg = cowobo()->query->requestmsg;
 
         //if request is coming from a post use that data instead
         if(!$rquser) $rquser = $profile_id;
@@ -424,7 +424,7 @@ class CoWoBo_Posts
             $notices = 'editrequest_cancelled';
         endif;
 
-        $cowobo->redirect( "message", $notices );
+        cowobo()->redirect( "message", $notices );
     }
 
     //Get list of all published IDs
@@ -553,7 +553,7 @@ class CoWoBo_Posts
                 }
             }
             if ( ! empty ( $msg ) ) {
-                $cowobo->add_notice( $msg, 'editrequest' );
+                cowobo()->add_notice( $msg, 'editrequest' );
             }
         }
     }

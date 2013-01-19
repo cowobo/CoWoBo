@@ -11,13 +11,13 @@ class CoWoBo_Feed
      * @todo When is this method really called?
      */
     public function filter_feed(){
-        global $cowobo;
+        
 
         //store variables from browse form
-        $cats = $cowobo->query->cats;
-        $sortby = $cowobo->query->sort;
-        $keywords = $cowobo->query->s;
-        $country = $cowobo->query->country;
+        $cats = cowobo()->query->cats;
+        $sortby = cowobo()->query->sort;
+        $keywords = cowobo()->query->s;
+        $country = cowobo()->query->country;
 
         //store cats to filter
         $catstring = '';
@@ -57,8 +57,8 @@ class CoWoBo_Feed
      */
     public function related_feed(){
         global $post, $cowobo;
-        $postids = $cowobo->relations->get_related_ids($post->ID);
-        $catid = get_cat_ID( $cowobo->query->showall );
+        $postids = cowobo()->relations->get_related_ids($post->ID);
+        $catid = get_cat_ID( cowobo()->query->showall );
         query_posts( array( 'cat'=> $catid, 'post__in'=>$postids ) );
     }
 
@@ -68,26 +68,26 @@ class CoWoBo_Feed
     function feed_title(){
         global $currentcat, $post, $cowobo;
 
-        if( $cowobo->query->new )
-            $feedtitle .= 'Add '.$cowobo->query->new;
+        if( cowobo()->query->new )
+            $feedtitle .= 'Add '.cowobo()->query->new;
         elseif( is_404() )
             $feedtitle = 'Yikes we cannot find that content';
-        elseif( $cowobo->query->userpw )
+        elseif( cowobo()->query->userpw )
             $feedtitle = 'Welcome to the club';
-        elseif( $cowobo->query->showall )
-            $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'. $cowobo->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
-        elseif( $cowobo->query->s )
+        elseif( cowobo()->query->showall )
+            $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'. cowobo()->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
+        elseif( cowobo()->query->s )
 			$feedtitle = 'Search Results';
-		elseif( $cowobo->query->action == 'login')
+		elseif( cowobo()->query->action == 'login')
             $feedtitle = 'Who are you?';
-        elseif( $cowobo->query->action == 'contact')
+        elseif( cowobo()->query->action == 'contact')
             $feedtitle = 'Contact';
-        elseif( $cowobo->query->action == 'translate')
+        elseif( cowobo()->query->action == 'translate')
             $feedtitle = 'Change Language';
-        elseif( $cowobo->query->action == 'editpost')
+        elseif( cowobo()->query->action == 'editpost')
             $feedtitle = 'Edit Post';
         elseif( is_single() )
-            $feedtitle = $cowobo->L10n->the_title($post->ID);
+            $feedtitle = cowobo()->L10n->the_title($post->ID);
         elseif( is_category() )
             $feedtitle = $currentcat->name;
         else

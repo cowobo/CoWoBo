@@ -1,11 +1,11 @@
 <?php
-global $cowobo;
+
 if (have_posts()) : while (have_posts()) : the_post();
 	$postid = get_the_ID();
-	$postcat = $cowobo->posts->get_category($postid);
+	$postcat = cowobo()->posts->get_category($postid);
 
 	//include post title and data
-	echo '<div class="feedtitle">'.$cowobo->feed->feed_title();
+	echo '<div class="feedtitle">'.cowobo()->feed->feed_title();
 		echo '<a class="feededit" href="?action=editpost">';
         echo ( $author ) ? '+edit' : "+contribute?";
         echo '</a>';
@@ -18,13 +18,13 @@ if (have_posts()) : while (have_posts()) : the_post();
 	include(TEMPLATEPATH.'/templates/search.php');
 
 	//include gallery if post has images
-	echo $cowobo->posts->loadgallery($post->ID);
+	echo cowobo()->posts->loadgallery($post->ID);
 
-    if ( isset ( $cowobo->layouts->layout[$postcat->term_id] ) ) {
+    if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
 
         $index = 0;
         echo '<div class="tab">';
-        foreach($cowobo->layouts->layout[$postcat->term_id] as $field): $index++;
+        foreach(cowobo()->layouts->layout[$postcat->term_id] as $field): $index++;
             $slug = $field['type'].$index;
             if($field['type'] == 'tags'):
                 echo '<span class="field"><h3>'.$field['label'].':</h3>';
@@ -112,15 +112,15 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
-			echo apply_filters('the_content',  $cowobo->L10n->the_content(get_the_ID()));
+			echo apply_filters('the_content',  cowobo()->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
 		echo '</div>';
 	endif;
 
 	//sort linked posts by type
-	if($linkedids = $cowobo->relations->get_related_ids($postid)):
+	if($linkedids = cowobo()->relations->get_related_ids($postid)):
 		foreach($linkedids as $linkedid):
-			$typecat = $cowobo->posts->get_category($linkedid);
+			$typecat = cowobo()->posts->get_category($linkedid);
 			$excludecats = array(get_cat_ID('Uncategorized'));
 			if($postcat->slug == 'coder' or $postcat->slug == 'location') $excludecats[] = $postcat->term_id;
 			if($typecat && !in_array($typecat->term_id, $excludecats)):
@@ -154,7 +154,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				echo '<option>Or link to your other posts:</option>';
 				echo '<option></option>';
 				foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&numberposts=-1') as $userpost):
-					echo '<option value="'.$userpost->ID.'">' . $cowobo->L10n->the_title($userpost->ID).'</option>';
+					echo '<option value="'.$userpost->ID.'">' . cowobo()->L10n->the_title($userpost->ID).'</option>';
 				endforeach;
 				echo '</select>';
                 wp_nonce_field( 'linkposts' );

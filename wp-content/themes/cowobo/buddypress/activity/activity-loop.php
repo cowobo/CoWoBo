@@ -1,5 +1,5 @@
-<?php global $cowobo;
-$query_filter = $cowobo->buddypress->query_filter; ?>
+<?php 
+$query_filter = cowobo()->buddypress->query_filter; ?>
 
 <?php do_action( 'bp_before_activity_loop' ); ?>
 
@@ -29,8 +29,8 @@ $query_filter = $cowobo->buddypress->query_filter; ?>
 
 		<li class="load-more">
             <input type="hidden" id="cowobo-activity-page" value="<?php echo ( isset ( $_POST['page'] ) ) ? $_POST['page'] + 1 : 2 ?>">
-            <input type="hidden" id="cowobo-activity-scope" value="<?php echo ( $cowobo->query->scope ) ? $cowobo->query->scope : $query_filter ?>">
-            <input type="hidden" id="cowobo-activity-user-id" value="<?php echo ( $cowobo->query->user_id ) ? $cowobo->query->user_id : $cowobo->users->displayed_user->ID ?>">
+            <input type="hidden" id="cowobo-activity-scope" value="<?php echo ( cowobo()->query->scope ) ? cowobo()->query->scope : $query_filter ?>">
+            <input type="hidden" id="cowobo-activity-user-id" value="<?php echo ( cowobo()->query->user_id ) ? cowobo()->query->user_id : cowobo()->users->displayed_user->ID ?>">
 
 			<a href="#more"><?php _e( 'Load More', 'buddypress' ); ?></a>
 		</li>
