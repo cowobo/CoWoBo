@@ -3,6 +3,9 @@
 if (!defined('ABSPATH'))
     exit;
 
+/**
+ * @todo make sure user nicename is more appropriate
+ */
 class CoWoBo_BuddyPress
 {
 
@@ -28,10 +31,15 @@ class CoWoBo_BuddyPress
     }
 
     private function content_filters() {
-        add_filter ( 'bp_core_get_user_domain', array ( &$this, 'cowobo_user_domain' ), 12, 2 );
+        add_filter ( 'bp_core_get_user_domain', array ( &$this, 'cowobo_user_domain' ), 10, 2 );
 
         // Add context to BP Activity form
         add_action ( 'bp_activity_post_form_options', array ( &$this, 'cowobo_activity_context' ) );
+        // Make sure activities posted on a user's profile actually end up there
+        add_filter ( 'bp_activity_custom_update', array ( &$this, 'update_filter' ), 10, 3 );
+
+        // Disable favorites
+        add_filter ( 'bp_activity_can_favorite' ,'__return_false' );
     }
 
     public function cowobo_user_domain( $domain, $user_id ) {
@@ -76,7 +84,46 @@ class CoWoBo_BuddyPress
     public function cowobo_activity_context() {
         global $cowobo;
         if ( $cowobo->users->is_profile() )
-            echo "<input type='hidden' name='user_id' value='{$cowobo->users->displayed_user->ID}'>";
+            //echo "<input type='hidden' name='context' value='user_id'>";
+            echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
+            echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$cowobo->users->displayed_user->ID}'>";
+            echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$cowobo->users->displayed_user->user_nicename}'>";
+    }
+
+    public function update_filter( $object = '', $item_id = '', $content = '' ) {
+        global $cowobo;
+
+        // Sanity check
+        if ( empty ( $item_id ) || empty ( $content ) ) return $object;
+
+        if ( $object != "user_profile" ) return $object;
+
+        $user = get_userdata( $item_id );
+        $nicename = $user->user_nicename;
+        // Are we already mentioning?
+        if ( strpos ( $content, "@$nicename" ) )
+            $post = $content;
+
+        // Name mentioned, no mention yet
+        elseif ( strpos ( $content, $nicename ) )
+            $post = $this->str_replace_once ( $nicename, "@$nicename", $content );
+
+        // Bad user!
+        else
+            $post = "@$nicename: $content";
+
+        return bp_activity_post_update( array( 'content' => $post ) );
+    }
+
+    function str_replace_once($search, $replace, $subject) {
+        $firstChar = strpos($subject, $search);
+        if($firstChar !== false) {
+            $beforeStr = substr($subject,0,$firstChar);
+            $afterStr = substr($subject, $firstChar + strlen($search));
+            return $beforeStr.$replace.$afterStr;
+        } else {
+            return $subject;
+        }
     }
 
 }
