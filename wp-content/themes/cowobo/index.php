@@ -57,7 +57,7 @@ else:
 		$state='';
 	endif;
 
-	if(is_home() && !$cowobo->query->s && $cowobo->query->new ):
+	if(is_home() && !$cowobo->query->s && !$cowobo->query->new ):
 		include( TEMPLATEPATH . '/templates/home.php');
 	endif;
 	//include feed (hide if we are translating with javascript)
