@@ -74,11 +74,11 @@ form {margin:0 auto;}
 
 /* Page Styles*/
 .feed {position:relative; width:640px; margin:0 auto 130px auto; z-index:20;}
-.feedtitle {font-size:34px; color:#fff; font-weight:bold; height:24px; margin: 70px 70px 0 0; overflow:hidden;}
+.feedtitle {font-size:34px; color:#fff; font-weight:bold; height:24px; cursor:pointer; margin: 70px 70px 0 0; overflow:hidden;}
 .feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
-.introtitle {position:relative; margin:50px auto 0 auto; font-family: 'Passion One', cursive; color:#fff; font-size:60px; z-index:20; text-align:center; width:500px; line-height:1em;}
-.introtitle:hover, .learnmore:hover {color:#eee;}
-.introimg {margin-top:20px;}
+.introtitle {position:relative; margin:70px auto 60px auto; font-family: 'Passion One', cursive; color:#fff; font-size:50px; z-index:20; text-align:center; width:500px; line-height:1em;}
+.introtitle:hover, .introtitle a:hover {color:#eee;}
+.introtitle a{color:#fff; font-size:40px;}
 .learnmore {position:absolute; top:5px; left:0; width:100%; text-align:center; color:#fff; font-size:24px;}
 .sitetitle {font-size:22px!important;}
 .feedlinks {position:relative; padding:5px 2px 0 15px; z-index: 20; font-size:17px; margin-bottom:30px;}
