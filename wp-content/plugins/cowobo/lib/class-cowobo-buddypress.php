@@ -43,7 +43,7 @@ class CoWoBo_BuddyPress
 		$actions = array(
 
 			// Activity
-			'activity_get_older_updates'  => 'cowobo_activity_template_loader',
+			'activity_get_older_updates'  => 'bp_legacy_theme_activity_template_loader',
 //			'activity_mark_fav'           => 'bp_legacy_theme_mark_activity_favorite',
 //			'activity_mark_unfav'         => 'bp_legacy_theme_unmark_activity_favorite',
 			'activity_widget_filter'      => 'bp_legacy_theme_activity_template_loader',
