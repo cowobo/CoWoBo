@@ -31,12 +31,13 @@ if( ! isset ( $author ) || ! $author ):
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
-
 echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
 echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
 echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
 echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
 
+	$cowobo->print_notices( array ( 'savepost', 'saved' ) );
+	$unsaved_data = ( $cowobo->has_notice( 'savepost' ) ) ? true : false;
 if( ! $cowobo->has_notice( array ( 'savepost', 'saved' ) ) ) {
     echo '<div class="tab">';
             echo '<b>Please enter all text in ';

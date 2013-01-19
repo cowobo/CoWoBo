@@ -35,11 +35,10 @@ else:
 	echo '<div class="feedlinks">';
 		echo '<a class="sitetitle" href="'.home_url().'">Coders Without Borders</a>';
 		echo '<a href="/?action=contact">Contact</a>';
-		echo '<a href="/?action=search'.'">Search</a>';
 		if(is_user_logged_in()):
-			echo '<a href="'.get_permalink($profile_id).'">Profile</a>';
+			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
 		else:
-			echo '<a href="/?action=login'.'">Profile</a>';
+			echo '<a href="?action=login'.'">Profile</a>';
 		endif;
 		echo '<a class="showmap" href="?action=showmap'.'">Show Map ▼</a>';
 		echo '<span class="maploading hide"></span>';
@@ -57,7 +56,7 @@ else:
 		$state='';
 	endif;
 
-	if(is_home() && ! $cowobo->query->sort && ! $cowobo->query->new && ! $cowobo->query->action ):
+	if(is_home() && !$cowobo->query->s && !$cowobo->query->new ):
 		include( TEMPLATEPATH . '/templates/home.php');
 	endif;
 	//include feed (hide if we are translating with javascript)
@@ -83,13 +82,13 @@ else:
 			include(TEMPLATEPATH.'/templates/404.php');
 		elseif(is_single()):
 			include(TEMPLATEPATH.'/templates/posts.php');
-		elseif(is_category() or $cowobo->query->sort):
+		elseif(is_category() or $cowobo->query->s): 
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
 
         if ( $cowobo->users->is_profile() ) :
 			include(TEMPLATEPATH.'/templates/useractivities.php');
-        endif;
+		endif;
 
 		//include share forms below feeds
 		//if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');

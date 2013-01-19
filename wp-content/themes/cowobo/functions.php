@@ -35,3 +35,19 @@ add_filter('show_admin_bar', 'cowobo_show_admin_bar');
 function cowobo_show_admin_bar(){
     return false;
 }
+
+//check if a website is down
+function check_website_status($url){
+	$resURL = curl_init(); 
+	curl_setopt($resURL, CURLOPT_URL, $url); 
+	curl_setopt($resURL, CURLOPT_BINARYTRANSFER, 1); 
+	curl_setopt($resURL, CURLOPT_HEADERFUNCTION, 'curlHeaderCallback'); 
+	curl_setopt($resURL, CURLOPT_FAILONERROR, 1); 
+	curl_exec ($resURL); 
+	$intReturnCode = curl_getinfo($resURL, CURLINFO_HTTP_CODE); 
+	curl_close ($resURL); 
+	if ($intReturnCode != 200 && $intReturnCode != 302 && $intReturnCode != 304) { 
+	    return false;
+	}
+	else return true;
+}

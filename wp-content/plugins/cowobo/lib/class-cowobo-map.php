@@ -139,12 +139,12 @@ function cwb_loadmap() {
 
 	//update global mapdata
 	$mapdata = $data;
-
-	if(is_home() or is_category()):
+	$mapquest = 'http://platform.beta.mapquest.com/staticmap';
+	if(is_home() or is_category() or !check_website_status($mapquest)):
 		$bufferurl =  get_bloginfo('template_url').'/images/buffer.jpg';
 		$tileurl =  get_bloginfo('template_url').'/images/tile.jpg';
 	else:
-		$mappath = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='.$maptype.'&scalebar=false&size=1000,500';
+		$mappath = $mapquest.'/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type='.$maptype.'&scalebar=false&size=1000,500';
 		$bufferurl =  $mappath.'&zoom='.($data['zoom']-1).'&center='.$data['lat'].','.$data['lng'];
 		$tileurl =  $mappath.'&zoom='.$data['zoom'].'&center='.$data['lat'].','.$data['lng']; //.$path;
 	endif;
