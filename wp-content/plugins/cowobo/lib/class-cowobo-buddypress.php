@@ -44,17 +44,22 @@ class CoWoBo_BuddyPress
 
     public function ajax_querystring( $query_string, $object ) {
         global $cowobo;
+        $qf = &$this->query_filter;
 
         $qs = array();
         switch ( $object ) {
             case 'activity' :
                 if ( $cowobo->users->is_profile() ) {
                     $current_profile = $cowobo->users->displayed_user;
-                    if ( $this->query_filter == 'mentions' ) {
-                        $qs[] = 'search_terms=@' . $current_profile->user_nicename . '<';
-                        $qs[] = "user_id=0";
-                    } else
-                    $qs[] = "user_id={$current_profile->ID}";
+                    switch ( $qf ) {
+                        case 'mentions' :
+                            $qs[] = "search_terms=@{$current_profile->user_nicename}<";
+                            $qs[] = "user_id=0";
+                            break;
+                        case 'user' :
+                            $qs[] = "user_id={$current_profile->ID}";
+
+                    }
                 }
                 break;
         }
