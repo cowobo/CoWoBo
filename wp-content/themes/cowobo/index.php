@@ -34,12 +34,12 @@ else:
 	//include site-wide links
 	echo '<div class="feedlinks">';
 		echo '<a class="sitetitle" href="'.home_url().'">Coders Without Borders</a>';
-		echo '<a href="?action=contact">Contact</a>';
-		echo '<a href="?action=search'.'">Search</a>';
+		echo '<a href="/?action=contact">Contact</a>';
+		echo '<a href="/?action=search'.'">Search</a>';
 		if(is_user_logged_in()):
 			echo '<a href="'.get_permalink($profile_id).'">Profile</a>';
 		else:
-			echo '<a href="?action=login'.'">Profile</a>';
+			echo '<a href="/?action=login'.'">Profile</a>';
 		endif;
 		echo '<a class="showmap" href="?action=showmap'.'">Show Map ▼</a>';
 		echo '<span class="maploading hide"></span>';
