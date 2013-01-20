@@ -186,8 +186,16 @@ class CoWoBo_BuddyPress
         add_filter ( 'bp_activity_multiple_at_mentions_notification', array ( &$this, 'at_mention_notification_replace_link' ), 10, 2 );
         add_filter ( 'bp_activity_single_at_mentions_notification', array ( &$this, 'at_mention_notification_replace_link' ), 10, 2 );
 
+        // Angel mysterman
+        add_filter( 'bp_core_mysteryman_src', array ( &$this , 'angel_default_avatar' ) );
+
 
     }
+
+    function angel_default_avatar( $url ) {
+        return COWOBO_BP_TEMPLATEURL .'anon-angel.png';
+    }
+
 
     public function at_mention_notification_replace_link( $notification, $link ) {
         $newlink = cowobo()->users->get_current_user_profile_link() . "#mentions";
