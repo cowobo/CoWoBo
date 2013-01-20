@@ -86,10 +86,8 @@ else:
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
 
-        if ( cowobo()->users->is_profile() ) :
-			include(TEMPLATEPATH.'/templates/useractivities.php');
-		endif;
-
+        do_action ( 'cowobo_after_content' );
+        
 		//include share forms below feeds
 		//if( ! $action && ! cowobo()->query->new ) include( TEMPLATEPATH . '/templates/share.php');
 

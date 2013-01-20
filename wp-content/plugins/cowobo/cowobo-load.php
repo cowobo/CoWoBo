@@ -41,7 +41,6 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-related.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-l10n.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
-require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-buddypress.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'notices.php' );
 
 if (!class_exists('CoWoBo')) :

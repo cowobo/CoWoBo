@@ -1,9 +1,41 @@
 <?php
+/*
+  Plugin Name: CoWoBo BuddyPress loader
+  Plugin URI: http://cowobo.org
+  Description: CoWoBo BuddyPress plugin to one-click enable or disable all BP integration
+  Version: 0.1
+  Author: Coding Angels
+  Author URI: http://cowobo.org
+ */
+
 // Exit if accessed directly
 if (!defined('ABSPATH'))
     exit;
 
-require_once ( COWOBO_PLUGIN_LIB . 'buddypress-ajax.php' );
+/**
+ * Version number
+ *
+ * @since 0.1
+ */
+define('COWOBO_BP_VERSION', '0.1');
+
+
+/**
+ * PATHs and URLs
+ *
+ * @since 0.1
+ */
+define('COWOBO_BP_DIR', plugin_dir_path(__FILE__));
+define('COWOBO_BP_URL', plugin_dir_url(__FILE__));
+define('COWOBO_BP_LIB', COWOBO_BP_DIR . 'lib/' );
+define('COWOBO_BP_TEMPLATEPATH', COWOBO_BP_DIR . 'templates/' );
+define('COWOBO_BP_TEMPLATEURL', COWOBO_BP_URL . 'templates/' );
+
+/**
+ * Requires and includes
+ */
+require_once ( COWOBO_BP_LIB . 'buddypress-ajax.php' );
+require_once ( COWOBO_BP_LIB . 'class-cowobo-bp-templates.php' );
 
 /**
  * @todo make sure user nicename is more appropriate
@@ -12,6 +44,8 @@ class CoWoBo_BuddyPress
 {
 
     public $query_filter;
+    public $templates;
+    private $admin_notice = '';
 
     public static function &init() {
         static $instance = false;
@@ -24,24 +58,48 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
+        if ( ! defined ( 'COWOBO_PLUGIN_VERSION' ) ){
+            $this->admin_notice = "CoWoBo Plugin not active. To use BP integration, CoWoBo must be active.";
+            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+            return;
+        } elseif ( ! bp_is_active( 'activity' ) ) {
+            $this->admin_notice = "Please make sure the activity component in BP is activated.";
+            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+            return;
+        }
 
         cowobo()->buddypress = &$this;
+        $this->templates = new CoWoBo_BuddyPress_Templates;
 
         $this->filter_querystring();
         $this->content_filters();
 
 		add_action( 'bp_enqueue_scripts', array( $this, 'enqueue_scripts'  ) ); // Enqueue theme JS
         add_action ( 'wp_head', array ( &$this, 'do_notifications' ) );
+        add_action ( 'wp_head', array ( &$this, 'templates_filters' ) );
+
+        add_filter ( 'bp_get_template_stack', array ( &$this, 'add_cowobo_to_template_stack' ), 99 );
 
         $this->add_ajax();
 
+    }
+
+    public function add_cowobo_to_template_stack ( $stack ) {
+        array_unshift ( $stack, COWOBO_BP_TEMPLATEPATH );
+        return $stack;
+    }
+
+    public function admin_notice() {
+        echo "<div class='error'>
+            <p>{$this->admin_notice}</p>
+         </div>";
     }
 
     public function do_notifications() {
         if ( cowobo()->users->is_current_user_profile() )
             // Remove at_mention notifications
             bp_activity_remove_screen_notifications();
-        
+
         $this->add_notifications();
     }
 
@@ -54,6 +112,11 @@ class CoWoBo_BuddyPress
             cowobo()->add_notice( $notification, 'message' );
         }
 
+    }
+
+    public function templates_filters() {
+        if ( cowobo()->users->is_profile() )
+            add_action ( 'cowobo_after_content', array ( &$this->templates, 'profile_activities' ) );
     }
 
     private function add_ajax() {
@@ -101,8 +164,8 @@ class CoWoBo_BuddyPress
 	}
 
     public function enqueue_scripts() {
-        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/templates/buddypress/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
-        wp_enqueue_style( 'cowobo-buddypress', get_template_directory_uri() . '/templates/buddypress/bp.css', null, COWOBO_PLUGIN_VERSION );
+        wp_enqueue_script( 'cowobo-buddypress', COWOBO_BP_TEMPLATEURL . 'bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
+        wp_enqueue_style( 'cowobo-buddypress', COWOBO_BP_TEMPLATEURL . 'bp.css', null, COWOBO_PLUGIN_VERSION );
     }
 
     private function content_filters() {
