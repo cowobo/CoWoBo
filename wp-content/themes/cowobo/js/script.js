@@ -68,8 +68,7 @@ jQuery(document).ready(function() {
 	} else {
 		jQuery('.feeds').fadeIn();
 	}
-
-
+	
 });
 
 /// TAB FUNCTIONS ///
@@ -275,74 +274,58 @@ jQuery('.planet a').live('click', function(e){
 
 //TEXT EDITOR FUNCTIONS
 
-//wrap text with bold tags
-jQuery('.makebold').live('click', function(){
-	var textarea = jQuery(this).parent().siblings('textarea');
-	var selected= getInputSelection(textarea[0]);
-	var selectlength = selected.end - selected.start;
-	if(selectlength > 0) wrapText(textarea, '<b>', '</b>');
-	else alert('Select the text you wish to highlight');
+jQuery('#formsubmit').live('click', function(e){
+	jQuery('.htmlbox').val(jQuery('#rte').html());
 });
 
-//wrap text with link tags
-jQuery('.makelink').live('click', function(){
-	var textarea = jQuery(this).parent().siblings('textarea');
-	var selected= getInputSelection(textarea[0]);
-	var selectlength = selected.end - selected.start;
-	if(selectlength > 0) {
+jQuery('.htmlmode').live('click', function(e){
+	e.preventDefault();
+	jQuery('.htmlbox').val(jQuery('#rte').html());
+	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();
+});
+
+jQuery('.richmode').live('click', function(e){
+	e.preventDefault();
+ 	jQuery('#rte').html(jQuery(".htmlbox").val());
+	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();	
+});
+
+jQuery('.makebold').live('click', function(e){
+	document.execCommand('bold', false, null);
+	jQuery('#rte').focus();return false;
+});
+
+jQuery('.makeitalic').live('click', function(e){
+ 	document.execCommand('italic', false, null);
+	jQuery('#rte').focus();return false;
+});
+
+jQuery('.makeunderline').live('click', function(e){
+	document.execCommand('underline', false, null);
+	jQuery('#rte').focus();return false;
+});
+
+jQuery('.makelink').live('click', function(e){
+	e.preventDefault();
+	var selection = getInputSelection();
+	var selectval = String(selection);
+	if(selectval.length > 0) {
 		var value = prompt("Enter a url:", "");
-    	if (value != null) wrapText(textarea, '<a  href="'+value+'">', '</a>');
+    	if (value != null) document.execCommand("CreateLink", false, value);
     } else {
 		alert('Select the text you wish to turn into a link');
 	}
 });
 
-//wrap text in textarea with specified tag
-function wrapText(textarea, openTag, closeTag) {
-    var len = textarea.val().length;
-	var selected = getInputSelection(textarea[0]);
-    var start = selected.start;
-    var end = selected.end;
-    var selectedText = textarea.val().substring(start, end);
-    var replacement = openTag + selectedText + closeTag;
-    textarea.val(textarea.val().substring(0, start) + replacement + textarea.val().substring(end, len));
-}
-
-//crossbrowser get selection for textareas
-function getInputSelection(el) {
-    var start = 0, end = 0, normalizedValue, range,
-        textInputRange, len, endRange;
-
-    if (typeof el.selectionStart == "number" && typeof el.selectionEnd == "number") {
-        start = el.selectionStart;
-        end = el.selectionEnd;
-    } else {
-        range = document.selection.createRange();
-
-        if (range && range.parentElement() == el) {
-            len = el.value.length;
-            normalizedValue = el.value.replace(/\r\n/g, "\n");
-
-            // Create a working TextRange that lives only in the input
-            textInputRange = el.createTextRange();
-            textInputRange.moveToBookmark(range.getBookmark());
-            endRange = el.createTextRange();
-            endRange.collapse(false);
-
-            if (textInputRange.compareEndPoints("StartToEnd", endRange) > -1) {
-                start = end = len;
-            } else {
-                start = -textInputRange.moveStart("character", -len);
-                start += normalizedValue.slice(0, start).split("\n").length - 1;
-
-                if (textInputRange.compareEndPoints("EndToEnd", endRange) > -1) {
-                    end = len;
-                } else {
-                    end = -textInputRange.moveEnd("character", -len);
-                    end += normalizedValue.slice(0, end).split("\n").length - 1;
-                }
-            }
+//cross browser check for selection
+function getInputSelection() {
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            return sel.getRangeAt(0);
         }
+    } else if (document.selection && document.selection.createRange) {
+        return document.selection.createRange();
     }
-    return { start: start, end: end };
+    return null;
 }
