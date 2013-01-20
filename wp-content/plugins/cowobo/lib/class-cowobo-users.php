@@ -123,6 +123,10 @@ class CoWoBo_Users
         return $this->current_user_profile_id;
     }
 
+        public function get_current_user_profile_link() {
+            return get_permalink( get_current_user_profile_id() );
+        }
+
         public function get_user_profile_id ( $user_id = 0 ) {
             if ( ! $user_id ) $user_id = wp_get_current_user()->ID;
             elseif ( is_a ( $user_id, 'WP_User' ) )
