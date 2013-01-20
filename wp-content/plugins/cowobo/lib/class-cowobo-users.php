@@ -124,7 +124,7 @@ class CoWoBo_Users
     }
 
         public function get_current_user_profile_link() {
-            return get_permalink( get_current_user_profile_id() );
+            return get_permalink( $this->get_current_user_profile_id() );
         }
 
         public function get_user_profile_id ( $user_id = 0 ) {

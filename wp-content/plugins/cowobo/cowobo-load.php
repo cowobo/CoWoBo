@@ -202,7 +202,8 @@ if (!class_exists('CoWoBo')) :
         }
 
         private function actions_and_filters() {
-            add_action('init', array ( &$this, 'setup' ) );
+            // 9, so it runs before bp_init
+            add_action('init', array ( &$this, 'setup' ), 9 );
             add_action('template_redirect', array ( &$this, 'controller' ) );
 
         }
@@ -404,7 +405,7 @@ if (!class_exists('CoWoBo')) :
 
     }
 
-    add_action('plugins_loaded', array('CoWoBo', 'init'));
+    add_action('plugins_loaded', array('CoWoBo', 'init') );
 endif;
 
 function cowobo() {

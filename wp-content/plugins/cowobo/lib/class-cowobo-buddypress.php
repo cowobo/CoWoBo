@@ -24,16 +24,35 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
-        
+
         cowobo()->buddypress = &$this;
 
         $this->filter_querystring();
         $this->content_filters();
 
 		add_action( 'bp_enqueue_scripts', array( $this, 'enqueue_scripts'  ) ); // Enqueue theme JS
-		add_action( 'bp_head',            array( $this, 'head_scripts'     ) ); // Output some extra JS in the <head>
+        add_action ( 'wp_head', array ( &$this, 'do_notifications' ) );
 
         $this->add_ajax();
+
+    }
+
+    public function do_notifications() {
+        if ( cowobo()->users->is_current_user_profile() )
+            // Remove at_mention notifications
+            bp_activity_remove_screen_notifications();
+        
+        $this->add_notifications();
+    }
+
+
+    private function add_notifications() {
+        if ( ! $notifications = bp_core_get_notifications_for_user( bp_loggedin_user_id() ) )
+            return;
+
+        foreach ( $notifications as $notification ) {
+            cowobo()->add_notice( $notification, 'message' );
+        }
 
     }
 
@@ -82,8 +101,8 @@ class CoWoBo_BuddyPress
 	}
 
     public function enqueue_scripts() {
-        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/buddypress/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
-        wp_enqueue_style( 'cowobo-buddypress', get_template_directory_uri() . '/buddypress/bp.css', null, COWOBO_PLUGIN_VERSION );
+        wp_enqueue_script( 'cowobo-buddypress', get_template_directory_uri() . '/templates/buddypress/bp.js', array ( 'jquery' ), COWOBO_PLUGIN_VERSION, true );
+        wp_enqueue_style( 'cowobo-buddypress', get_template_directory_uri() . '/templates/buddypress/bp.css', null, COWOBO_PLUGIN_VERSION );
     }
 
     private function content_filters() {
@@ -100,10 +119,20 @@ class CoWoBo_BuddyPress
         // Add updated post activity
         add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
 
+        // Make sure mentions have the right link
+        add_filter ( 'bp_activity_multiple_at_mentions_notification', array ( &$this, 'at_mention_notification_replace_link' ), 10, 2 );
+        add_filter ( 'bp_activity_single_at_mentions_notification', array ( &$this, 'at_mention_notification_replace_link' ), 10, 2 );
+
+
+    }
+
+    public function at_mention_notification_replace_link( $notification, $link ) {
+        $newlink = cowobo()->users->get_current_user_profile_link() . "#mentions";
+        return str_replace( $link, $newlink,  $notification );
     }
 
     public function cowobo_user_domain( $domain, $user_id ) {
-        
+
         return cowobo()->users->get_user_domain ( $user_id );
     }
 
@@ -114,7 +143,7 @@ class CoWoBo_BuddyPress
     }
 
     public function ajax_querystring( $query_string, $object ) {
-        
+
         if ( cowobo()->query->scope ) $this->query_filter = cowobo()->query->scope;
         $qf = &$this->query_filter;
 
@@ -154,8 +183,7 @@ class CoWoBo_BuddyPress
     }
 
     public function cowobo_activity_context() {
-        
-
+        $displayed_user = cowobo()->users->displayed_user;
 
         if ( cowobo()->users->is_profile() ) {
             $target = ( cowobo()->users->is_current_user_profile() ) ? 'user' : 'mentions';
@@ -163,14 +191,14 @@ class CoWoBo_BuddyPress
 
             if ( ! cowobo()->users->is_current_user_profile() ) {
                 echo "<input type='hidden' name='object' id='whats-new-post-object' value='user_profile'>";
-                echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{cowobo()->users->displayed_user->ID}'>";
-                echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{cowobo()->users->displayed_user->user_nicename}'>";
+                echo "<input type='hidden' name='item_id' id='whats-new-post-in' value='{$displayed_user->ID}'>";
+                echo "<input type='hidden' name='user_nicename' id='whats-new-post-in' value='{$displayed_user->user_nicename}'>";
             }
         }
     }
 
     public function update_filter( $object = '', $item_id = '', $content = '' ) {
-        
+
 
         // Sanity check
         if ( empty ( $item_id ) || empty ( $content ) ) return $object;
