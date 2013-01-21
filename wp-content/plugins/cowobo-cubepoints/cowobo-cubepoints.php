@@ -36,6 +36,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
      * @todo Give points to user / author(s) of post
      * @todo Points progression
      * @todo Add specific CoWoBo point actions
+     * @todo Notifications
      */
     class CoWoBo_CubePoints    {
 
@@ -63,8 +64,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
          */
         public function __construct() {
             if ( !defined ( 'CP_VER' ) ) {
-                cowobo()->admin_notice = "CubePoints plugin not active. To use CoWoBo CubePoints integration, enable CubePoints (as would seem quite logical to do..)";
-                add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
+                cowobo()->do_admin_notice( "CubePoints plugin not active. To use CoWoBo CubePoints integration, enable CubePoints (as would seem quite logical to do..)" );
                 return;
             }
 
