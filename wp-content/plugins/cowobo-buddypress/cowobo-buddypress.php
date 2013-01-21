@@ -37,6 +37,9 @@ define('COWOBO_BP_TEMPLATEURL', COWOBO_BP_URL . 'templates/' );
 require_once ( COWOBO_BP_LIB . 'buddypress-ajax.php' );
 require_once ( COWOBO_BP_LIB . 'class-cowobo-bp-templates.php' );
 
+// Make sure we don't have to load BP functions
+remove_action( 'bp_after_setup_theme', 'bp_load_theme_functions', 1 );
+
 /**
  * @todo make sure user nicename is more appropriate
  */
