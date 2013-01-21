@@ -58,11 +58,7 @@ class CoWoBo_BuddyPress
     }
 
     public function __construct() {
-        if ( ! defined ( 'COWOBO_PLUGIN_VERSION' ) ){
-            cowobo()->admin_notice = "CoWoBo Plugin not active. To use BP integration, CoWoBo must be active.";
-            add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
-            return;
-        } elseif ( ! bp_is_active( 'activity' ) ) {
+        if ( ! bp_is_active( 'activity' ) ) {
             cowobo()->admin_notice = "Please make sure the activity component in BP is activated.";
             add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
             return;
