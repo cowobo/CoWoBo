@@ -86,14 +86,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
             if ( is_user_logged_in() ) {
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
-                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 10, 3 );
 
-                add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 15, 3 );
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
+
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
 
-            add_action('cp_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
 
         }
 
@@ -303,29 +304,32 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
-            if ( ! substr ( $type, 0, 7 ) == 'cowobo_' ) return;
-            $type = substr ( $type, 7 );
+            if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
+                $type = substr ( $type, 7 );
 
-            $data_arr = array();
-            parse_str ( $data, $data_arr );
-            if ( empty ( $data_arr ) ) {
-                echo "Corrupted data";
-                return;
+                $data_arr = array();
+                parse_str ( $data, $data_arr );
+                if ( empty ( $data_arr ) ) {
+                    echo "Corrupted data";
+                    return;
+                }
+
+                if ( ! isset ( $data_arr['userid'] ) ) return false;
+                $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+
+                switch ( $type ) {
+                    case 'kudos_profile' :
+                        echo '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> gave props and respect';
+                        break;
+                    case 'kudos_post' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                        break;
+                }
             }
-
-            if ( ! isset ( $data_arr['userid'] ) ) return false;
-            $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-
-            switch ( $type ) {
-                case 'kudos_profile' :
-                    echo 'Props and respect from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                    break;
-                case 'kudos_post' :
-                    if ( ! isset ( $data_arr['postid'] ) ) return false;
-                    $post = get_post( $data_arr['postid'] );
-                    echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                    break;
-            }
+            else
+                do_action('cp_logs_description', $type, $uid, $points, $data );
 
             return;
         }
