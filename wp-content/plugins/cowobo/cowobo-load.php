@@ -117,6 +117,11 @@ if (!class_exists('CoWoBo')) :
         public $notices = array();
 
         /**
+         * Admin notice
+         */
+        public $admin_notice = '';
+
+        /**
          *
          */
         public $notices_loop;
@@ -182,6 +187,13 @@ if (!class_exists('CoWoBo')) :
             public function CoWoBo() {
                 $this->__construct();
             }
+
+
+        public function admin_notice() {
+            echo "<div class='error'>
+                <p>{$this->admin_notice}</p>
+             </div>";
+        }
 
         private function setup_notices_loop() {
             $this->notices_loop = new stdClass;
