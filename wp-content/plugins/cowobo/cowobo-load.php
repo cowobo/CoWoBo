@@ -110,13 +110,6 @@ if (!class_exists('CoWoBo')) :
         public $layouts;
 
         /**
-         * Var to contain the BuddyPress class
-         *
-         * @var CoWoBo_BuddyPres
-         */
-        public $buddypress;
-
-        /**
          * Notices
          *
          * Errors, messages, success, or other notifications to the user about what's going on here.
