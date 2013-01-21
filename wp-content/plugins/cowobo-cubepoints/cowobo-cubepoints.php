@@ -19,6 +19,11 @@ if (!defined('ABSPATH'))
  */
 define('COWOBO_CP_VERSION', '0.1');
 
+
+define ( 'COWOBO_CP_POST_KUDOS', 10 );
+define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
+
+
 /**
  * PATHs and URLs
  *
@@ -35,6 +40,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
      * @todo Add specific CoWoBo point actions
      * @todo Show point log @ own profile
      * @todo Show point log @ all profiles?
+     * @display points and rank on user profile
      */
     class CoWoBo_CubePoints    {
 
@@ -81,7 +87,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
             if ( is_user_logged_in() ) {
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 10, 3 );
+
+                add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
+
+            add_action('cp_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
 
         }
 
@@ -95,6 +106,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function add_notification($type, $uid, $points, $data) {
+            if (get_current_user_id() != $uid )
+                return;
 
             if($points>0){
                 $m= "+$points";
@@ -204,6 +217,116 @@ if (!class_exists('CoWoBo_CubePoints')) :
             </div>
             You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $this->next_rank['rank']; ?>!
             <?php
+        }
+
+        /**
+         * Box to gives kudos to post authors for logged in users
+         *
+         * @param type $postid
+         * @param type $postcat
+         * @param type $author
+         * @return type
+         * @todo make it look nice
+         */
+        public function do_post_kudos_box ( $postid, $postcat, $author ) {
+            // Authors don't need to see this
+            if ( $author ) return;
+
+
+            echo "<div class='tab'>";
+
+                // Different box for profiles
+                if ( $postcat->slug == 'coder' ) {
+                    $kudos_link = add_query_arg( array ( 'profile_kudos' => wp_create_nonce( "profile_kudos_$postid" ) ) );
+                    echo "<p>Do you like " . get_the_title() . "? Or do you endorse the work of " . get_the_title() . "? Show it by giving props and rescept!</p>";
+
+                } else {
+                    $kudos_link = add_query_arg( array ( 'post_kudos' => wp_create_nonce( "post_kudos_$postid" ) ) );
+                    echo "<p>Liked this post? Give the authors some kudos! It's free!*</p>";
+                }
+                echo "<p><a href='$kudos_link' class='button'>Give kudos</a></p>";
+
+            echo "</div>";
+        }
+
+        public function _maybe_give_kudos() {
+            if ( ! is_single() ) return;
+
+                $postid = get_the_ID();
+            if ( cowobo()->query->post_kudos ) {
+                $object = 'post';
+                if ( ! wp_verify_nonce ( cowobo()->query->post_kudos, "post_kudos_$postid" ) )
+                    return;
+            } elseif ( cowobo()->query->profile_kudos ) {
+                $object = 'profile';
+                if ( ! wp_verify_nonce ( cowobo()->query->profile_kudos, "profile_kudos_$postid" ) )
+                    return;
+            } else {
+                return;
+            }
+
+            // Don't allow authors to kudo themselves
+            if ( cowobo()->posts->is_user_post_author( $postid ) )
+                return;
+
+            // Give kudos!
+            $this->give_kudos( $object, $postid );
+        }
+
+            private function give_kudos ( $object = '', $object_id = 0, $amount = 0, $origin= '' ) {
+                if ( empty ( $origin ) ) $origin = $object;
+
+                switch ( $object ) {
+                    case 'post' :
+                        if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
+                        $authors = cowobo()->posts->get_post_authors( $object_id );
+                        foreach ( $authors as $author_profile_id ) {
+                            $this->give_kudos( 'profile', $author_profile_id, $amount, $origin );
+                        }
+                        break;
+                    case 'profile' :
+                        if ( ! $amount ) $amount = COWOBO_CP_PROFILE_KUDOS;
+                        $users = cowobo()->users->get_users_by_profile_id( $object_id );
+                        foreach ( $users as $user ) {
+                            $this->give_kudos ( 'user', $user->ID, $amount, $origin );
+                        }
+                        break;
+                    case 'user' :
+                        if ( ! $amount ) $amount = 1; // Unidentified kudos. Let's just give one anyway.
+
+                        $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
+                        cp_points("cowobo_kudos_$origin", $object_id, $amount, $data );
+                        break;
+
+                }
+            }
+
+        public function cp_logs_desc( $type, $uid, $points, $data ){
+            if ( ! substr ( $type, 0, 7 ) == 'cowobo_' ) return;
+            $type = substr ( $type, 7 );
+
+            $data_arr = array();
+            parse_str ( $data, $data_arr );
+            if ( empty ( $data_arr ) ) {
+                echo "Corrupted data";
+                return;
+            }
+
+            if ( ! isset ( $data_arr['userid'] ) ) return false;
+            $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+
+            switch ( $type ) {
+                case 'kudos_profile' :
+                    echo 'Props and respect from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                    break;
+                case 'kudos_post' :
+                    if ( ! isset ( $data_arr['postid'] ) ) return false;
+                    $post = get_post( $data_arr['postid'] );
+                    echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                    break;
+            }
+
+            return;
         }
 
     }

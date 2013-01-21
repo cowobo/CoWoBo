@@ -139,7 +139,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 		endforeach;
 	endif;
 
-	if($author):
+	if($author) {
 		echo '<div class="tabthumb right">+</div>';
 		echo '<div class="tabtext left">';
 			echo '<h2>Add posts to this page &raquo;</h2>';
@@ -161,7 +161,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 				echo '<button type="submit" class="button">Add</button>';
 			echo '</form>';
 		echo '</div>';
-	endif;
+    }
+
+    do_action ( 'cowobo_after_post', $postid, $postcat, $author );
+
 
 	//show comments
     if ( ! $postcat->slug == 'coder' )
