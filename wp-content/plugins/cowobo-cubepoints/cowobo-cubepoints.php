@@ -32,7 +32,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
      * @todo Give points to user / author(s) of post
-     * @todo Points progression
      * @todo Add specific CoWoBo point actions
      * @todo Notifications
      */
@@ -80,6 +79,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( is_user_logged_in() ) {
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
+                add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
             }
 
         }
@@ -92,6 +92,17 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        public function add_notification($type, $uid, $points, $data) {
+
+            if($points>0){
+                $m= "+$points";
+                cowobo()->add_notice( "Wow! That just got you $points extra points!" );
+            } else {
+                cowobo()->add_notice( "Careful, that action cost you $points!" );
+            }
+
+        }
 
         private function setup_context() {
             if( ! cp_module_activated('ranks') ) {
