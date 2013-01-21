@@ -65,6 +65,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             cowobo()->points = &$this;
 
+            if ( is_user_logged_in() ) {
+                add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
+            }
+
         }
 
             /**
@@ -84,7 +88,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
              * Alias for cp_displayPoints
              */
             public function get_user_points( $uid = 0, $format = 1 ) {
-                cp_displayPoints( $uid, true, $format );
+                return cp_displayPoints( $uid, true, $format );
             }
 
         public function the_rank( $uid = 0 ) {
@@ -92,6 +96,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             public function get_user_rank ( $uid = 0 ) {
+                if ( !function_exists( 'cp_module_ranks_getRank' ) ) return;
+
                 if ($uid == 0) {
                     if (!is_user_logged_in()) {
                       return false;
@@ -101,6 +107,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 return cp_module_ranks_getRank( $uid );
             }
+
+        public function do_awesome_box() {
+            echo "<div class='tab'>";
+            echo "<p>" . $this->get_user_points() . " and rank: " . $this->get_user_rank() . "</p>";
+            echo "</div>";
+        }
 
     }
 
