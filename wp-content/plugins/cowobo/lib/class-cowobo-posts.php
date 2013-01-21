@@ -560,7 +560,7 @@ class CoWoBo_Posts
 
     public function get_post_authors( $postid = 0 ) {
         if ( ! $postid ) $postid = get_the_ID();
-        if ( ! $postid ) return false;
+        if ( ! $postid ) return array();
 
         return get_post_meta( $postid, 'author', false );
     }
