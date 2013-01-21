@@ -76,6 +76,31 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
+        public function the_points( $uid = 0, $format = 1 ) {
+            echo $this->get_user_points( $uid, $format );
+        }
+
+            /**
+             * Alias for cp_displayPoints
+             */
+            public function get_user_points( $uid = 0, $format = 1 ) {
+                cp_displayPoints( $uid, true, $format );
+            }
+
+        public function the_rank( $uid = 0 ) {
+            echo $this->get_user_rank( $uid );
+        }
+
+            public function get_user_rank ( $uid = 0 ) {
+                if ($uid == 0) {
+                    if (!is_user_logged_in()) {
+                      return false;
+                    }
+                    $uid = cp_currentUser();
+                }
+
+                return cp_module_ranks_getRank( $uid );
+            }
 
     }
 
