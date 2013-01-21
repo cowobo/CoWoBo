@@ -62,8 +62,7 @@ class CoWoBo_BuddyPress
 
     public function __construct() {
         if ( ! bp_is_active( 'activity' ) ) {
-            cowobo()->admin_notice = "Please make sure the activity component in BP is activated.";
-            add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
+            cowobo()->do_admin_notice( "Please make sure the activity component in BP is activated." );
             return;
         }
 

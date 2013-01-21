@@ -189,6 +189,13 @@ if (!class_exists('CoWoBo')) :
             }
 
 
+        public function do_admin_notice( $notice = '' ) {
+            if ( ! empty ( $notice ) && empty ( $this->admin_notice ) )
+                $this->admin_notice = $notice;
+
+            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+        }
+
         public function admin_notice() {
             echo "<div class='error'>
                 <p>{$this->admin_notice}</p>
