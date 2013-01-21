@@ -59,12 +59,12 @@ class CoWoBo_BuddyPress
 
     public function __construct() {
         if ( ! defined ( 'COWOBO_PLUGIN_VERSION' ) ){
-            $this->admin_notice = "CoWoBo Plugin not active. To use BP integration, CoWoBo must be active.";
-            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+            cowobo()->admin_notice = "CoWoBo Plugin not active. To use BP integration, CoWoBo must be active.";
+            add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
             return;
         } elseif ( ! bp_is_active( 'activity' ) ) {
-            $this->admin_notice = "Please make sure the activity component in BP is activated.";
-            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+            cowobo()->admin_notice = "Please make sure the activity component in BP is activated.";
+            add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
             return;
         }
 
@@ -87,12 +87,6 @@ class CoWoBo_BuddyPress
     public function add_cowobo_to_template_stack ( $stack ) {
         array_unshift ( $stack, COWOBO_BP_TEMPLATEPATH );
         return $stack;
-    }
-
-    public function admin_notice() {
-        echo "<div class='error'>
-            <p>{$this->admin_notice}</p>
-         </div>";
     }
 
     public function do_notifications() {
