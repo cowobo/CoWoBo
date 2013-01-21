@@ -105,6 +105,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                 endif;
             endif;
         endforeach;
+
+        do_action ( 'cowobo_after_layouts', $postid, $postcat, $author );
+
         echo '</div>';
 
     }
