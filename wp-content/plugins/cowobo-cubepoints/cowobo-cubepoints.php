@@ -57,17 +57,24 @@ if (!class_exists('CoWoBo_CubePoints')) :
          * @since 0.1
          */
         public function __construct() {
+            if ( !defined ( 'CP_VER' ) ) {
+                cowobo()->admin_notice = "CubePoints plugin not active. To use CoWoBo CubePoints integration, enable CubePoints (as would seem quite logical to do..)";
+                add_action ('admin_notices', array ( cowobo(), 'admin_notice' ) );
+                return;
+            }
+
+            cowobo()->points = &$this;
 
         }
 
-        /**
-         * PHP4
-         *
-         * @since 0.1
+            /**
+             * PHP4
+             *
+             * @since 0.1
              */
-        public function CoWoBo_CubePoints() {
-            $this->__construct();
-        }
+            public function CoWoBo_CubePoints() {
+                $this->__construct();
+            }
 
 
     }
