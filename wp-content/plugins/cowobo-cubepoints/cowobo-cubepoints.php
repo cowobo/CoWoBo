@@ -224,35 +224,51 @@ if (!class_exists('CoWoBo_CubePoints')) :
          * @param type $postcat
          * @param type $author
          * @return type
+         * @todo make it look nice
          */
         public function do_post_kudos_box ( $postid, $postcat, $author ) {
             // Authors don't need to see this
             if ( $author ) return;
 
+
             echo "<div class='tab'>";
 
-                echo "<p>Liked this post? Give the authors some kudos! It's free!*</p>";
-                $kudos_link = add_query_arg( array ( 'post_kudos' => wp_create_nonce( "post_kudos_$postid" ) ) );
+                // Different box for profiles
+                if ( $postcat->slug == 'coder' ) {
+                    $kudos_link = add_query_arg( array ( 'profile_kudos' => wp_create_nonce( "profile_kudos_$postid" ) ) );
+                    echo "<p>Do you like " . get_the_title() . "? Or do you endorse the work of " . get_the_title() . "? Show it by giving props and rescept!</p>";
+
+                } else {
+                    $kudos_link = add_query_arg( array ( 'post_kudos' => wp_create_nonce( "post_kudos_$postid" ) ) );
+                    echo "<p>Liked this post? Give the authors some kudos! It's free!*</p>";
+                }
                 echo "<p><a href='$kudos_link' class='button'>Give kudos</a></p>";
 
             echo "</div>";
         }
 
         public function _maybe_give_kudos() {
-            if ( is_single() ) {
-                if ( cowobo()->query->post_kudos ) {
-                    $postid = get_the_ID();
-                    if ( ! wp_verify_nonce ( cowobo()->query->post_kudos, "post_kudos_$postid" ) )
-                        return;
+            if ( ! is_single() ) return;
 
-                    // Don't allow authors to kudo themselves
-                    if ( cowobo()->posts->is_user_post_author( $postid ) )
-                        return;
-
-                    // Give kudos!
-                    $this->give_kudos( 'post', $postid );
-                }
+                $postid = get_the_ID();
+            if ( cowobo()->query->post_kudos ) {
+                $object = 'post';
+                if ( ! wp_verify_nonce ( cowobo()->query->post_kudos, "post_kudos_$postid" ) )
+                    return;
+            } elseif ( cowobo()->query->profile_kudos ) {
+                $object = 'profile';
+                if ( ! wp_verify_nonce ( cowobo()->query->profile_kudos, "profile_kudos_$postid" ) )
+                    return;
+            } else {
+                return;
             }
+
+            // Don't allow authors to kudo themselves
+            if ( cowobo()->posts->is_user_post_author( $postid ) )
+                return;
+
+            // Give kudos!
+            $this->give_kudos( $object, $postid );
         }
 
             private function give_kudos ( $object = '', $object_id = 0, $amount = 0, $origin= '' ) {
