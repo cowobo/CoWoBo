@@ -33,7 +33,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
     /**
      * @todo Give points to user / author(s) of post
      * @todo Add specific CoWoBo point actions
-     * @todo Notifications
+     * @todo Show point log @ own profile
+     * @todo Show point log @ all profiles?
      */
     class CoWoBo_CubePoints    {
 
@@ -159,7 +160,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function get_current_user_rank() {
             if ( !is_user_logged_in() ) return null;
 
-            if ( $this->current_user_rank ) return $this->current_user_rank;
+            if ( $this->current_user_rank ) return $this->current_user_rank['rank'];
             $this->current_user_rank = $this->get_user_rank ( get_current_user_id() );
         }
 
@@ -177,7 +178,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public function do_awesome_box() {
             echo "<div class='tab'>";
-            echo "<p>" . $this->get_user_points() . " and rank: " . $this->get_user_rank() . "</p>";
+            echo "<p>" . $this->get_current_user_points() . "</p>";
+            echo "<p>" . $this->get_current_user_rank() . "</p>";
             $this->do_progression();
             echo "</div>";
         }
