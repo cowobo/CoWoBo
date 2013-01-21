@@ -36,7 +36,6 @@ define('COWOBO_CP_INC_URL', COWOBO_CP_URL . '_inc/');
 if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
-     * @todo Give points to user / author(s) of post
      * @todo Add specific CoWoBo point actions
      * @todo Show point log @ own profile
      * @todo Show point log @ all profiles?
@@ -88,6 +87,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 10, 3 );
+
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 15, 3 );
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
@@ -328,6 +329,34 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             return;
         }
+
+        public function do_points_log_box( $postid, $postcat, $author ) {
+            if ( ! cowobo()->users->is_profile() ) return;
+
+            $GLOBALS['wpdb']->show_errors();
+            $log = $this->get_log ( cowobo()->users->displayed_user->ID, 15 );
+
+            require ( COWOBO_CP_DIR . 'templates/log.php' );
+
+        }
+
+            private function get_log( $type = 'all', $limit = 10 ) {
+                global $wpdb;
+
+                $q      = '';
+                $limitq = '';
+
+                $uid = (int) cowobo()->users->displayed_user->ID;
+
+                if ( 'all' != $type )
+                    $q = $wpdb->prepare ( " WHERE `uid` = %d", $uid );
+
+                if( $limit > 0 )
+                    $limitq = 'LIMIT '.(int) $limit;
+
+                $query = 'SELECT * FROM `' . CP_DB . '` ' . $q . ' ORDER BY timestamp DESC ' . $limitq;
+                return $wpdb->get_results( $query );
+            }
 
     }
 
