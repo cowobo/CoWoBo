@@ -86,9 +86,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             $this->setup_context();
 
-            if (cowobo()->users->is_profile() )
-                $this->setup_displayed_user();
-
             if ( is_user_logged_in() ) {
                 $this->setup_current_user();
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
@@ -96,11 +93,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
-                add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
 
+            add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
             add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
 
         }
@@ -155,7 +152,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         private function setup_displayed_user() {
             $display_user_id = cowobo()->users->displayed_user->ID;
-            $displayed_user_points = $this->get_user_points( $display_user_id );
+            $displayed_user_points = $this->displayed_user_points = $this->get_user_points( $display_user_id );
             $displayed_user_ranks = $this->get_user_ranks_by_points( $displayed_user_points );
 
             $this->displayed_user_rank        = $displayed_user_ranks['current_rank'];
@@ -163,14 +160,17 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             private function get_user_ranks_by_points ( $points ) {
+                $previous_rank = '';
                 foreach( $this->ranks as $p => $r ) {
-                    if( $current_user_points >= $p ) {
+                    if( $points >= $p ) {
                         $current_rank = array ( "rank" => $r, "points" => $p );
                         $next_rank = $previous_rank;
                         break;
                     }
                     $previous_rank = array ( "rank" => $r, "points" => $p );
                 }
+
+                if ( empty ( $next_rank ) ) $next_rank = $current_rank;
 
                 return array (
                     "current_rank" => $current_rank,
@@ -223,7 +223,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo "<div class='tab'>";
             echo "<p>" . $this->get_current_user_points() . "</p>";
             echo "<p>" . $this->get_current_user_rank() . "</p>";
-            $this->do_progression();
+            $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
             echo "</div>";
         }
 
@@ -231,22 +231,24 @@ if (!class_exists('CoWoBo_CubePoints')) :
          * @todo make this work with different UIDs
          * @param type $uid
          */
-        public function do_progression( $uid = 0 ) {
-            $current_points = (int) $this->current_user_points - (int) $this->current_user_rank['points'];
-            $goal = (int) $this->current_user_next_rank['points'] - (int) $this->current_user_rank['points'];
+        public function do_progression( $points, $current_rank, $next_rank ) {
+
+            $current_points = (int) $points - (int) $current_rank['points'];
+            $goal = (int) $next_rank['points'] - (int) $current_rank['points'];
             if ( $goal == 0 ) return false;
             $percentage = round ( ($current_points / $goal) * 100 );
 
             $image_url = COWOBO_CP_INC_URL . 'progress_bar.png';
 
             ?>
-            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;">
+            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
                 <div class="stat-bar" style="width:<?php echo $percentage;?>px; overflow: hidden;">
-                    <img alt="" src="<?php echo $image_url;?>"/>
+                    <img title="You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
                 </div>
             </div>
-            You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $this->current_user_next_rank['rank']; ?>!
             <?php
+            return $goal - $current_points;
+
         }
 
         /**
@@ -363,10 +365,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_user_profile_points ( $postid, $postcat, $author ) {
-            if ( ! cowobo()->users->is_profile() ) return;
+            $this->setup_displayed_user();
+            //if ( ! cowobo()->users->is_profile() ) return;
 
-            $points;
-            echo '<span class="field"><h3>Awesomeness:</h3><span class="hint"></span></span>';
+            echo '<span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+            echo '<span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
+            $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
         }
 
         public function do_points_log_box( $postid, $postcat, $author ) {
