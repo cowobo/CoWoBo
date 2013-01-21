@@ -113,13 +113,13 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             $current_user_points = $this->get_current_user_points();
 
-            foreach($this->ranks as $p=>$r){
+            foreach( $this->ranks as $p => $r ) {
                 if( $current_user_points >= $p ) {
-                    $this->current_user_rank = array ("rank" => $r, "points" => $p );
+                    $this->current_user_rank = array ( "rank" => $r, "points" => $p );
                     $this->next_rank = $previous_rank;
                     break;
                 }
-                $previous_rank = array ("rank" => $r, "points" => $p );
+                $previous_rank = array ( "rank" => $r, "points" => $p );
             }
         }
 
@@ -167,7 +167,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function do_awesome_box() {
             echo "<div class='tab'>";
             echo "<p>" . $this->get_user_points() . " and rank: " . $this->get_user_rank() . "</p>";
-            echo "<p>Next rank:</p>";
             $this->do_progression();
             echo "</div>";
         }
