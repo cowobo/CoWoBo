@@ -92,6 +92,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
 
+            add_action('cp_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+
         }
 
             /**
@@ -292,26 +294,40 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     case 'user' :
                         if ( ! $amount ) $amount = 1; // Unidentified kudos. Let's just give one anyway.
 
-                        $data = $this->get_kudos_description ( $origin );
-
+                        $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
                         cp_points("cowobo_kudos_$origin", $object_id, $amount, $data );
                         break;
 
                 }
             }
 
-                private function get_kudos_description( $origin ) {
-                    $current_user = get_current_user();
-                    $userlink = "<a href='" . cowobo()->users->get_current_user_profile_link() ."'>" . $current_user . "</a>";
-                    switch ( $origin ) {
-                        case 'post' :
-                            $postlink = "<a href='" . get_post_permalink() . "'>" . get_the_title() . "</a>";
-                            return "Received kudos from $userlink on $postlink";
-                            break;
-                        default:
-                            return "Received kudus from $userlink";
-                    }
-                }
+        public function cp_logs_desc( $type, $uid, $points, $data ){
+            if ( ! substr ( $type, 0, 7 ) == 'cowobo_' ) return;
+            $type = substr ( $type, 7 );
+
+            $data_arr = array();
+            parse_str ( $data, $data_arr );
+            if ( empty ( $data_arr ) ) {
+                echo "Corrupted data";
+                return;
+            }
+
+            if ( ! isset ( $data_arr['userid'] ) ) return false;
+            $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+
+            switch ( $type ) {
+                case 'kudos_profile' :
+                    echo 'Props and respect from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                    break;
+                case 'kudos_post' :
+                    if ( ! isset ( $data_arr['postid'] ) ) return false;
+                    $post = get_post( $data_arr['postid'] );
+                    echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                    break;
+            }
+
+            return;
+        }
 
     }
 
