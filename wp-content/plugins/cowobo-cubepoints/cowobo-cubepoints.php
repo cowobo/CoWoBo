@@ -32,6 +32,11 @@ define('COWOBO_CP_INC_URL', COWOBO_CP_TEMPLATES_URL . '_inc/');
 
 if (!class_exists('CoWoBo_CubePoints')) :
 
+    /**
+     * @todo Give points to user / author(s) of post
+     * @todo Points progression
+     * @todo Add specific CoWoBo point actions
+     */
     class CoWoBo_CubePoints    {
 
         /**
