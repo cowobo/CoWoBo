@@ -24,7 +24,7 @@ define ( 'COWOBO_CP_POST_KUDOS', 10 );
 define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
 define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
 define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
-
+define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
 
 /**
  * PATHs and URLs
@@ -460,10 +460,27 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function record_post_edited( $post_id ) {
+            global $wpdb;
+
+            $type = '';
             if ( cowobo()->users->is_profile( $post_id ) )
-                cp_points("cowobo_profile_updated", get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
+                $type = "cowobo_profile_updated";
             else
-                cp_points("cowobo_post_updated", get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+                $type = "cowobo_post_updated";
+
+            $uid = get_current_user_id();
+            $time = COWOBO_UPDATE_POINTS_MIN_INTERVAL;
+            $difference = time() - $time;
+            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='$type'");
+            if( $count!= 0 ) {
+                cowobo()->add_notice("That was fast! You know you won't get any points for updating so fast?");
+                return;
+            }
+
+            if ( cowobo()->users->is_profile( $post_id ) )
+                cp_points( $type, get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
+            else
+                cp_points( $type, get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
         }
 
     }
