@@ -103,11 +103,11 @@ function cwb_loadmap() {
 
 	//get coordinates if specified in url or post
 	if(is_single()):
-		if( $cowobo->query->post_ID ) $postid = $cowobo->query->post_ID;
+		if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
 		else $postid = $post->ID;
 		$postcoordinates = get_post_meta($postid, 'coordinates', true);
 		$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
-		echo $cowobo->posts->loadgallery($postid);
+		echo cowobo()->posts->loadgallery($postid);
 	endif;
 	
 	$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';

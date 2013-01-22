@@ -14,16 +14,16 @@ class CoWoBo_Posts
      * Delete post and all links associated with it
      */
     public function delete_post() {
-        global $cowobo;
 
-        $deleteid = $cowobo->query->id;
-        $cowobo->relations->delete_relations($deleteid);
+
+        $deleteid = cowobo()->query->id;
+        cowobo()->relations->delete_relations($deleteid);
         if ( wp_delete_post($deleteid) ) {
-            $cowobo->notifications[] = array (
+            cowobo()->notifications[] = array (
                 "error" => "An error occurred deleting your post."
             );
         } else {
-            $cowobo->notifications[] = array (
+            cowobo()->notifications[] = array (
                 "success" => "Post succesfully deleted."
             );
         }
@@ -37,21 +37,21 @@ class CoWoBo_Posts
         global $post, $cowobo, $profile_id;
 
         //store all data
-        $postid = $cowobo->query->post_ID;
+        $postid = cowobo()->query->post_ID;
 
-        $post_title  = ( $cowobo->query->post_title ) ? trim(strip_tags( $cowobo->query->post_title ) ) : null;
-        $post_content = ( $cowobo->query->post_content ) ? trim( $cowobo->query->post_content ) : null;
-        $tags  = ( $cowobo->query->tags ) ? trim(strip_tags( $cowobo->query->tags ) ) : null;
+        $post_title  = ( cowobo()->query->post_title ) ? trim(strip_tags( cowobo()->query->post_title ) ) : null;
+        $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
+        $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcity = get_post_meta( $postid, 'cityid', true );
         //$oldslug = $post->post_name;
-        $involvement = $cowobo->query->involvement;
+        $involvement = cowobo()->query->involvement;
         $newslug = sanitize_title($post_title);
 
-        $postcat = ( ! $cowobo->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( $cowobo->query->new ) );
+        $postcat = ( ! cowobo()->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( cowobo()->query->new ) );
         $tagarray = array( $postcat->term_id );
 
         if ( ! $postid ) {
-            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( $cowobo->query->new ) ), 'post_content' => " " ) );
+            $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
             add_post_meta( $postid, 'author', $profile_id);
         }
 
@@ -65,7 +65,7 @@ class CoWoBo_Posts
 
         //if the user is not involved don't link it to their profile
         if($involvement == 'none') {
-            $cowobo->relations->delete_relations($postid, $profile_id); //existing posts
+            cowobo()->relations->delete_relations($postid, $profile_id); //existing posts
             $linkedid = false;
         } else {
             $linkedid = $profile_id;
@@ -75,7 +75,7 @@ class CoWoBo_Posts
         if ($post_title == '') $postmsg['title'] = 'You forgot to add one.';
 
         //check if the user entered all text in english
-        if(!$cowobo->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
+        if(!cowobo()->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
 
         /**
          * update all the custom fields
@@ -96,7 +96,7 @@ class CoWoBo_Posts
 
         //if its a new location post geocode its location
         if( $postcat->slug == 'location' ) {
-            if( $countryid = $cowobo->query->country ) {
+            if( $countryid = cowobo()->query->country ) {
                 $tagarray = array( $countryid );
                 if($latlng = cwb_geocode( $post_title.', '.$countryid ) ) {
                     $coordinates = $latlng['lat'].','.$latlng['lng'];
@@ -107,7 +107,7 @@ class CoWoBo_Posts
                     } else {
                         add_post_meta($postid, 'coordinates', $coordinates);
                     }
-                    if( ! empty( $linkedid ) ) $cowobo->relations->create_relations($postid, array($linkedid));
+                    if( ! empty( $linkedid ) ) cowobo()->relations->create_relations($postid, array($linkedid));
                 } else {
                     $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
@@ -117,7 +117,7 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $city = $cowobo->query->city ) {
+        if( $city = cowobo()->query->city ) {
             if($city != $oldcity ) {
                 if($countryid = $_POST['country']) {
                     $countrycat = get_category($countryid);
@@ -132,8 +132,8 @@ class CoWoBo_Posts
                             $cityid = wp_insert_post(array('post_title'=>$city, 'post_category'=>array($countryid), 'post_status'=>'Publish'));
                             add_post_meta($cityid, 'coordinates', $coordinates);
                         endif;
-                        $cowobo->relations->delete_relations($postid, $oldcity);
-                        $cowobo->relations->create_relations($postid, array($cityid));
+                        cowobo()->relations->delete_relations($postid, $oldcity);
+                        cowobo()->relations->create_relations($postid, array($cityid));
                         add_post_meta($postid, 'cityid', $cityid);  //save ID to check city next time
                         update_post_meta($postid, 'coordinates', $coordinates);
                     else:
@@ -169,7 +169,7 @@ class CoWoBo_Posts
             $videocheck = explode("?v=", $_POST['caption'.$x]);
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
-            if($cowobo->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
+            if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
             //if($_POST['delete'.$x] or !empty($file) or !empty($videocheck[1])):
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
@@ -188,15 +188,19 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
-            //wp_set_post_categories( $postid, $postcat );
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
-            if(!empty($linkedid)) $cowobo->relations->create_relations($postid, array($linkedid));
-            $cowobo->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
+
+            if ( ! isset ( $GLOBALS['newpostid'] ) || empty ( $GLOBALS['newpostid'] ) ) {
+                do_action( 'cowobo_post_updated', $postid, $post_title );
+            }
+
+            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, array($linkedid));
+            cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
-            $cowobo->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
+            cowobo()->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
             foreach ( $postmsg as $key => $msg ) {
-                $cowobo->add_notice ( $msg, $key );
+                cowobo()->add_notice ( $msg, $key );
             }
         }
 
@@ -206,7 +210,14 @@ class CoWoBo_Posts
     /**
      * Get primal category of post
      */
-    public function get_category($postid) {
+    public function get_category( $postid = 0 ) {
+        if ( ! $postid ) {
+            $post = get_post();
+            if ( ! $post ) return false;
+            $postid = $post->ID;
+        }
+        if ( ! $postid ) return false;
+
         $cat = get_the_category($postid);
         $ancestors = get_ancestors($cat[0]->term_id,'category');
         if (empty($ancestors)) return $cat[0];
@@ -388,10 +399,10 @@ class CoWoBo_Posts
      */
     public function edit_request(){
         global $post, $cowobo, $profile_id;
-        $rqtype = $cowobo->query->requesttype;
-        $rquser = $cowobo->query->requestuser;
-        $rqpost = $cowobo->query->requestpost;
-        $rqmsg = $cowobo->query->requestmsg;
+        $rqtype = cowobo()->query->requesttype;
+        $rquser = cowobo()->query->requestuser;
+        $rqpost = cowobo()->query->requestpost;
+        $rqmsg = cowobo()->query->requestmsg;
 
         //if request is coming from a post use that data instead
         if(!$rquser) $rquser = $profile_id;
@@ -423,7 +434,7 @@ class CoWoBo_Posts
             $notices = 'editrequest_cancelled';
         endif;
 
-        $cowobo->redirect( "message", $notices );
+        cowobo()->redirect( "message", $notices );
     }
 
     //Get list of all published IDs
@@ -487,74 +498,91 @@ class CoWoBo_Posts
         return true;
     }
 
-        /**
-         * Converts the url to the right one
-          *
-          * @param str $url for the rss service with either %enc_feed% or %feed%
-          * @param str $feed_url url for the feed to be added
-          * @return str Url for the service with feed url
-        */
-        private function get_feed_url($url, $feed_url) {
-            $url = str_replace(
-                array('%enc_feed%', '%feed%'),
-                array(urlencode($feed_url), esc_url($feed_url),
-            ),$url);
-            return $url;
+    /**
+     * Converts the url to the right one
+      *
+      * @param str $url for the rss service with either %enc_feed% or %feed%
+      * @param str $feed_url url for the feed to be added
+      * @return str Url for the service with feed url
+    */
+    private function get_feed_url($url, $feed_url) {
+        $url = str_replace(
+            array('%enc_feed%', '%feed%'),
+            array(urlencode($feed_url), esc_url($feed_url),
+        ),$url);
+        return $url;
+    }
+
+    /**
+     * Returns the RSS URL for the current feed in the feederbar
+     *
+     * @return str RSS URL for the current feed in the feederbar
+     */
+    private function current_feed_url() {
+        $url = 'http';
+        if ( isset ( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on") {$url .= "s";}
+        $url .= "://";
+        if ($_SERVER["SERVER_PORT"] != "80") {
+            $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        } else {
+            $url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
         }
 
-        /**
-         * Returns the RSS URL for the current feed in the feederbar
-         *
-         * @return str RSS URL for the current feed in the feederbar
-         */
-        private function current_feed_url() {
-            $url = 'http';
-            if ( isset ( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on") {$url .= "s";}
-            $url .= "://";
-            if ($_SERVER["SERVER_PORT"] != "80") {
-                $url .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-            } else {
-                $url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-            }
+        if ( substr ( $url, -1 ) != '/' ) $url .= '/';
 
-            if ( substr ( $url, -1 ) != '/' ) $url .= '/';
+        $url .= "feed";
+        return $url;
+    }
 
-            $url .= "feed";
-            return $url;
-        }
+    private function has_requests() {
+        global $profile_id, $cowobo;
+        //check if the user has any pending author requests
+        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
 
-        private function has_requests() {
-            global $profile_id, $cowobo;
-            //check if the user has any pending author requests
-            $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
-
-            if( ! empty ( $requestposts ) ) {
-                foreach($requestposts as $requestpost) {
-                    $requests = get_post_meta($requestpost->ID, 'request', false);
-                    $msg = '';
-                    foreach($requests as $request) {
-                        $requestdata = explode('|', $request);
-                        if($requestdata[1] != 'deny') {
-                            $profile = get_post($requestdata[0]);
-                            $msg .= '<form method="post" action="">';
-                            $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
-                            $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
-                            $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
-                            $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
-                            $msg .= '<ul class="horlist">';
-                            $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
-                            $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
-                            $msg .= wp_nonce_field( 'request', 'request', true, false );
-                            $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
-                            $msg .= '</ul>';
-                            $msg .= '</form>';
-                        }
+        if( ! empty ( $requestposts ) ) {
+            foreach($requestposts as $requestpost) {
+                $requests = get_post_meta($requestpost->ID, 'request', false);
+                $msg = '';
+                foreach($requests as $request) {
+                    $requestdata = explode('|', $request);
+                    if($requestdata[1] != 'deny') {
+                        $profile = get_post($requestdata[0]);
+                        $msg .= '<form method="post" action="">';
+                        $msg .= '<a href="'.get_permalink($profile->ID).'">'.$profile->post_title.'</a> sent you a request for ';
+                        $msg .= '<a href="'.get_permalink($requestpost->ID).'">'.$requestpost->post_title.'</a>:<br/> '.$requestdata[1].'<br/>';
+                        $msg .= '<input type="hidden" name="requestuser" value="'.$requestdata[0].'"/>';
+                        $msg .= '<input type="hidden" name="requestpost" value="'.$requestpost->ID.'"/>';
+                        $msg .= '<ul class="horlist">';
+                        $msg .= '<li><input type="radio" name="requesttype" value="accept" selected="selected"/>Accept</li>';
+                        $msg .= '<li><input type="radio" name="requesttype" value="deny"/>Deny</li>';
+                        $msg .= wp_nonce_field( 'request', 'request', true, false );
+                        $msg .= '<li><input type="submit" class="auto" value="Update"/></li>';
+                        $msg .= '</ul>';
+                        $msg .= '</form>';
                     }
                 }
-                if ( ! empty ( $msg ) ) {
-                    $cowobo->add_notice( $msg, 'editrequest' );
-                }
+            }
+            if ( ! empty ( $msg ) ) {
+                cowobo()->add_notice( $msg, 'editrequest' );
             }
         }
+    }
+
+    public function get_post_authors( $postid = 0 ) {
+        if ( ! $postid ) $postid = get_the_ID();
+        if ( ! $postid ) return array();
+
+        return get_post_meta( $postid, 'author', false );
+    }
+
+    public function is_user_post_author ( $postid = 0, $profile_id = 0 ) {
+        if ( ! is_user_logged_in() ) return false;
+
+        if ( ! $profile_id ) $profile_id = $GLOBALS['profile_id'];
+        $authors = $this->get_post_authors( $postid );
+
+        return in_array( $profile_id, $authors );
+    }
+
 }
 

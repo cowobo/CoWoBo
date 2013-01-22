@@ -1,6 +1,7 @@
 <?php
-global $cowobo;
 
+
+	echo '<div class="feedtitle">'. cowobo()->feed->feed_title() .'</div>';
 	include(TEMPLATEPATH.'/templates/search.php');		
 
 	if (have_posts()):
@@ -24,6 +25,6 @@ global $cowobo;
 	echo '</div>';
 
 	//include navigation links
-	echo '<div class="center">'; $cowobo->feed->pagination(); echo '</div>';
+	echo '<div class="center">'; cowobo()->feed->pagination(); echo '</div>';
 
 ?>

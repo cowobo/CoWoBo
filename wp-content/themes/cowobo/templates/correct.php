@@ -1,10 +1,10 @@
 <?php
-global $cowobo;
+
 
 if (have_posts()) : while (have_posts()) : the_post();
 
-$newtitle = $cowobo->L10n->the_title($post->ID);
-$newcontent = $cowobo->L10n->the_content($post->ID);
+$newtitle = cowobo()->L10n->the_title($post->ID);
+$newcontent = cowobo()->L10n->the_content($post->ID);
 
 //hide extra formating so its easier to edit
 $stripped = str_replace(array('<br/>','</p>'), '\n', $newcontent);

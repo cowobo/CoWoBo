@@ -19,7 +19,7 @@
 
 
 // SETUP GLOBAL VARIABLES
-global $cowobo, $translate, $lang;
+global $translate, $lang;
 
 //check user language before loading anything else
 if(!$lang):?>
@@ -40,7 +40,7 @@ wp_enqueue_script('mainscript', get_bloginfo('template_url').'/js/script.js');
 if(is_single())	wp_enqueue_script('comment-reply');
 
 //get currentcat
-$current_category = $cowobo->get_current_category();
+$current_category = cowobo()->get_current_category();
 extract ($current_category);
 
 //$feed_query = ($catid = get_query_var('cat')) ? "'c',$catid" : "'p',".$post->ID;

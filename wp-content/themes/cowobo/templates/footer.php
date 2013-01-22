@@ -1,10 +1,10 @@
 <?php
-global $cowobo;
+
 
 $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://www.cowobo.org/"');
 
 
-//$cowobo->posts->print_rss_links();
+//cowobo()->posts->print_rss_links();
 
 echo '<div class="footer">';
 		
@@ -33,7 +33,7 @@ echo '</div>';
 //include share forms below feeds
 echo '<div class="hide">';
 	echo '<h2>Share with friends &raquo;</h2>';
-	if ( $cowobo->query->user_email ) echo 'Your message has been sent.';
+	if ( cowobo()->query->user_email ) echo 'Your message has been sent.';
 	echo '<form method="post" action="">';
         wp_nonce_field( 'sendemail', 'sendemail' );
 		echo '<textarea name="emailtext" rows="3" class="emailtext"></textarea>';

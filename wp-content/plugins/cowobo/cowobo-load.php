@@ -105,10 +105,9 @@ if (!class_exists('CoWoBo')) :
         /**
          * Var to contain the layouts class
          *
-         * @var CoWoBo_Localization
+         * @var CoWoBo_Layouts
          */
         public $layouts;
-
 
         /**
          * Notices
@@ -116,6 +115,11 @@ if (!class_exists('CoWoBo')) :
          * Errors, messages, success, or other notifications to the user about what's going on here.
          */
         public $notices = array();
+
+        /**
+         * Admin notice
+         */
+        public $admin_notice = '';
 
         /**
          *
@@ -130,6 +134,8 @@ if (!class_exists('CoWoBo')) :
             );
 
 
+        static $instance = false;
+
         /**
          * Creates an instance of the CoWoBo class
          *
@@ -141,12 +147,21 @@ if (!class_exists('CoWoBo')) :
             global $cowobo;
             //static $instance = false;
 
+            if ( self::$instance && ! $cowobo ) $cowobo = self::$instance;
             if (!$cowobo) {
                 load_plugin_textdomain('cowobo', false, basename(COWOBO_PLUGIN_DIR) . '/languages/');
-                $cowobo = new CoWoBo;
+                $cowobo = self::$instance = new CoWoBo;
             }
 
             return $cowobo;
+        }
+
+        public static function &instance() {
+            if ( ! self::$instance ) {
+                self::$instance = new CoWoBo;
+            }
+
+            return self::$instance;
         }
 
         /**
@@ -173,6 +188,20 @@ if (!class_exists('CoWoBo')) :
                 $this->__construct();
             }
 
+
+        public function do_admin_notice( $notice = '' ) {
+            if ( ! empty ( $notice ) && empty ( $this->admin_notice ) )
+                $this->admin_notice = $notice;
+
+            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+        }
+
+        public function admin_notice() {
+            echo "<div class='error'>
+                <p>{$this->admin_notice}</p>
+             </div>";
+        }
+
         private function setup_notices_loop() {
             $this->notices_loop = new stdClass;
             $this->notices_loop->count = 0;
@@ -184,7 +213,8 @@ if (!class_exists('CoWoBo')) :
         }
 
         private function actions_and_filters() {
-            add_action('init', array ( &$this, 'setup' ) );
+            // 9, so it runs before bp_init
+            add_action('init', array ( &$this, 'setup' ), 9 );
             add_action('template_redirect', array ( &$this, 'controller' ) );
 
         }
@@ -386,5 +416,14 @@ if (!class_exists('CoWoBo')) :
 
     }
 
-    add_action('plugins_loaded', array('CoWoBo', 'init'));
+    add_action('plugins_loaded', array('CoWoBo', 'init') );
 endif;
+
+function cowobo() {
+    return CoWoBo::instance();
+}
+
+function is_profile( $postid = 0, $postcat = '' ) {
+    if ( ! empty ( $postcat ) )
+        return ( $postcat->slug == 'coder' );
+}

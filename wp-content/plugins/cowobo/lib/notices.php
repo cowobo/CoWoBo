@@ -1,8 +1,8 @@
 <?php
 function have_notices() {
-    global $cowobo;
-    $loop = &$cowobo->notices_loop;
-    $notices = &$cowobo->notices;
+    
+    $loop = &cowobo()->notices_loop;
+    $notices = &cowobo()->notices;
 
     if ( empty ( $notices ) )
         return false;
@@ -27,10 +27,10 @@ function have_notices() {
 }
 
 function the_notice() {
-    global $cowobo;
-    $loop = &$cowobo->notices_loop;
-    $notices = &$cowobo->notices;
-    $notice = &$cowobo->notices_loop->the_notice;
+    
+    $loop = &cowobo()->notices_loop;
+    $notices = &cowobo()->notices;
+    $notice = &cowobo()->notices_loop->the_notice;
 
     // make sure all the notices haven't already been looped through
     if ( $loop->index >= $loop->count ) {
@@ -44,7 +44,7 @@ function the_notice() {
     $notice = current ( each ( $notices ) );
 
     // increment the index for the next time this method is called
-    //next ( $cowobo->notices );
+    //next ( cowobo()->notices );
     $loop->index++;
 
 }
@@ -54,8 +54,8 @@ function the_notice_content() {
 }
 
     function get_the_notice_content() {
-        global $cowobo;
-        $notice = &$cowobo->notices_loop->the_notice;
+        
+        $notice = &cowobo()->notices_loop->the_notice;
         return current ( $notice );
     }
 
@@ -64,7 +64,7 @@ function the_notice_type() {
 }
 
     function get_the_notice_type() {
-        global $cowobo;
-        $notice = &$cowobo->notices_loop->the_notice;
+        
+        $notice = &cowobo()->notices_loop->the_notice;
         return key ( $notice );
     }

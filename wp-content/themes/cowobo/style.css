@@ -156,7 +156,7 @@ body.js.notice { padding-right: 60px; }
 .zoomlevel {width:70px; margin-left: 15px; float:left;}
 .button, .form-submit input {font-size:15px; color:#5c63b3; border:none; background:none; padding:none; font-weight:bold; cursor:pointer; margin: 0 15px 0 0;}
 .form-submit input {width:auto;}
-.field {display:inline-block; zoom: 1; *display: inline; margin-right:15px}
+.field {display:inline-block; zoom: 1; display: inline; margin-right:15px}
 .field h3 {display:inline;}
 .field a {margin-left:5px}
 .smallfield {width:290px; margin:10px 10px 0 0;}
