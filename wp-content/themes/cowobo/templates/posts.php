@@ -4,21 +4,14 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postid = get_the_ID();
 	$postcat = $cowobo->posts->get_category($postid);
 
-	//include post title and data
-	echo '<div class="feedtitle">'.$cowobo->feed->feed_title();
+	//include thumbnails
+	echo $cowobo->posts->load_thumbs($post->ID);
+	
+	echo '<div class="posttitle">'.$cowobo->L10n->the_title($post->ID);
 		echo '<a class="feededit" href="?action=editpost">';
         echo ( $author ) ? '+edit' : "+contribute?";
         echo '</a>';
 	echo '</div>';
-
-	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
-	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
-	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';
-
-	include(TEMPLATEPATH.'/templates/search.php');
-
-	//include gallery if post has images
-	echo $cowobo->posts->loadgallery($post->ID);
 
     if ( isset ( $cowobo->layouts->layout[$postcat->term_id] ) ) {
 
