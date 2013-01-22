@@ -113,7 +113,7 @@ function cwb_loadmap() {
 	$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
 	
 	//construct new maplayer
-	$map = '<div class="slide" style="width:110%; height:110%; left: -5%; top:-5%;">';
+	$map = '<div class="slide zoom1" id="slide-0" style="width:110%">';
 	$newlayer .= '<img class="mapimg" src="'.$tileurl.'" alt="" width="100%">';
 
 	//sort $posts by related count
@@ -144,7 +144,7 @@ function cwb_loadmap() {
 
 	//now add the links to a layer above the cloud mask
 	if($markerlinks):
-		$map .= '<div class="markerlinks style="width:110%"">';
+		$map .= '<div class="markerlinks zoom1">';
 		foreach($markerlinks as $markerlink):
 			$map .= $markerlink;
 		endforeach;
