@@ -87,7 +87,9 @@ else:
 		endif;
 
         do_action ( 'cowobo_after_content' );
-        
+        if (is_user_logged_in() )
+            do_action ( 'cowobo_after_content_loggedin' );
+
 		//include share forms below feeds
 		//if( ! $action && ! cowobo()->query->new ) include( TEMPLATEPATH . '/templates/share.php');
 
