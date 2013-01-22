@@ -36,18 +36,21 @@ define('COWOBO_CP_INC_URL', COWOBO_CP_URL . '_inc/');
 if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
-     * @todo Give points to user / author(s) of post
      * @todo Add specific CoWoBo point actions
-     * @todo Show point log @ own profile
-     * @todo Show point log @ all profiles?
-     * @display points and rank on user profile
+     * @todo Add strings for point actions
      */
     class CoWoBo_CubePoints    {
 
-        public $current_user_points = 0;
-        public $current_user_rank = array( "rank" => "", "points" => "");
-        public $next_rank = array( "rank" => "", "points" => "");
         public $ranks = array();
+
+        public $current_user_points     = 0;
+        public $current_user_rank       = array( "rank" => "", "points" => "");
+        public $current_user_next_rank  = array( "rank" => "", "points" => "");
+
+        public $displayed_user_points   = 0;
+        public $displayed_user_rank     = array( "rank" => "", "points" => "");
+        public $displayed_user_next_rank
+                                        = array( "rank" => "", "points" => "");
 
         /**
          * Creates an instance of the CoWoBo_CubePoints class
@@ -81,18 +84,19 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             $this->setup_context();
 
-            if (is_user_logged_in() )
-                $this->setup_current_user();
-
             if ( is_user_logged_in() ) {
+                $this->setup_current_user();
                 add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
-                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 10, 3 );
+
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
+                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             }
 
-            add_action('cp_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
+            add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
 
         }
 
@@ -137,16 +141,40 @@ if (!class_exists('CoWoBo_CubePoints')) :
         private function setup_current_user() {
 
             $current_user_points = $this->get_current_user_points();
+            $current_user_ranks = $this->get_user_ranks_by_points( $current_user_points );
 
-            foreach( $this->ranks as $p => $r ) {
-                if( $current_user_points >= $p ) {
-                    $this->current_user_rank = array ( "rank" => $r, "points" => $p );
-                    $this->next_rank = $previous_rank;
-                    break;
-                }
-                $previous_rank = array ( "rank" => $r, "points" => $p );
-            }
+            $this->current_user_rank        = $current_user_ranks['current_rank'];
+            $this->current_user_next_rank   = $current_user_ranks['next_rank'];
+
         }
+
+        private function setup_displayed_user() {
+            $display_user_id = cowobo()->users->displayed_user->ID;
+            $displayed_user_points = $this->displayed_user_points = $this->get_user_points( $display_user_id );
+            $displayed_user_ranks = $this->get_user_ranks_by_points( $displayed_user_points );
+
+            $this->displayed_user_rank        = $displayed_user_ranks['current_rank'];
+            $this->displayed_user_next_rank   = $displayed_user_ranks['next_rank'];
+        }
+
+            private function get_user_ranks_by_points ( $points ) {
+                $previous_rank = '';
+                foreach( $this->ranks as $p => $r ) {
+                    if( $points >= $p ) {
+                        $current_rank = array ( "rank" => $r, "points" => $p );
+                        $next_rank = $previous_rank;
+                        break;
+                    }
+                    $previous_rank = array ( "rank" => $r, "points" => $p );
+                }
+
+                if ( empty ( $next_rank ) ) $next_rank = $current_rank;
+
+                return array (
+                    "current_rank" => $current_rank,
+                    "next_rank" => $next_rank,
+                );
+            }
 
         public function get_current_user_points() {
             if ( !is_user_logged_in() ) return null;
@@ -191,9 +219,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public function do_awesome_box() {
             echo "<div class='tab'>";
-            echo "<p>" . $this->get_current_user_points() . "</p>";
-            echo "<p>" . $this->get_current_user_rank() . "</p>";
-            $this->do_progression();
+            echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
+            echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
+            $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+            echo "</p>";
             echo "</div>";
         }
 
@@ -201,22 +230,24 @@ if (!class_exists('CoWoBo_CubePoints')) :
          * @todo make this work with different UIDs
          * @param type $uid
          */
-        public function do_progression( $uid = 0 ) {
-            $current_points = (int) $this->current_user_points - (int) $this->current_user_rank['points'];
-            $goal = (int) $this->next_rank['points'] - (int) $this->current_user_rank['points'];
+        public function do_progression( $points, $current_rank, $next_rank ) {
+
+            $current_points = (int) $points - (int) $current_rank['points'];
+            $goal = (int) $next_rank['points'] - (int) $current_rank['points'];
             if ( $goal == 0 ) return false;
             $percentage = round ( ($current_points / $goal) * 100 );
 
             $image_url = COWOBO_CP_INC_URL . 'progress_bar.png';
 
             ?>
-            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;">
+            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
                 <div class="stat-bar" style="width:<?php echo $percentage;?>px; overflow: hidden;">
-                    <img alt="" src="<?php echo $image_url;?>"/>
+                    <img title="You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
                 </div>
             </div>
-            You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $this->next_rank['rank']; ?>!
             <?php
+            return $goal - $current_points;
+
         }
 
         /**
@@ -280,11 +311,21 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     case 'post' :
                         if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
                         $authors = cowobo()->posts->get_post_authors( $object_id );
+
+                        if ( $this->kudos_already_given() ) {
+                            cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
+                            return;
+                        }
+
                         foreach ( $authors as $author_profile_id ) {
                             $this->give_kudos( 'profile', $author_profile_id, $amount, $origin );
                         }
                         break;
                     case 'profile' :
+                        if ( $origin == $object && $this->kudos_already_given() ) {
+                            cowobo()->add_notice("You must really like this angel! Sorry, but you can't give props to the same person twice.");
+                            return;
+                        }
                         if ( ! $amount ) $amount = COWOBO_CP_PROFILE_KUDOS;
                         $users = cowobo()->users->get_users_by_profile_id( $object_id );
                         foreach ( $users as $user ) {
@@ -301,33 +342,100 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 }
             }
 
+            private function kudos_already_given ( $data = '' ) {
+                global $wpdb;
+
+                if ( empty ( $data) ) $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
+
+                $query = $wpdb->prepare ( 'SELECT * FROM `' . CP_DB . '` WHERE data = %s', $data );
+                $results = $wpdb->get_results( $query, 'ARRAY_A' );
+                return ( ! empty ( $results ) );
+            }
+
         public function cp_logs_desc( $type, $uid, $points, $data ){
-            if ( ! substr ( $type, 0, 7 ) == 'cowobo_' ) return;
-            $type = substr ( $type, 7 );
+            if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
+                $type = substr ( $type, 7 );
 
-            $data_arr = array();
-            parse_str ( $data, $data_arr );
-            if ( empty ( $data_arr ) ) {
-                echo "Corrupted data";
-                return;
+                $data_arr = array();
+                parse_str ( $data, $data_arr );
+                if ( empty ( $data_arr ) ) {
+                    echo "Corrupted data";
+                    return;
+                }
+
+                if ( ! isset ( $data_arr['userid'] ) ) return false;
+                $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+
+                switch ( $type ) {
+                    case 'kudos_profile' :
+                        echo '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> gave props and respect';
+                        break;
+                    case 'kudos_post' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                        break;
+                }
+            } else {
+                switch ( $type ) {
+                    case 'dailypoints' :
+                        echo "Thanks for checking in on CoWoBo today!";
+                        break;
+                    case 'post' :
+                        $post = get_post($data);
+                        echo 'Added a new post, <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                        break;
+
+
+                    default:
+                        do_action('cp_logs_description', $type, $uid, $points, $data );
+                        break;
+                }
             }
 
-            if ( ! isset ( $data_arr['userid'] ) ) return false;
-            $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
 
-            switch ( $type ) {
-                case 'kudos_profile' :
-                    echo 'Props and respect from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                    break;
-                case 'kudos_post' :
-                    if ( ! isset ( $data_arr['postid'] ) ) return false;
-                    $post = get_post( $data_arr['postid'] );
-                    echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                    break;
-            }
+
 
             return;
         }
+
+        public function do_user_profile_points ( $postid, $postcat, $author ) {
+            if ( ! cowobo()->users->is_profile() ) return;
+
+            $this->setup_displayed_user();
+
+            echo '<span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+            echo '<span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
+            $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
+        }
+
+        public function do_points_log_box( $postid, $postcat, $author ) {
+            if ( ! cowobo()->users->is_profile() ) return;
+
+            $GLOBALS['wpdb']->show_errors();
+            $log = $this->get_log ( cowobo()->users->displayed_user->ID, 15 );
+
+            require ( COWOBO_CP_DIR . 'templates/log.php' );
+
+        }
+
+            private function get_log( $type = 'all', $limit = 10 ) {
+                global $wpdb;
+
+                $q      = '';
+                $limitq = '';
+
+                $uid = (int) cowobo()->users->displayed_user->ID;
+
+                if ( 'all' != $type )
+                    $q = $wpdb->prepare ( " WHERE `uid` = %d", $uid );
+
+                if( $limit > 0 )
+                    $limitq = 'LIMIT '.(int) $limit;
+
+                $query = 'SELECT * FROM `' . CP_DB . '` ' . $q . ' ORDER BY timestamp DESC ' . $limitq;
+                return $wpdb->get_results( $query );
+            }
 
     }
 

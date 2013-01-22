@@ -422,3 +422,8 @@ endif;
 function cowobo() {
     return CoWoBo::instance();
 }
+
+function is_profile( $postid = 0, $postcat = '' ) {
+    if ( ! empty ( $postcat ) )
+        return ( $postcat->slug == 'coder' );
+}

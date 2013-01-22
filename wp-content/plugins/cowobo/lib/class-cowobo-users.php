@@ -166,7 +166,6 @@ class CoWoBo_Users
         return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
     }
 
-
     public function is_profile() {
 
         if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
