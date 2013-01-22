@@ -6,8 +6,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 	//include thumbnails
 	echo cowobo()->posts->load_thumbs($post->ID);
-	
+
 	echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID);
+
+        if ( ! cowobo()->users->is_profile() || $author ) {
             echo '<a class="feededit" href="?action=editpost">';
             echo ( $author ) ? '+edit' : "+contribute?";
             echo '</a>';
