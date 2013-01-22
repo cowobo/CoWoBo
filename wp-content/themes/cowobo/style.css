@@ -10,7 +10,7 @@ Author URI: http://www.cowobo.org
 /* Tag Styles */
 * {margin:0; padding:0;}
 html {overflow-y:scroll; height:100%;}
-html, body {top: 0!important; position:relative; background:#f7f7f7; }
+html, body {top: 0!important; position:relative;}
 body {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; color: #555; min-height:100%; line-height:1.6em; font-size:15px; overflow:hidden;}
 a {text-decoration:none; color:#5c63b3; font-weight:bold;}
 a:hover {color:#666}
@@ -43,60 +43,62 @@ form {margin:0 auto;}
 .horlist {list-style:none; display: block;}
 .horlist li, .horlist span, .horlist a{margin:0 15px 0 0; display:inline-block; cursor:pointer;}
 .inline {display: inline!important;}
-.nowrap {white-space:nowrap; height:25px; overflow:hidden; color:#999; text-overflow: ellipsis; }
+.nowrap {white-space:nowrap; height:25px; overflow:hidden; color:#999; text-overflow: ellipsis;}
+.unselectable {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 .hint {font-weight:bold; color:#999; margin-left:5px;}
 .half {width:305px; float:left; clear:none!important;}
 .auto {width:auto}
 
 /* Map Styles*/
-.background {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;}
-.planet {position:relative; cursor: pointer; z-index:1; background:#1a4780;}
-.mapholder, .maplayer, .marker, .markerlink, .tile, .buffer {position:absolute;}
-.mapholder {top:-50%; left:-50%; width:200%; height:200%;}
-.maplayer {top:0; left:0; width:100%; height:100%;}
-.maplogo {float:right; margin-top:5px}
-.cloud {position:relative; z-index:9;}
-.buffer {top:0; left:0; width:100%; height:100%; z-index: 1}
-.tile {top:25%; left:25%; width:50%; height:50%; z-index: 2}
-.markerlinks {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:10;}
+.planet {position:relative; cursor: pointer; background:#1a4780; overflow:hidden;}
+.marker, .markerlink, .markerlinks, .mapimg, .navcontrols, .navcontrols a {position:absolute;}
+.slide {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:1}
+.cloud {position:relative; z-index:4;}
+.mapimg {top:0; left:0; width:100%; height:100%;}
+.markerlinks {top:0; left:0; width:100%; height:100%; z-index:6;}
 .markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0}
 .markerlink:hover {opacity:1; color:#fff;}
-.marker {z-index:8;}
-.navcontrols {position:absolute; opacity:0.8; right:25px; top: 35px; width:55px; height:133px; background:url(images/navcontrols.png); z-index:20}
-.navcontrols a {position:absolute; width:20px; height:20px; text-align:center; color:#fff; line-height: 16px;}
+.marker {z-index:4;}
+.zoom1 {width:110%; height:110%; left: -5%; top:-5%};
+.zoom2 {width:200%; height:200%; top:-50%; left:-50%;}
+.navcontrols {position:absolute; opacity: 0.9; right:20px; top: 20px; width:124px; height:50px; background:url(images/navcontrols.png); z-index:20}
+.navcontrols a {position:absolute; width:20px; height:20px; text-align:center; color:#333; line-height: 16px;}
 .navcontrols a:hover {color:#888;}
-.panup {top:0px; left:17px; font-size:21px}
-.pandown {top:36px; left:17px; font-size:21px}
-.panleft {top:20px; left:0px; font-size:23px}
-.panright {top:20px; left:34px; font-size:23px}
-.zoomin {top:72px; left:17px; font-size:28px}
-.zoomout {top:112px; left:17px; font-size:21px}
+.panup {top:0px; right:16px; font-size:21px}
+.pandown {top:33px; right:16px; font-size:21px}
+.panleft {top:18px; right:32px; font-size:23px}
+.panright {top:18px; right:0px; font-size:23px}
+.zoomin {top:16px; right:68px; font-size:28px}
+.zoomout {top:17px; right:106px; font-size:24px}
+.grabcursor {cursor:hand; cursor:grab!important; cursor:-moz-grab; cursor: url(https://mail.google.com/mail/images/2/openhand.cur), pointer!important; cursor:-webkit-grab;}
 
 /* Page Styles*/
-.feed {position:relative; width:640px; margin:0 auto 130px auto; z-index:20;}
-.feedtitle {font-size:34px; color:#fff; font-weight:bold; height:24px; cursor:pointer; margin: 70px 70px 0 0; overflow:hidden;}
-.feededit {font-size:20px; margin-left:10px; color:#fff; line-height:0;}
-.introtitle {position:relative; margin:70px auto 60px auto; font-family: 'Passion One', cursive; color:#fff; font-size:50px; z-index:20; text-align:center; width:500px; line-height:1em;}
-.introtitle:hover, .introtitle a:hover {color:#eee;}
-.introtitle a{color:#fff; font-size:40px;}
-.learnmore {position:absolute; top:5px; left:0; width:100%; text-align:center; color:#fff; font-size:24px;}
-.sitetitle {font-size:22px!important;}
-.feedlinks {position:relative; padding:5px 2px 0 15px; z-index: 20; font-size:17px; margin-bottom:30px;}
-.feedlinks a {margin-right:10px; color:#fff;}
-.feedlinks a:hover {color:#ccc;}
-.maploading {padding-left:20px; height:22px; background:url(images/loading.gif) no-repeat right center;}
-.loading {width:20px; height: 20px; background:url(images/loading.gif) no-repeat center; display: inline-block;}
+.page  {position:relative; background:#fff;}
+.dragbar {height:15px; cursor: n-resize;}
+.feed {position:relative; width:620px; margin:0 auto 0 auto; background:#fff; overflow:hidden; padding:0 15px 20px 15px; z-index:20; }
+.sitetitle {position:absolute; top:15px; font-weight:normal; left:20px; z-index: 20; font-size:23px; color:#ddd;}
+.sitetitle:hover {color:#fff;}
+.posttitle {font-size:26px; margin: 15px 0 15px 0;}
+.feededit {font-size:18px; margin: 0 0 0 10px;}
+.intro {position:absolute; left:50%; color:#fff; z-index:11;}
+.title {font-size:38px; top: 90px; margin-left:-200px;}
+.tour {font-size:26px; top: 130px; margin-left:-90px;}
+.titlebar {position:absolute; left:50%; bottom:0px; margin-left:-310px; z-index:5; white-space:nowrap;}
+.titlebar img {margin: 0 0 -5px 200px;}
+.feedtitle, .feedtitle a {font-size:38px; line-height:20px; font-weight:bold; color:#fff;}
+.footer {clear:both; padding:20px 0 0 0; text-align:center;}
+.footer a {font-size:17px; margin:0 20px 0 0;}
 
 /* Search Styles */
 .searchbar, .sortbar, .gobutton {font-size:20px; line-height:30px; padding-left:10px;}
-.searchbar:hover, .sortbar:hover {background:#ddd;}
-.searchbar {width:305px; margin-right:10px;}
-.sortbar {width:240px; margin-right:10px; background: #eee url(images/arrowdown.png) center right no-repeat;}
+.searchbar:hover, .sortbar:hover {background:#ccc;}
+.searchbar {width:305px; margin-right:10px; background: #ddd;}
+.sortbar {width:240px; margin-right:10px; background: #ddd url(images/arrowdown.png) center right no-repeat;}
 .gobutton {background:#8b94d0 url(images/searchbutton.png) center center no-repeat; width:55px; border:none; padding:0; cursor:pointer;}
 .gobutton:hover {background:#707bc5 url(images/searchbutton.png) center center no-repeat;}
 .closebutton {position:absolute; bottom:0; right:0; width:15px; height:15px; background:url(images/arrowup.png) no-repeat; cursor:pointer;}
+.js .dropmenu {display:none;}
 .dropmenu {position:relative; overflow:hidden; margin-top:10px;}
-.js .dropmenu {display:none}
 .dropmenu .half {font-size:16px; font-weight:bold; }
 .dropmenu span {float:left; width:50%; cursor:pointer; opacity:0.8}
 .dropmenu span:hover, .checked {opacity:1!important; font-size:17px}
@@ -104,15 +106,12 @@ form {margin:0 auto;}
 .dropmenu li:hover {color:#333;}
 
 /* Tab Styles */
-.tab {padding:10px; background:#fff; margin-bottom:20px; clear:both; }
-.tab, .tabthumb, .tabtext, .shadow {-moz-box-shadow:5px 5px 30px 0px rgba(0,0,0,0.2); -webkit-box-shadow:5px 5px 30px 0px rgba(0,0,0,0.2); box-shadow:5px 5px 30px 0px rgba(0,0,0,0.2);}
-.tab:hover, .tabthumb:hover, .tabtext:hover {-moz-box-shadow:5px 5px 30px 0px rgba(0,0,0,0.4); -webkit-box-shadow:5px 5px 30px 0px rgba(0,0,0,0.4); box-shadow:5px 5px 30px 0px rgba(0,0,0,0.4);}
-.tabthumb {border:10px solid #fff; width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden;}
+.tab {background:#fff; margin-bottom:20px; clear:both; }
+.tabthumb {width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden;}
 .tabthumb {text-align:center; line-height:90px; font-size:100px; color:#ccc; margin-bottom:20px}
-.tabtext {width:440px; height:100px; background:#fff; border: 10px solid white; overflow:hidden; margin-bottom:20px}
+.tabtext {width:460px; height:100px; background:#fff; overflow:hidden; margin-bottom:20px}
 .nextthumb {float:left; width:40px; height:30px; overflow:hidden; background:#eee;}
 .gallery {position:relative; height:350px; overflow:hidden; opacity:0.9; cursor:pointer;}
-.slide {position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:1}
 .gallery .slide {background:#eee;}
 .caption, .captionback {position:absolute; bottom:0; left:0; width:610px; padding:0 5px 5px 5px; height:20px; overflow:hidden; z-index:1}
 .caption {color:#fff;}
@@ -123,10 +122,8 @@ form {margin:0 auto;}
 .third {float:left; width:200px; margin-right:10px;}
 .third .thumb {height:130px;}
 .fourths {overflow:hidden; width:628px;}
-.fourth {float:left; width:149px; margin-right:8px;}
-.fourth .thumb {height:95px;}
-.fourth .thumb:hover {opacity:0.8;}
-.symbol {color:#888; margin-right:5px}
+.fourth {float:left; width:149px; overflow:hidden; height:90px; margin-right:8px; background:#ccc; opacity:0.8;}
+.fourth:hover {opacity:1;}
 .notice { border-radius: 2px; background: rgba(255,255,255,0.7); font-weight: bold; }
 .notice.error { background: rgba(255,210,210,0.7); }
 body.js.notice { padding-right: 60px; }
@@ -180,9 +177,8 @@ body.js.notice { padding-right: 60px; }
 .rsslinks a {margin:0 15px 0 0; display: inline-block; font-weight:normal;}
 .fbbutton {display:inline-block; margin:10px; color:#fff; padding:4px; background: #5B74A8; border:1px solid; border-color: #29447E #29447E #1A356E;}
 .tweetbutton {margin:10px; background:#39D; padding: 5px 9px 5px 9px; color: white; -moz-border-radius: 4px;	-webkit-border-radius: 4px;	border-radius: 4px; border: 1px solid #39D; font: bold Helvetica Neue,Arial,"Lucida Grande",Sans-serif;}
-.fb-like {margin:10px;}
+.fb-like {margin-top:10px;}
 .emailtext {margin-bottom:10px;}
-
 
 /* Background Styles */
 .angel {position:absolute;}
@@ -192,12 +188,10 @@ body.js.notice { padding-right: 60px; }
 .angel3 {right:-30px; top:-44px;}
 .angel4 {left:-163px; top:125px;}
 .angel5 {right:-163px; top:245px;}
-.menuback {position:absolute; top:0; left:0; width:100%; height:40px; background:#ddd; z-index:0}
-.pagesource {position:relative; margin-top:-30px; text-align:left; direction:ltr; color:#ddd; z-index:3}
+.background {position:absolute; top:10px; left:0; width:100%; height:100%; overflow:hidden;}
+.pagesource {position:relative; text-align:left; direction:ltr; color:#ccc; z-index:3}
 .unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
 .rownumbers {float:left; color:#ccc; text-align:right; width:20px; margin-right:15px; height:100%; font-size:13px}
-.footer {position:absolute; bottom:20px; left:0; width:100%; text-align:center; z-index:15}
-.footer a {font-size:17px; margin:0 10px 0 10px;}
 
 /* Google Translate Styles */
 #google-infowindow, #goog-gt-tt .gmnoprint, .skiptranslate {display:none!important}

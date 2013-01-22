@@ -28,90 +28,102 @@ else:
 		$coordinates = get_post_meta($post->ID, 'coordinates', true);
 	endif;
 
+	if(is_home() && !$cowobo->query->s && !$cowobo->query->new){
+		$ishome = true;
+	} else if(is_single()){
+		$mapheight = 'style="margin-top:-60px"';
+	} else {
+		$mapheight = 'style="margin-top:-200px"';
+	}
+	
 	//add hidden description for google index
+	echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';	
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
-
-	//include site-wide links
-	echo '<div class="feedlinks">';
-		echo '<a class="sitetitle" href="'.home_url().'">Coders Without Borders</a>';
-		echo '<a href="?action=contact">Contact</a>';
-		if(is_user_logged_in()):
-			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
-		else:
-			echo '<a href="?action=login'.'">Profile</a>';
-		endif;
-		echo '<a class="showmap" href="?action=showmap'.'">Show Map ▼</a>';
-		echo '<span class="maploading hide"></span>';
-		echo '<a class="maplogo" href="http://www.mapquest.com" title="Visit MapQuest"><img src="'.get_bloginfo('template_url').'/images/mapquest.png" alt=""></a>';
+		
+	//include planet/imageviewer
+	echo '<div class="planet grabcursor" '.$mapheight.'>';
+		echo '<img class="cloud" src="'.get_bloginfo('template_url').'/images/cloud.png" width="100%" alt=""/>';
+		echo cwb_loadmap();
+		echo '<div class="titlebar">';
+			echo '<span class="feedtitle">'.$cowobo->feed->feed_title().'</span>';
+			echo '<img src="'.get_bloginfo('template_url').'/images/intro.png" alt=""/>';
+		echo '</div>';
 	echo '</div>';
 
-	//include translating message for other languages
-	if($translate):
-		echo '<div class="feeds translating">';
-			echo '<div class="feedtitle">'.$feedtitle.'</div>';
-			echo '<h2 class="center">'.$subtitle.'<span class="loading"></span></h2>';
-		echo '</div>';
-		$state='hide';
-	else:
-		$state='';
-	endif;
-
-	if(is_home() && !$cowobo->query->s && !$cowobo->query->new ):
-		include( TEMPLATEPATH . '/templates/home.php');
-	endif;
-	//include feed (hide if we are translating with javascript)
-	echo '<div class="feed" '.$state.'>';
-
-		//include any notifications to user
-		include( TEMPLATEPATH . '/templates/notify.php');
-
-		//include the appropriate feed template
-		if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
-			if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
-				include(TEMPLATEPATH.'/templates/login.php');
-			else:
-				include(TEMPLATEPATH.'/templates/'.$action.'.php');
-			endif;
-		elseif( $cowobo->query->new ): $author = true;
-			if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
-				 include(TEMPLATEPATH.'/templates/login.php');
-			else:
-				include(TEMPLATEPATH.'/templates/editpost.php');
-			endif;
-		elseif(is_404()):
-			include(TEMPLATEPATH.'/templates/404.php');
-		elseif(is_single()):
-			include(TEMPLATEPATH.'/templates/posts.php');
-		elseif(is_category() or $cowobo->query->s): 
-			include(TEMPLATEPATH.'/templates/categories.php');
-		endif;
-
-		//include share forms below feeds
-		//if( ! $action && ! $cowobo->query->new ) include( TEMPLATEPATH . '/templates/share.php');
-
-		//clear floats in feed
-		echo '<div class="clear"></div>';
-
+	//include planet/imageviewer controls
+	echo '<div class="navcontrols">';
+		echo '<a class="pan panleft" href="?pan=left">&#60;</a>';
+		echo '<a class="pan panright" href="?pan=right">&#62;</a>';
+		echo '<a class="pan panup" href="?pan=up">&#8743;</a>';
+		echo '<a class="pan pandown" href="?pan=down">&#8744;</a>';
+		echo '<a class="zoom zoomin" href="?zoom=in">+</a>';
+		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
 	echo '</div>';
 
-	echo '<div class="background">';
+	
+	//include page
+	echo '<div class="page">';
 
-		echo '<div class="planet">';
-			echo '<img class="cloud" src="'.get_bloginfo('template_url').'/images/cloud.png" width="100%" alt=""/>';
-			echo cwb_loadmap();
-		echo '</div>';
-
-		//include background for image disabled browsers
-		echo '<div class="menuback"></div>';
-
-		echo '<div class="pagesource unselectable" unselectable="on">';
-			echo '<div class="rownumbers">';
-				for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
+		//include dragbar to resize imageviewer
+		echo '<div class="dragbar"></div>';
+			
+		//if translating hide feed and show notice
+		if($translate):
+			echo '<div class="feeds translating">';
+				echo '<div class="feedtitle">'.$feedtitle.'</div>';
+				echo '<h2 class="center">'.$subtitle.'<span class="loading"></span></h2>';
 			echo '</div>';
-			echo '<pre class="notranslate">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre>';
+			$state='hide';
+		else:
+			$state='';
+		endif;
+	
+		//include feed
+		echo '<div class="feed" '.$state.'>';
+			
+			if(is_home() && !$cowobo->query->s && !$cowobo->query->new ):
+				include(TEMPLATEPATH.'/templates/search.php');
+			endif;
+	
+			//include any notifications to user
+			include( TEMPLATEPATH . '/templates/notify.php');
+	
+			//include the appropriate feed template
+			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
+				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
+					include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/'.$action.'.php');
+				endif;
+			elseif( $cowobo->query->new ): $author = true;
+				if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
+					 include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/editpost.php');
+				endif;
+			elseif(is_404()):
+				include(TEMPLATEPATH.'/templates/404.php');
+			elseif(is_single()):
+				include(TEMPLATEPATH.'/templates/posts.php');
+			elseif(is_category() or $cowobo->query->s): 
+				include(TEMPLATEPATH.'/templates/categories.php');
+			endif;
+	
+			//include footer
+			include(TEMPLATEPATH.'/templates/footer.php');
+			
 		echo '</div>';
 
-		include(TEMPLATEPATH.'/templates/footer.php');
+		//include background source
+		echo '<div class="background">';
+			echo '<div class="pagesource unselectable" unselectable="on">';
+				echo '<div class="rownumbers">';
+					for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
+				echo '</div>';
+				echo '<pre class="notranslate">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre>';
+			echo '</div>';
+		echo '</div>';
+			
 
 	echo '</div>';
 
