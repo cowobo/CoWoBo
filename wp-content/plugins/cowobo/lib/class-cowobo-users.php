@@ -12,6 +12,7 @@ if (!defined('ABSPATH'))
 class CoWoBo_Users
 {
     public $current_user_profile_id = 0;
+    public $current_user_profile_name = '';
     public $displayed_user = null;
 
     public function __construct() {
@@ -31,14 +32,15 @@ class CoWoBo_Users
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
 
-        add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
+        add_filter( 'avatar_defaults' ,             array ( &$this, 'avatar_defaults' ) );
 
     }
 
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
         echo "<div class='tab'>";
-        do_action ( 'current_user_box', &$this );
+        echo "<h3>" . $this->current_user_profile_name . "</h3>";
+        do_action ( 'current_user_box' );
         echo "</div>";
     }
 
@@ -167,9 +169,10 @@ class CoWoBo_Users
      * @return type
      */
     public function get_current_user_profile_id() {
-        if ( ! $this->current_user_profile_id ) {
+        if ( ! $this->current_user_profile_id || empty ( $this->current_user_profile_id ) ) {
             $user_id = wp_get_current_user()->ID;
             $this->current_user_profile_id = $this->get_user_profile_id( $user_id );
+            $this->current_user_profile_name = get_the_title ( $this->current_user_profile_id );
         }
 
         return $this->current_user_profile_id;
