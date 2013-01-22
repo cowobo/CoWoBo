@@ -22,7 +22,7 @@ if ( $query->new ) {
     elseif(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
 
     $postcat = cowobo()->posts->get_category($postid);
-    $unsaved_data = ( cowobo()->has_notice( 'savepost' ) ) ? true : false;
+    $unsaved_data = ( cowobo()->has_notice( array ( 'savepost', 'saved' ) ) ) ? true : false;
 }
 
 //if user is not author show become editor screen
