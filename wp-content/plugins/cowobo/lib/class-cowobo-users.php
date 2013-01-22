@@ -31,6 +31,8 @@ class CoWoBo_Users
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
 
+        add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
+
     }
 
     public function current_user_box() {
@@ -247,5 +249,11 @@ class CoWoBo_Users
     public function is_current_user_profile() {
         return ( get_the_ID() == $this->current_user_profile_id );
     }
+
+	function avatar_defaults( $avatar_defaults ) {
+       $cowoboavatar = COWOBO_DEFAULT_AVATAR_URL;
+       $avatar_defaults[$cowoboavatar] = 'Cowobo';
+       return $avatar_defaults;
+	}
 
 }
