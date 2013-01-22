@@ -38,23 +38,23 @@ jQuery(document).ready(function() {
 		event.stopPropagation();
 		jQuery(this).parent().toggleClass('checked');
 	});
-	
+
 	jQuery('.dropmenu span').live('click', function(event){
 		var checkbox = jQuery(this).children('input');
 		var type = jQuery(this).parents('.dropmenu').attr('id');
 		checkbox.prop("checked", !checkbox.prop("checked"));
 		jQuery(this).toggleClass('checked');
 	});
-	
+
 	jQuery('.searchform').live('click', function(){
 		jQuery('.dropmenu').slideDown();
 	});
-	
+
 	jQuery('.closebutton').live('click', function(event){
 		event.stopPropagation();
 		jQuery('.dropmenu').slideUp();
 	});
-		
+
 	if(jQuery('.translating').length>0){
 		var title = jQuery(".description");
 		title.data('original', title.text());
@@ -68,7 +68,14 @@ jQuery(document).ready(function() {
 	} else {
 		jQuery('.feeds').fadeIn();
 	}
-	
+
+    // Avatar uploads
+    jQuery( ".upload-avatar-link").click( function(e) {
+        e.preventDefault();
+        jQuery(".upload-avatar").slideToggle();
+
+    });
+
 });
 
 /// TAB FUNCTIONS ///
@@ -287,7 +294,7 @@ jQuery('.htmlmode').live('click', function(e){
 jQuery('.richmode').live('click', function(e){
 	e.preventDefault();
  	jQuery('#rte').html(jQuery(".htmlbox").val());
-	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();	
+	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();
 });
 
 jQuery('.makebold').live('click', function(e){
