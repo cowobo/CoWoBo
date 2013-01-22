@@ -301,16 +301,14 @@ class CoWoBo_Posts
      */
     public function loadgallery( $postid ) {
 
-        $slidenum = 5; //to limit the download burden
         $slides = array();
 
-        for ($x=0; $x<$slidenum; $x++):
+        for ($x=0; $x<3; $x++):
 
             //store slide info
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
-             $state = ($x==0) ? 'hide' : '';
             //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
                 $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
@@ -319,14 +317,11 @@ class CoWoBo_Posts
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-               	$thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a></div>';
             elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-                $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
                 $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
                     if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
-                $thumbs[$x] = '<div class="fourth '.$state.'"><a href="?img='.$x.'" class="thumb '.$state.'"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a></div>';
             endif;
 
             unset($caption); unset($imgid);
@@ -338,17 +333,38 @@ class CoWoBo_Posts
         $gallery = '';
         if( ! empty ( $slides ) ) {
             $slides = array_reverse($slides); //so they appear in the correct order
-            $gallery = '<div class="tab"><div class="gallery">'.implode('', $slides).'</div></div>';
+            $gallery = implode('', $slides);
         }
-
-        if(count($slides)<4 && count($slides)>1){
-            $remaining = 5 - count($slides);
-            for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-            $gallery .= '<div class="tab"><div class="fourths">'.implode('',$thumbs).'</div></div>';
-        }
-
-
+		
         return $gallery;
+    }
+
+	/**
+     * Return list of thumbs for post
+     */
+    function load_thumbs($postid, $catslug = false){
+        
+        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
+			
+		//create thumbs for other images
+        for ($x=0; $x<3; $x++):
+            //store slide info
+            $imgid = get_post_meta($postid, 'imgid'.$x, true);
+            $videocheck = explode("?v=", $caption);
+		    //check if the slide is video or image;
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+            elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
+                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+            endif;
+        endfor;
+
+        //construct thumb gallery
+        $remaining = 4 - count($thumbs);
+        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
+        $gallery .= '<div class="fourths">'.implode('',$thumbs).'</div>';
+		
+		return $gallery;
     }
 
     /**
