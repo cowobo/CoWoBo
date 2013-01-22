@@ -1,6 +1,6 @@
 <?php
 global $post, $currlang;
-$query = &cowobo()->query;
+$query = cowobo()->query;
 
 if ( $query->new ) {
     $postid = ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  ) ? $newpostid : 0;

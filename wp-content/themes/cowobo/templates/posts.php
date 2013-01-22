@@ -5,13 +5,12 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postcat = cowobo()->posts->get_category($postid);
 
 	//include thumbnails
-	echo $cowobo->posts->load_thumbs($post->ID);
+	echo cowobo()->posts->load_thumbs($post->ID);
 	
-	echo '<div class="posttitle">'.$cowobo->L10n->the_title($post->ID);
+	echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID);
             echo '<a class="feededit" href="?action=editpost">';
             echo ( $author ) ? '+edit' : "+contribute?";
             echo '</a>';
-        }
 	echo '</div>';
 
     if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
