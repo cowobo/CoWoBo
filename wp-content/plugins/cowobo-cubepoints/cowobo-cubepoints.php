@@ -37,9 +37,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
      * @todo Add specific CoWoBo point actions
-     * @todo Show point log @ own profile
-     * @todo Show point log @ all profiles?
-     * @display points and rank on user profile
+     * @todo Add strings for point actions
      */
     class CoWoBo_CubePoints    {
 
@@ -312,6 +310,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     case 'post' :
                         if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
                         $authors = cowobo()->posts->get_post_authors( $object_id );
+                        $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
+                        if ( $this->kudos_already_given( $data ) ) {
+                            cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
+                            return;
+                        }
                         foreach ( $authors as $author_profile_id ) {
                             $this->give_kudos( 'profile', $author_profile_id, $amount, $origin );
                         }
@@ -331,6 +334,14 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         break;
 
                 }
+            }
+
+            private function kudos_already_given ( $data ) {
+                global $wpdb;
+
+                $query = $wpdb->prepare ( 'SELECT * FROM `' . CP_DB . '` WHERE data = %s', $data );
+                $results = $wpdb->get_results( $query, 'ARRAY_A' );
+                return ( ! empty ( $results ) );
             }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
@@ -357,9 +368,25 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
                         break;
                 }
+            } else {
+                switch ( $type ) {
+                    case 'dailypoints' :
+                        echo "Thanks for checking in on CoWoBo today!";
+                        break;
+                    case 'post' :
+                        $post = get_post($data);
+                        echo 'Added a new post, <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                        break;
+
+
+                    default:
+                        do_action('cp_logs_description', $type, $uid, $points, $data );
+                        break;
+                }
             }
-            else
-                do_action('cp_logs_description', $type, $uid, $points, $data );
+
+
+
 
             return;
         }
