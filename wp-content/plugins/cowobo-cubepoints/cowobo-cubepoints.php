@@ -392,8 +392,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_user_profile_points ( $postid, $postcat, $author ) {
+            if ( ! cowobo()->users->is_profile() ) return;
+
             $this->setup_displayed_user();
-            //if ( ! cowobo()->users->is_profile() ) return;
 
             echo '<span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
             echo '<span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
