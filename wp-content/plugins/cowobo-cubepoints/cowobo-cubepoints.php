@@ -100,6 +100,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
             add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
 
         }
 
@@ -111,6 +112,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        public function no_points_for_profiles( $post_id ) {
+            if ( cowobo()->users->is_profile( $post_id) ) return 0;
+        }
 
         public function add_notification($type, $uid, $points, $data) {
             if (get_current_user_id() != $uid )
@@ -367,7 +372,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
-                if ( isset ( $data_arr['userid'] ) ) 
+                if ( isset ( $data_arr['userid'] ) )
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
 
                 switch ( $type ) {
