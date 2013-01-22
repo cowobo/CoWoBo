@@ -46,6 +46,11 @@ jQuery(document).ready(function() {
 		jQuery('.feeds').fadeIn();
 	}
 	
+    // Avatar uploads
+    jQuery( ".upload-avatar-link").click( function(e) {
+        e.preventDefault();
+        jQuery(".upload-avatar").slideToggle();
+    });
 	
 	//Enable Map Resizing and Panning
 	var pan = false; var drag = false; var previousX; var previousY;

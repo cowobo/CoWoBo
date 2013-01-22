@@ -86,7 +86,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( is_user_logged_in() ) {
                 $this->setup_current_user();
-                add_action ( 'cowobo_after_content', array ( &$this, 'do_awesome_box' ) );
+                add_action ( 'current_user_box', array ( &$this, 'do_awesome_box' ) );
+
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
 
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
@@ -218,12 +219,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function do_awesome_box() {
-            echo "<div class='tab'>";
+            //echo "<div class='tab'>";
             echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
             echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
             $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
             echo "</p>";
-            echo "</div>";
+            //echo "</div>";
         }
 
         /**
