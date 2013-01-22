@@ -6,9 +6,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 	//include post title and data
 	echo '<div class="feedtitle">'.cowobo()->feed->feed_title();
-		echo '<a class="feededit" href="?action=editpost">';
-        echo ( $author ) ? '+edit' : "+contribute?";
-        echo '</a>';
+        if ( $author || ! is_profile ( null, $postcat ) ) {
+            echo '<a class="feededit" href="?action=editpost">';
+            echo ( $author ) ? '+edit' : "+contribute?";
+            echo '</a>';
+        }
 	echo '</div>';
 
 	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
@@ -105,6 +107,9 @@ if (have_posts()) : while (have_posts()) : the_post();
                 endif;
             endif;
         endforeach;
+
+        do_action ( 'cowobo_after_layouts', $postid, $postcat, $author );
+
         echo '</div>';
 
     }
@@ -139,7 +144,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 		endforeach;
 	endif;
 
-	if($author):
+	if($author) {
 		echo '<div class="tabthumb right">+</div>';
 		echo '<div class="tabtext left">';
 			echo '<h2>Add posts to this page &raquo;</h2>';
@@ -161,7 +166,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 				echo '<button type="submit" class="button">Add</button>';
 			echo '</form>';
 		echo '</div>';
-	endif;
+    }
+
+    do_action ( 'cowobo_after_post', $postid, $postcat, $author );
+
 
 	//show comments
     if ( ! $postcat->slug == 'coder' )

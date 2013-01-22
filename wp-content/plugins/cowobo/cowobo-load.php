@@ -110,18 +110,16 @@ if (!class_exists('CoWoBo')) :
         public $layouts;
 
         /**
-         * Var to contain the BuddyPress class
-         *
-         * @var CoWoBo_BuddyPres
-         */
-        public $buddypress;
-
-        /**
          * Notices
          *
          * Errors, messages, success, or other notifications to the user about what's going on here.
          */
         public $notices = array();
+
+        /**
+         * Admin notice
+         */
+        public $admin_notice = '';
 
         /**
          *
@@ -189,6 +187,20 @@ if (!class_exists('CoWoBo')) :
             public function CoWoBo() {
                 $this->__construct();
             }
+
+
+        public function do_admin_notice( $notice = '' ) {
+            if ( ! empty ( $notice ) && empty ( $this->admin_notice ) )
+                $this->admin_notice = $notice;
+
+            add_action ('admin_notices', array ( &$this, 'admin_notice' ) );
+        }
+
+        public function admin_notice() {
+            echo "<div class='error'>
+                <p>{$this->admin_notice}</p>
+             </div>";
+        }
 
         private function setup_notices_loop() {
             $this->notices_loop = new stdClass;
@@ -409,4 +421,9 @@ endif;
 
 function cowobo() {
     return CoWoBo::instance();
+}
+
+function is_profile( $postid = 0, $postcat = '' ) {
+    if ( ! empty ( $postcat ) )
+        return ( $postcat->slug == 'coder' );
 }

@@ -14,7 +14,7 @@ class CoWoBo_Posts
      * Delete post and all links associated with it
      */
     public function delete_post() {
-        
+
 
         $deleteid = cowobo()->query->id;
         cowobo()->relations->delete_relations($deleteid);
@@ -557,5 +557,22 @@ class CoWoBo_Posts
             }
         }
     }
+
+    public function get_post_authors( $postid = 0 ) {
+        if ( ! $postid ) $postid = get_the_ID();
+        if ( ! $postid ) return array();
+
+        return get_post_meta( $postid, 'author', false );
+    }
+
+    public function is_user_post_author ( $postid = 0, $profile_id = 0 ) {
+        if ( ! is_user_logged_in() ) return false;
+
+        if ( ! $profile_id ) $profile_id = $GLOBALS['profile_id'];
+        $authors = $this->get_post_authors( $postid );
+
+        return in_array( $profile_id, $authors );
+    }
+
 }
 
