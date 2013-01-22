@@ -1,11 +1,6 @@
 <?php
 global $cowobo;
 
-	echo '<div class="feedtitle">'. $cowobo->feed->feed_title() .'</div>';
-	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';						
-	echo '<img class="angel angel4" src="'.get_bloginfo('template_url').'/images/angel1.png" alt=""/>';
-	echo '<img class="angel angel5" src="'.get_bloginfo('template_url').'/images/angel2.png" alt=""/>';												
-
 	include(TEMPLATEPATH.'/templates/search.php');		
 
 	if (have_posts()):
