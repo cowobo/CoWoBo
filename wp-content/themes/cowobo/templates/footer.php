@@ -8,8 +8,15 @@ $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://
 
 echo '<div class="footer">';
 		
+		echo '<a href="'.home_url().'">Home</a>';
+		echo '<a href="?action=contact">Contact</a>';
+		if(is_user_logged_in()):
+			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
+		else:
+			echo '<a href="?action=login'.'">Your Profile</a>';
+		endif;
+		
 		echo '<a href="?action=rss">RSS</a>';
-		echo '<a href="?action=contact">Disclaimer</a>';
 		echo '<a href="?action=translate'.'">English (UK)</a>';
 		if(is_user_logged_in()):
 			echo '<a href="'.wp_logout_url(get_bloginfo('url')).'">Logout</a>';
@@ -23,7 +30,7 @@ echo '<div class="footer">';
 		
 echo '</div>';
 
-
+//include share forms below feeds
 echo '<div class="hide">';
 	echo '<h2>Share with friends &raquo;</h2>';
 	if ( $cowobo->query->user_email ) echo 'Your message has been sent.';
@@ -40,6 +47,7 @@ echo '<div class="hide">';
 echo '</div>';?>
 
 <div id="fb-root"></div>
+
 <script>
 	(function(d, s, id) {
 	  var js, fjs = d.getElementsByTagName(s)[0];
