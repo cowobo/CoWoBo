@@ -311,14 +311,14 @@ class CoWoBo_Posts
             $videocheck = explode("?v=", $caption);
             //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
-                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
+                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
             elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
                     if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
@@ -372,13 +372,7 @@ class CoWoBo_Posts
      */
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location'):
-            if($coordinates = get_post_meta($postid, 'coordinates', true)):
-                $zoom = '11';
-            else:
-                $coordinates = '0,40'; $zoom = '1';
-            endif;
-            $mapurl = 'http://platform.beta.mapquest.com/staticmap/v4/getmap?key=Kmjtd|luua2qu7n9,7a=o5-lzbgq&type=sat&scalebar=false&size=140,130&zoom='.$zoom.'&center='.$coordinates;
-            echo '<img src="'.$mapurl.'" width="100%" alt=""/>';
+            echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
         else:
             foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
                 $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
