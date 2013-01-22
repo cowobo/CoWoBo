@@ -30,7 +30,8 @@ class CoWoBo_Users
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
-        add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
 
         add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
 
@@ -39,12 +40,15 @@ class CoWoBo_Users
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
         echo "<div class='tab'>";
-        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
         do_action ( 'current_user_box' );
         echo "</div>";
     }
 
-    public function show_avatar_with_upload_form() {
+    public function do_user_link() {
+        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
+    }
+
+    public function do_avatar_with_upload_form() {
         if( isset ( $_POST['user_avatar_edit_submit'] ) ) {
            do_action('edit_user_profile_update', get_current_user_id() );
         }
@@ -210,6 +214,8 @@ class CoWoBo_Users
      * Save profile id field
      */
     public function save_extra_profile_fields( $user_id = false ) {
+        if ( ! is_admin() || ! cowobo()->query->cowobo_profile ) return;
+
         if ( ! $user_id ) $user_id = get_current_user_id();
 
         if ( !current_user_can( 'edit_user', $user_id ) )
