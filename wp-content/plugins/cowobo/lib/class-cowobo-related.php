@@ -82,11 +82,12 @@ class Cowobo_Related_Posts {
      *
      * @global obj $wpdb
      * @param int $postid of the post to be related
-     * @param arr $relatedpostids of posts to be related
+     * @param mixed $relatedpostids String or array of posts to be related
      * @return arr wp queries
      */
     public function create_relations($postid, $relatedpostids) {
         global $wpdb;
+        if ( ! is_array ( $relatedpostids ) ) $relatedpostids = array ( $relatedpostids );
         $results = array();
         foreach($relatedpostids as $relatedpostid) {
  			$this->delete_relations($postid, $relatedpostid);
