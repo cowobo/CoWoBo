@@ -35,7 +35,7 @@ else:
 	} else {
 		$mapheight = 'style="margin-top:-200px"';
 	}
-	
+
 	//add hidden description for google index
 	echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
@@ -96,7 +96,7 @@ else:
 				include(TEMPLATEPATH.'/templates/'.$action.'.php');
 			endif;
 		elseif( cowobo()->query->new ): $author = true;
-			if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
+			if(!is_user_logged_in()): $redirect = 'new';
 				 include(TEMPLATEPATH.'/templates/login.php');
 			else:
 				include(TEMPLATEPATH.'/templates/editpost.php');
@@ -108,7 +108,7 @@ else:
 		elseif(is_category() or cowobo()->query->s):
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
-	
+
 			do_action ( 'cowobo_after_content' );
 
         do_action ( 'cowobo_after_content' );
