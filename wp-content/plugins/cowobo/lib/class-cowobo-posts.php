@@ -35,6 +35,7 @@ class CoWoBo_Posts
      */
     public function save_post(){
         global $post, $cowobo, $profile_id;
+        $linkedid = 0;
 
         //store all data
         $postid = cowobo()->query->post_ID;
@@ -56,7 +57,7 @@ class CoWoBo_Posts
         }
 
         //check if post is created from within another post
-        if($postid != $post->ID) $linkedid = $post->ID;
+        //if($postid != $post->ID) $linkedid = $post->ID;
 
         if ( empty ( $post_content ) ) {
             $postmsg['largetext'] = "Please add some content to your post!";
@@ -190,11 +191,14 @@ class CoWoBo_Posts
         if(empty($postmsg)) {
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
 
+
             if ( ! isset ( $GLOBALS['newpostid'] ) || empty ( $GLOBALS['newpostid'] ) ) {
                 do_action( 'cowobo_post_updated', $postid, $post_title );
             }
 
-            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, array($linkedid));
+            if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
+            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
+
             cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
@@ -346,7 +350,7 @@ class CoWoBo_Posts
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-		
+
         return $gallery;
     }
 
@@ -354,9 +358,9 @@ class CoWoBo_Posts
      * Return list of thumbs for post
      */
     function load_thumbs($postid, $catslug = false){
-        
+
         $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-			
+
 		//create thumbs for other images
         for ($x=0; $x<3; $x++):
             //store slide info
@@ -374,7 +378,7 @@ class CoWoBo_Posts
         $remaining = 4 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
         $gallery .= '<div class="fourths">'.implode('',$thumbs).'</div>';
-		
+
 		return $gallery;
     }
 

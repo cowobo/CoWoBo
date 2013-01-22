@@ -1,9 +1,11 @@
 <?php
 global $post, $currlang;
 $query = cowobo()->query;
+$link_to = 0;
 
 if ( $query->new ) {
     $postid = ( isset ( $GLOBALS['newpostid'] ) && $newpostid = $GLOBALS['newpostid']  ) ? $newpostid : 0;
+    if ( is_single() ) $link_to = get_the_ID();
 
     // Set the category
     $postcat = get_category ( get_cat_ID( $query->new ) );
@@ -224,6 +226,7 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 		echo '<a class="button" href="'.get_bloginfo('url').'?delete=' . wp_create_nonce( 'delete' ). '&id='.$postid.'">Delete</a>';
 		echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
         wp_nonce_field( 'save', 'save' );
+        if ( $link_to ) echo "<input type='hidden' name='link_to' value='$link_to'>";
 		echo '<button id="formsubmit" type="submit" class="button">Save</button>';
 		echo '<span class="loadicon"></span>';
 	echo '</div>';
