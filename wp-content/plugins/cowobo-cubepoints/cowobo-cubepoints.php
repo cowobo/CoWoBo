@@ -219,9 +219,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public function do_awesome_box() {
             echo "<div class='tab'>";
-            echo "<p>" . $this->get_current_user_points() . "</p>";
-            echo "<p>" . $this->get_current_user_rank() . "</p>";
+            echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
+            echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
             $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+            echo "</p>";
             echo "</div>";
         }
 
