@@ -32,6 +32,7 @@ class CoWoBo_Users
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form' ), 5 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
+        add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
 
         add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
 
@@ -48,6 +49,13 @@ class CoWoBo_Users
         echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
     }
 
+    public function do_profile_avatar() {
+        if ( ! $this->is_profile() ) return;
+        echo "<p class='left'>";
+        echo get_avatar( get_current_user_id() );
+        echo "</p>";
+    }
+
     public function do_avatar_with_upload_form() {
         if( isset ( $_POST['user_avatar_edit_submit'] ) ) {
            do_action('edit_user_profile_update', get_current_user_id() );
@@ -56,7 +64,7 @@ class CoWoBo_Users
 
         $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
 
-        echo "<p class='hide-if-no-js left'><a href='?upload-avatar' class='upload-avatar-link'>";
+        echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
         echo get_avatar( get_current_user_id() );
         echo "</a></p>";
 

@@ -109,9 +109,13 @@ form {margin:0 auto;}
 
 /* Tab Styles */
 .tab {background:#fff; margin-bottom:20px; clear:both; }
-.tabthumb {width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden;}
+.tabthumb {width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden; }
 .tabthumb {text-align:center; line-height:90px; font-size:100px; color:#ccc; margin-bottom:20px}
+.tabthumb.left { clear: left; }
+.tabthumb.right { clear: right; }
 .tabtext {width:460px; height:100px; background:#fff; overflow:hidden; margin-bottom:20px}
+.tabtext.left { clear: left; }
+.tabtext.right { clear: right; }
 .nextthumb {float:left; width:40px; height:30px; overflow:hidden; background:#eee;}
 .gallery {position:relative; height:350px; overflow:hidden; opacity:0.9; cursor:pointer;}
 .gallery .slide {background:#eee;}

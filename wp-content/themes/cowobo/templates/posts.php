@@ -110,6 +110,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
+            do_action ( 'cowobo_before_postcontent' );
 			echo apply_filters('the_content',  cowobo()->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
 		echo '</div>';
