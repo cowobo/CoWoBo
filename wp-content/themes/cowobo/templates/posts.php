@@ -6,9 +6,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 	//include post title and data
 	echo '<div class="feedtitle">'.cowobo()->feed->feed_title();
-		echo '<a class="feededit" href="?action=editpost">';
-        echo ( $author ) ? '+edit' : "+contribute?";
-        echo '</a>';
+        if ( $author || ! is_profile ( null, $postcat ) ) {
+            echo '<a class="feededit" href="?action=editpost">';
+            echo ( $author ) ? '+edit' : "+contribute?";
+            echo '</a>';
+        }
 	echo '</div>';
 
 	echo '<img class="angel angel3" src="'.get_bloginfo('template_url').'/images/angel3.png" alt=""/>';
