@@ -23,10 +23,60 @@ class CoWoBo_Users
     }
 
     private function actions_and_filters() {
-        add_action('show_user_profile', array ( &$this, 'show_extra_profile_fields' ) );
-        add_action('edit_user_profile', array ( &$this, 'show_extra_profile_fields' ) );
-        add_action('personal_options_update', array ( &$this, 'save_extra_profile_fields' ) );
-        add_action('edit_user_profile_update', array ( &$this, 'save_extra_profile_fields' ) );
+        add_action('show_user_profile',             array ( &$this, 'show_extra_profile_fields' ) );
+        add_action('edit_user_profile',             array ( &$this, 'show_extra_profile_fields' ) );
+        add_action('personal_options_update',       array ( &$this, 'save_extra_profile_fields' ) );
+        add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
+
+        add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
+        add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
+
+    }
+
+    public function current_user_box() {
+        if ( ! has_action ( 'current_user_box') ) return;
+        echo "<div class='tab'>";
+        do_action ( 'current_user_box', &$this );
+        echo "</div>";
+    }
+
+    public function show_avatar_with_upload_form() {
+        if( isset ( $_POST['user_avatar_edit_submit'] ) ) {
+           do_action('edit_user_profile_update', get_current_user_id() );
+        }
+
+
+        $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
+
+        echo "<p class='hide-if-no-js left'><a href='?upload-avatar' class='upload-avatar-link'>";
+        echo get_avatar( get_current_user_id() );
+        echo "</a></p>";
+
+        echo "<div class='upload-avatar hide-if-js'>";
+        $this->avatar_upload_form();
+        echo "</div>";
+    }
+
+    private function avatar_upload_form() {
+        do_action( 'simple_local_avatar_notices' );
+        ?>
+        <form id='your-profile' action='' method='post'>
+            <?php wp_nonce_field( 'simple_local_avatar_nonce', '_simple_local_avatar_nonce', false ); ?>
+            <input type="file" name="simple-local-avatar" id="simple-local-avatar" /><br />
+
+            <?php
+            if ( empty( get_userdata( get_current_user_id() )->simple_local_avatar ) )
+                echo '<span class="description">' . __('No local avatar is set. Use the upload field to add a local avatar.','simple-local-avatars') . '</span>';
+            else
+                echo '
+                    <input type="checkbox" name="simple-local-avatar-erase" value="1" /> ' . __('Delete local avatar','simple-local-avatars') . '
+                ';
+            ?>
+            <p><input type="submit" class='button' name="user_avatar_edit_submit" value="Upload avatar"/></p>
+            <script type="text/javascript">var form = document.getElementById('your-profile');form.encoding = 'multipart/form-data';form.setAttribute('enctype', 'multipart/form-data');</script>
+        </form>
+        <div class="clear"></div>
+        <?php
     }
 
     private function has_sent_email() {
