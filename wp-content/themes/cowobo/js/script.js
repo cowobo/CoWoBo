@@ -31,7 +31,7 @@ jQuery(document).ready(function() {
 	} else {
 		jQuery('.feeds').fadeIn();
 	}
-		
+
 	if(jQuery('.translating').length>0){
 		var title = jQuery(".description");
 		title.data('original', title.text());
@@ -45,38 +45,38 @@ jQuery(document).ready(function() {
 	} else {
 		jQuery('.feeds').fadeIn();
 	}
-	
+
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
         jQuery(".upload-avatar").slideToggle();
     });
-	
+
 	//Enable Map Resizing and Panning
 	var pan = false; var drag = false; var previousX; var previousY;
-	
+
 	jQuery(".planet").mousedown(function(e) {
 		jQuery('body').addClass('unselectable');
 	    previousX = e.clientX;
 	    previousY = e.clientY;
 	    pan = true;
 	});
-	
+
 	jQuery(".dragbar").mousedown(function(e) {
 		jQuery('body').addClass('unselectable');
 	    previousY = e.clientY;
 	    drag = true;
 	});
-	
+
 	jQuery("body").mousemove(function(e) {
-	    
+
 		if (pan) {
 	        var slide = jQuery(".slide:last");
-			var slidepos = slide.position(); 
+			var slidepos = slide.position();
 			var xmax = jQuery('.planet').width()-slide.width();
 			var ymax = jQuery('.planet').height()-slide.height();
 			var ymin = -parseFloat(jQuery('.planet').css('margin-top'));
-			var newx = slidepos.left - (previousX - e.clientX);  
+			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
 			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');
 			if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
@@ -88,7 +88,7 @@ jQuery(document).ready(function() {
 	        previousX = e.clientX;
 	        previousY = e.clientY;
 	    }
-		
+
 		if (drag) {
 	        var planet = jQuery(".planet");
 			var planetpos = parseFloat(planet.css('margin-top'));
@@ -105,13 +105,18 @@ jQuery(document).ready(function() {
 	        previousY = e.clientY;
 	    }
 	});
-	
+
 	//disable panning and dragging on mouse up
 	jQuery(document).mouseup(function() {
 	    pan = false; drag = false;
 		jQuery('body').removeClass('unselectable');
 	});
-	
+
+    // Is So Meta (Even The Acronym)!
+    jQuery('div.pagesource pre').html(
+        document.documentElement.outerHTML.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    );
+
 });
 
 //IMAGE VIEWER FUNCTIONS//
@@ -124,7 +129,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var xmax = jQuery('.planet').width()-slide.width();
 	var ymax = jQuery('.planet').height()-slide.height();
 	var amount; var newstyle;
-	
+
 	if(action == 'labels') {
 		//to do: change day/night maptype
 	} else if(action == 'panleft') {
@@ -152,7 +157,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	} else if(action ==  'zoomout') {
 		newstyle = {width:"100%", height:"100%", top:"0", left:"0"};
 	}
-	
+
 	//if slide contains markers than animate that too
 	if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 	slide.animate(newstyle, 2000);
@@ -169,23 +174,23 @@ jQuery('.dropmenu input').live('click', function(event){
 	event.stopPropagation();
 	jQuery(this).parent().toggleClass('checked');
 });
-	
+
 jQuery('.dropmenu span').live('click', function(event){
 	var checkbox = jQuery(this).children('input');
 	var type = jQuery(this).parents('.dropmenu').attr('id');
 	checkbox.prop("checked", !checkbox.prop("checked"));
 	jQuery(this).toggleClass('checked');
 });
-	
+
 jQuery('.searchform').live('click', function(){
 	jQuery('.dropmenu').slideDown();
 });
-	
+
 jQuery('.closebutton').live('click', function(event){
 	event.stopPropagation();
 	jQuery('.dropmenu').slideUp();
 });
-	
+
 
 /// TAB FUNCTIONS ///
 jQuery(document).ready(function($) {
@@ -235,7 +240,7 @@ jQuery('.htmlmode').live('click', function(e){
 jQuery('.richmode').live('click', function(e){
 	e.preventDefault();
  	jQuery('#rte').html(jQuery(".htmlbox").val());
-	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();	
+	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();
 });
 
 jQuery('.makebold').live('click', function(e){
