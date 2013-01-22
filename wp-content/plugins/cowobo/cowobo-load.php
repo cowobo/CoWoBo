@@ -43,7 +43,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'notices.php' );
 
-require_once ( COWOBO_PLUGIN_LIB . 'simple-local-avatars/simple-local-avatars.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'simple-local-avatars.php' );
 
 if (!class_exists('CoWoBo')) :
 
