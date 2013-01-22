@@ -29,6 +29,8 @@ form {margin:0 auto;}
 
 /* Generic Styles*/
 .hide {display:none;}
+.js .hide-if-js { display: none; }
+.no-js .hide-if-no-js { display: none; }
 .left {float:left!important;}
 .right {float:right!important;}
 .clear {clear:both;}
@@ -171,9 +173,9 @@ body.js.notice { padding-right: 60px; }
 .richbuttons a {color:#333; margin-right:10px;}
 .richmode {display:none;}
 .makeitalic {font-weight:normal;}
-.makeunderline {font-weight:normal; text-decoration:underline} 
+.makeunderline {font-weight:normal; text-decoration:underline}
 .makelink {color:#5c63b3!important;}
-.htmlbox {display:none; height:300px; overflow-y:scroll;} 
+.htmlbox {display:none; height:300px; overflow-y:scroll;}
 
 /* Share Styles */
 .rsslinks {line-height:30px;}
