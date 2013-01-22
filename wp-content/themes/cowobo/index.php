@@ -86,11 +86,12 @@ else:
 		echo '<div class="dragbar"></div>';
 		
 		//include shadow
-		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 				
 		//include feed (hide if we are translating with javascript)
 		echo '<div class="feed">';
 			
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+
 			//include searchform
 			include(TEMPLATEPATH.'/templates/search.php');
 	
@@ -138,6 +139,9 @@ else:
 		echo '</div>';
 
 		echo '<div class="background">';
+			
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+
 			echo '<div class="pagesource unselectable" unselectable="on">';
 				echo '<div class="rownumbers">';
 					for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
