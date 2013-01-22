@@ -61,7 +61,7 @@ form {margin:0 auto;}
 .markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0}
 .markerlink:hover {opacity:1; color:#fff;}
 .marker {z-index:4;}
-.zoom1 {width:110%; height:110%; left: -5%; top:-5%};
+.zoom1 {width:110%; height:110%; left: -5%; top:-5%}
 .zoom2 {width:200%; height:200%; top:-50%; left:-50%;}
 .navcontrols {position:absolute; opacity: 0.9; right:20px; top: 20px; width:124px; height:50px; background:url(images/navcontrols.png); z-index:20}
 .navcontrols a {position:absolute; width:20px; height:20px; text-align:center; color:#333; line-height: 16px;}

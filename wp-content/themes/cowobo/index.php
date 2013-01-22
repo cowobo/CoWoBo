@@ -28,7 +28,16 @@ else:
 		$coordinates = get_post_meta($post->ID, 'coordinates', true);
 	endif;
 
+	if(is_home() && !$cowobo->query->s && !$cowobo->query->new){
+		$ishome = true;
+	} else if(is_single()){
+		$mapheight = 'style="margin-top:-60px"';
+	} else {
+		$mapheight = 'style="margin-top:-200px"';
+	}
+	
 	//add hidden description for google index
+	echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
 
 	//include planet/imageviewer
@@ -36,7 +45,7 @@ else:
 		echo '<img class="cloud" src="'.get_bloginfo('template_url').'/images/cloud.png" width="100%" alt=""/>';
 		echo cwb_loadmap();
 		echo '<div class="titlebar">';
-			echo '<span class="feedtitle">'.$cowobo->feed->feed_title().'</span>';
+			echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
 			echo '<img src="'.get_bloginfo('template_url').'/images/intro.png" alt=""/>';
 		echo '</div>';
 	echo '</div>';
@@ -51,13 +60,13 @@ else:
 		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
 	echo '</div>';
 
-	
+
 	//include page
 	echo '<div class="page">';
 
 		//include dragbar to resize imageviewer
 		echo '<div class="dragbar"></div>';
-			
+
 		//if translating hide feed and show notice
 	if($translate):
 		echo '<div class="feeds translating">';
@@ -113,14 +122,6 @@ else:
 	echo '</div>';
 
 	echo '<div class="background">';
-
-		echo '<div class="planet">';
-			echo '<img class="cloud" src="'.get_bloginfo('template_url').'/images/cloud.png" width="100%" alt=""/>';
-			echo cwb_loadmap();
-		echo '</div>';
-
-		//include background for image disabled browsers
-		echo '<div class="menuback"></div>';
 
 		echo '<div class="pagesource unselectable" unselectable="on">';
 			echo '<div class="rownumbers">';
