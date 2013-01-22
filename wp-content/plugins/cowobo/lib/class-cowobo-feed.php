@@ -66,7 +66,7 @@ class CoWoBo_Feed
      */
     function feed_title(){
         global $currentcat, $post, $cowobo;
-
+		
         if( $cowobo->query->new )
             $feedtitle .= 'Add '.$cowobo->query->new;
         elseif( is_404() )
@@ -85,13 +85,12 @@ class CoWoBo_Feed
             $feedtitle = 'Change Language';
         elseif( $cowobo->query->action == 'editpost')
             $feedtitle = 'Edit Post';
-        elseif( is_single() )
-            $feedtitle = $cowobo->L10n->the_title($post->ID);
-        elseif( is_category() )
+		elseif( $cowobo->users->is_profile ) 
+			$feedtitle = $post->post_title;
+        elseif( is_single() or is_category()) 
             $feedtitle = $currentcat->name;
-        else
-            //$feedtitle = $langnames[$lang][1];
-            $feedtitle = 'Welcome to Coders Without Borders';
+        elseif( is_home() )
+            $feedtitle = '<a href="/category/take-the-tour">Take the Tour &raquo;</a>';
 
         return $feedtitle;
     }
