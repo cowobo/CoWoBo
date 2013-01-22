@@ -86,7 +86,7 @@ class CoWoBo_Feed
             $feedtitle = 'Change Language';
         elseif( cowobo()->query->action == 'editpost')
             $feedtitle = 'Edit Post';
-		elseif( cowobo()->users->is_profile ) 
+		elseif( cowobo()->users->is_profile() ) 
 			$feedtitle = $post->post_title;
         elseif( is_single() or is_category()) 
             $feedtitle = $currentcat->name;

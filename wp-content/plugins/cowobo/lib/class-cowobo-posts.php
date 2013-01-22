@@ -335,7 +335,7 @@ class CoWoBo_Posts
                 $slides[$x] .= '</div>';
             endif;
 
-            unset($caption); unset($imgid);
+           unset($imgid);
 
         endfor;
 
@@ -355,25 +355,25 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
         
-        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
+        $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
 			
 		//create thumbs for other images
-        for ($x=0; $x<3; $x++):
+        for ($x=0; $x<4; $x++):
             //store slide info
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
 		    //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
-               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+               	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
             elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
-                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
             endif;
         endfor;
 
         //construct thumb gallery
-        $remaining = 4 - count($thumbs);
-        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-        $gallery .= '<div class="fourths">'.implode('',$thumbs).'</div>';
+        $remaining = 5 - count($thumbs);
+        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
+        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
 		
 		return $gallery;
     }

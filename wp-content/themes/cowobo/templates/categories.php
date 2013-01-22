@@ -1,7 +1,5 @@
 <?php
 
-
-	echo '<div class="feedtitle">'. cowobo()->feed->feed_title() .'</div>';
 	include(TEMPLATEPATH.'/templates/search.php');		
 
 	if (have_posts()):
