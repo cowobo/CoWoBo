@@ -1,4 +1,8 @@
 <?php
+if ( ! defined ( COWOBO_DEFAULT_AVATAR_URL ) || ! COWOBO_DEFAULT_AVATAR_URL )
+    define ( 'COWOBO_DEFAULT_AVATAR_URL', get_template_directory_uri() . '/images/angel3.png' );
+
+
 //Add console log for easier debugging
 function console_log ( $content ) {
 	echo "<script>console.log('$content')</script>";
@@ -38,15 +42,15 @@ function cowobo_show_admin_bar(){
 
 //check if a website is down
 function check_website_status($url){
-	$resURL = curl_init(); 
-	curl_setopt($resURL, CURLOPT_URL, $url); 
-	curl_setopt($resURL, CURLOPT_BINARYTRANSFER, 1); 
-	curl_setopt($resURL, CURLOPT_HEADERFUNCTION, 'curlHeaderCallback'); 
-	curl_setopt($resURL, CURLOPT_FAILONERROR, 1); 
-	curl_exec ($resURL); 
-	$intReturnCode = curl_getinfo($resURL, CURLINFO_HTTP_CODE); 
-	curl_close ($resURL); 
-	if ($intReturnCode != 200 && $intReturnCode != 302 && $intReturnCode != 304) { 
+	$resURL = curl_init();
+	curl_setopt($resURL, CURLOPT_URL, $url);
+	curl_setopt($resURL, CURLOPT_BINARYTRANSFER, 1);
+	curl_setopt($resURL, CURLOPT_HEADERFUNCTION, 'curlHeaderCallback');
+	curl_setopt($resURL, CURLOPT_FAILONERROR, 1);
+	curl_exec ($resURL);
+	$intReturnCode = curl_getinfo($resURL, CURLINFO_HTTP_CODE);
+	curl_close ($resURL);
+	if ($intReturnCode != 200 && $intReturnCode != 302 && $intReturnCode != 304) {
 	    return false;
 	}
 	else return true;
