@@ -157,7 +157,7 @@ class CoWoBo_Posts
             $tagarray = array_map('intval', $tagarray);
             $tagarray = array_unique($tagarray);
         } elseif($postcat->slug != 'location') {
-             $postmsg['tags'] = 'You must add atleast one.';
+             //$postmsg['tags'] = 'You must add atleast one.';
         }
 
         //handle images
