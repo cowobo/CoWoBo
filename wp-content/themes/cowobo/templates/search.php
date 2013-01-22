@@ -7,7 +7,8 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab searchform"
 	echo '<input type="text" class="sortbar green" name="sortbar" disabled placeholder="Sorted by .."/>';
 	echo '<input type="submit" class="gobutton" value="" title="Search"/>';
 
-	echo '<div class="dropmenu">';	
+	if(!is_home()) $dropclass = 'hide';
+	echo '<div class="dropmenu '.$dropclass.'">';
 		
 		echo '<div id="searchbar" class="half shade left blue">';
 			if($querycats = $cowobo->query->cats) $selected = $querycats; 
@@ -42,5 +43,9 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab searchform"
 		echo '<div class="closebutton" title="Hide Options"></div>';
 			
 	echo '</div>';
+	
+	if(is_home()):
+		//echo '<div class="featured">Featured </div>';
+	endif;
 	
 echo '</form>';	
