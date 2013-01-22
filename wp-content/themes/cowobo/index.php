@@ -108,6 +108,8 @@ else:
 		elseif(is_category() or cowobo()->query->s):
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
+	
+			do_action ( 'cowobo_after_content' );
 
         do_action ( 'cowobo_after_content' );
         if (is_user_logged_in() )

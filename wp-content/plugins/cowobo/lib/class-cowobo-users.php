@@ -32,7 +32,7 @@ class CoWoBo_Users
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
 
-        add_filter( 'avatar_defaults' ,             array ( &$this, 'avatar_defaults' ) );
+        add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
 
     }
 

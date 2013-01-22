@@ -96,13 +96,23 @@ jQuery(document).ready(function() {
 			var slidepos = slide.position();
 			var mousemove = previousY - e.clientY;
 			var newy = planetpos - mousemove;
-			var overlap = slidepos.top + (slide.height() - planet.height());
-			if(overlap < 0) mousemove = 0;
+			var ymax = planet.height() - slide.height();
+			var overlap = slidepos.top - ymax;
+			var newtop = slidepos.top + mousemove;
+			if(overlap < 0) newtop = ymax;
 			if(newy > 0) newy = 0;
-			if(newy < -300) newy = -300;
+			if(newy < -300) {
+				newy = -300;
+				newtop = slidepos.top;
+			}
 			planet.css('margin-top', newy);
-			slide.css('top', slidepos.top + mousemove);
+			slide.css('top', newtop);
 	        previousY = e.clientY;
+			
+			
+			
+			
+			
 	    }
 	});
 
@@ -219,8 +229,9 @@ jQuery('.hidemap').live('click', function(event) {
 jQuery('.fourths a').live('click', function(event) {
 	var num = jQuery(this).index();
 	var slide = jQuery('#slide-'+num);
-	alert(num);
 	event.preventDefault();
+	if(num == 0) jQuery('.markerlinks').show();
+	else jQuery('.markerlinks').hide();
 	slide.hide().appendTo(jQuery('.planet')).fadeIn(1000);
 });
 
