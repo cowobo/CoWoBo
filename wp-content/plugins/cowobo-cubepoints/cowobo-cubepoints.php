@@ -22,6 +22,7 @@ define('COWOBO_CP_VERSION', '0.1');
 
 define ( 'COWOBO_CP_POST_KUDOS', 10 );
 define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
+define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
 
 
 /**
@@ -94,6 +95,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
+                add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
@@ -365,8 +367,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
-                if ( ! isset ( $data_arr['userid'] ) ) return false;
-                $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+                if ( isset ( $data_arr['userid'] ) ) 
+                    $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
 
                 switch ( $type ) {
                     case 'kudos_profile' :
@@ -377,6 +379,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         $post = get_post( $data_arr['postid'] );
                         echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
                         break;
+                    case 'post_updated' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                        break;
+
                 }
             } else {
                 switch ( $type ) {
@@ -438,6 +446,17 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $query = 'SELECT * FROM `' . CP_DB . '` ' . $q . ' ORDER BY timestamp DESC ' . $limitq;
                 return $wpdb->get_results( $query );
             }
+
+        public function record_post_edited( $post_id ) {
+            cp_points("cowobo_post_updated", get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+
+            /*$activity_action  = sprintf( __( '%1$s updated the post %2$s', 'cowobo' ), bp_core_get_userlink( (int) $user_id ), '<a href="' . $post_permalink . '">' . $post_title . '</a>' );
+
+            // Update the blogs last activity
+            bp_blogs_update_blogmeta( $blog_id, 'last_activity', bp_core_current_time() );
+
+            do_action( 'bp_blogs_updated_blog_post', $post_id, $post_title, $user_id );*/
+        }
 
     }
 
