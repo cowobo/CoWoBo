@@ -310,16 +310,21 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     case 'post' :
                         if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
                         $authors = cowobo()->posts->get_post_authors( $object_id );
-                        $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
-                        if ( $this->kudos_already_given( $data ) ) {
+
+                        if ( $this->kudos_already_given() ) {
                             cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
                             return;
                         }
+
                         foreach ( $authors as $author_profile_id ) {
                             $this->give_kudos( 'profile', $author_profile_id, $amount, $origin );
                         }
                         break;
                     case 'profile' :
+                        if ( $origin == $object && $this->kudos_already_given() ) {
+                            cowobo()->add_notice("You must really like this angel! Sorry, but you can't give props to the same person twice.");
+                            return;
+                        }
                         if ( ! $amount ) $amount = COWOBO_CP_PROFILE_KUDOS;
                         $users = cowobo()->users->get_users_by_profile_id( $object_id );
                         foreach ( $users as $user ) {
@@ -336,8 +341,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 }
             }
 
-            private function kudos_already_given ( $data ) {
+            private function kudos_already_given ( $data = '' ) {
                 global $wpdb;
+
+                if ( empty ( $data) ) $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
 
                 $query = $wpdb->prepare ( 'SELECT * FROM `' . CP_DB . '` WHERE data = %s', $data );
                 $results = $wpdb->get_results( $query, 'ARRAY_A' );
