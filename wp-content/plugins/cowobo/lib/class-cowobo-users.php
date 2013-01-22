@@ -38,7 +38,7 @@ class CoWoBo_Users
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
         echo "<div class='tab'>";
-        do_action ( 'current_user_box', &$this );
+        do_action ( 'current_user_box');
         echo "</div>";
     }
 
