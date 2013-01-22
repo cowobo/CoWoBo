@@ -39,7 +39,7 @@ class CoWoBo_Users
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
         echo "<div class='tab'>";
-        echo "<h3>" . $this->current_user_profile_name . "</h3>";
+        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
         do_action ( 'current_user_box' );
         echo "</div>";
     }
