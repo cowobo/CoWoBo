@@ -221,7 +221,14 @@ class CoWoBo_Users
         return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
     }
 
-    public function is_profile() {
+    public function is_profile( $post_id = 0 ) {
+        if ( $post_id ) {
+            $category = cowobo()->posts->get_category( $post_id );
+            if ( ! is_object ( $category ) || $category->slug != 'coder' ) return false;
+            $users = cowobo()->users->get_users_by_profile_id( get_the_ID() );
+            if ( empty ( $users ) ) return false;
+            return current ( $users );
+        }
 
         if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
             return $this->displayed_user;
