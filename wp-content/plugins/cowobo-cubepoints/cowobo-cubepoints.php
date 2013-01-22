@@ -23,6 +23,7 @@ define('COWOBO_CP_VERSION', '0.1');
 define ( 'COWOBO_CP_POST_KUDOS', 10 );
 define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
 define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
+define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
 
 
 /**
@@ -113,8 +114,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
-        public function no_points_for_profiles( $post_id ) {
-            if ( cowobo()->users->is_profile( $post_id) ) return 0;
+        public function no_points_for_profiles( $points ) {
+            if ( cowobo()->query->confirm || cowobo()->query->postcat == get_cat_ID ( 'Coders' ) ) return 0;
+            else return $points;
         }
 
         public function add_notification($type, $uid, $points, $data) {
@@ -389,6 +391,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         $post = get_post( $data_arr['postid'] );
                         echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                         break;
+                    case 'profile_updated' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
+                        break;
 
                 }
             } else {
@@ -453,14 +460,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function record_post_edited( $post_id ) {
-            cp_points("cowobo_post_updated", get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
-
-            /*$activity_action  = sprintf( __( '%1$s updated the post %2$s', 'cowobo' ), bp_core_get_userlink( (int) $user_id ), '<a href="' . $post_permalink . '">' . $post_title . '</a>' );
-
-            // Update the blogs last activity
-            bp_blogs_update_blogmeta( $blog_id, 'last_activity', bp_core_current_time() );
-
-            do_action( 'bp_blogs_updated_blog_post', $post_id, $post_title, $user_id );*/
+            if ( cowobo()->users->is_profile( $post_id ) )
+                cp_points("cowobo_profile_updated", get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
+            else
+                cp_points("cowobo_post_updated", get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
         }
 
     }
