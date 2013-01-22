@@ -204,3 +204,7 @@ body.js.notice { padding-right: 60px; }
 /* Google Translate Styles */
 #google-infowindow, #goog-gt-tt .gmnoprint, .skiptranslate {display:none!important}
 .goog-text-highlight {background:none; -webkit-box-shadow:none; -moz-box-shadow: none; box-shadow: none; box-sizing: none; -webkit-box-sizing: none; -moz-box-sizing: none;}
+
+/* Current user box */
+img.avatar { margin-right: 10px; }
+div.upload-avatar form input { width: initial; }
