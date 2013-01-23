@@ -12,6 +12,9 @@
 if (!defined('ABSPATH'))
     exit;
 
+if ( ! defined ( 'COWOBO_DEBUG' ) )
+    define ( 'COWOBO_DEBUG', true );
+
 /**
  * Version number
  *
@@ -135,6 +138,8 @@ if (!class_exists('CoWoBo')) :
                 "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
             );
 
+        public $debug = false;
+
 
         static $instance = false;
 
@@ -172,6 +177,7 @@ if (!class_exists('CoWoBo')) :
          * @since 0.1
          */
         public function __construct() {
+            if ( COWOBO_DEBUG ) $this->debug = true;
 
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
