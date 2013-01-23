@@ -6,11 +6,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 	//include thumbnails
 	echo '<div class="tab">'.cowobo()->posts->load_thumbs($post->ID).'</div>';
-	
+
 	if($postcat->slug != 'coder' && $postcat->slug != 'location') {
 		echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID).'</div>';
 	}
-	   
+
     if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
 
         $index = 0;
@@ -162,7 +162,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 
 	//show comments
-    if ( ! $postcat->slug == 'coder' )
+    if ( $postcat->slug != 'coder' )
         comments_template();
 endwhile;
 endif;

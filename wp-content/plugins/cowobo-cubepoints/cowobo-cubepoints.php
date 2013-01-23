@@ -39,7 +39,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
      * @todo Add specific CoWoBo point actions
-     * @todo Add strings for point actions
      */
     class CoWoBo_CubePoints    {
 
