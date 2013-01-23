@@ -163,7 +163,6 @@ class CoWoBo_Posts
         //handle images
         /**
          * @todo check for malicious code in jpg?
-         *
          */
         for ($x=0; $x<5; $x++):
             $imgid = $_POST['imgid'.$x];
@@ -172,7 +171,6 @@ class CoWoBo_Posts
             $caption = cowobo()->query->$caption_id;
             $videocheck = explode("?v=", $caption );
             $imagecheck = $this->is_image_url ( $caption );
-
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
             if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
@@ -330,14 +328,12 @@ class CoWoBo_Posts
             $image_check = $this->is_image_url( $caption );
             //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
-
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-
             } elseif ( $image_check ) {
 
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
@@ -633,7 +629,7 @@ class CoWoBo_Posts
         if ( empty ( $url ) ) {
             cowobo()->add_notice( $warning,'error');
             return;
-        }
+}
 
 		$images = array();
 		$title = '';
