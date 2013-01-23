@@ -631,9 +631,12 @@ class CoWoBo_Posts
 
 		if ($str) {
 			$image_els = $html->find('img');
+
 			foreach ($image_els as $el) {
 				if ($el->width > 100 && $el->height > 1) // Disregard spacers
 					$images[] = $el->src;
+
+                if ( count ( $images ) == 5 ) break;
 			}
 			$og_image = $html->find('meta[property=og:image]', 0);
 			if ($og_image) array_unshift($images, $og_image->content);
@@ -668,8 +671,14 @@ class CoWoBo_Posts
         $query = cowobo()->query;
         $query->post_title = trim ( $title );
         $query->post_content = trim ( $text );
-        $query->images = $images;
         $query->website = $url;
+
+        $x = 0;
+        foreach ( $images as $image ) {
+            $caption_id = "caption$x";
+            $query->$caption_id = $image;
+            $x++;
+        }
     }
 
 	/**
@@ -686,4 +695,3 @@ class CoWoBo_Posts
 	}
 
 }
-
