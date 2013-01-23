@@ -109,9 +109,9 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var slide = jQuery('.slide:last');
 	var slideimg = jQuery('.slide .mapimg');
 	var slidepos = slide.position();
-	var pagepos = parseFloat(page.css('margin-top'));
-	var xmax = jQuery('.planet').width()-slide.width();
-	var ymax = jQuery('.planet').height()-slide.height()+pagepos;
+	var pagepos = parseFloat(jQuery('.page').css('margin-top'));
+	var xmax = jQuery('.planet').width() - slide.width();
+	var ymax = jQuery('.planet').height() - slide.height() + pagepos + 40;
 	var amount; var newstyle;
 
 	if(action == 'labels') {
