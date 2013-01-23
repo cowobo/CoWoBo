@@ -107,7 +107,6 @@ function cwb_loadmap() {
 		else $postid = $post->ID;
 		$postcoordinates = get_post_meta($postid, 'coordinates', true);
 		$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
-		echo cowobo()->posts->loadgallery($postid);
 	endif;
 	
 	$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
@@ -151,5 +150,5 @@ function cwb_loadmap() {
 		$map .= '</div>';
 	endif;
 
-	return $map;
+	echo $map;
 }
