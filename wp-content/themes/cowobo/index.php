@@ -35,7 +35,7 @@ else:
 	} else {
 		$mapheight = 'style="margin-top:-200px"';
 	}
-	
+
 	//include hidden description for google index
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
 	echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
@@ -63,7 +63,7 @@ else:
 
 	//include planet/imageviewer
 	echo '<div class="planet grabcursor" '.$mapheight.'>';
-		
+
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
 		echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
 		echo '<div class="shade"></div>';
@@ -74,9 +74,9 @@ else:
 			else  $editlink = '?action=contribute';
 			echo '<a class="editpage" href="'.$editlink.'">Edit Page ▼</a>';
 		echo '</div>';
-		
+
 		echo cwb_loadmap();
-		
+
 	echo '</div>';
 
 	//include page
@@ -123,7 +123,7 @@ else:
 		elseif(is_category() or cowobo()->query->s):
 			include(TEMPLATEPATH.'/templates/categories.php');
 		endif;
-	
+
 			do_action ( 'cowobo_after_content' );
 
         do_action ( 'cowobo_after_content' );
@@ -146,7 +146,7 @@ else:
 			echo '<div class="rownumbers">';
 				for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
 			echo '</div>';
-				echo '<div class="notranslate">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</div>';
+				echo '<div class="notranslate pagesource">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</div>';
 		echo '</div>';
 
 		echo '</div>';

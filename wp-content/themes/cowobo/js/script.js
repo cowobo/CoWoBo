@@ -52,6 +52,10 @@ jQuery(document).ready(function() {
         jQuery(".upload-avatar").slideToggle();
     });
 
+    jQuery(".tab span.close").click( function() {
+        jQuery(this).parent('.tab').fadeOut();
+    })
+
 	//Enable Map Resizing and Panning
 	var pan = false; var drag = false; var previousX; var previousY;
 
@@ -118,6 +122,10 @@ jQuery(document).ready(function() {
 	});
 
     // Is So Meta (Even The Acronym)!
+    var pagesource = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' + document.documentElement.outerHTML;
+    jQuery('div.pagesource').html(
+        pagesource.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    );
 
 
 });
