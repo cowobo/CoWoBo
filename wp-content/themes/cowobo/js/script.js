@@ -1,37 +1,15 @@
 //VARIABLES//
-var overscroller;
 var rooturl;
-var data = {'lat':0, 'lng':40, 'zoom':3, 'type':'sat'}
-var animate = false;
-var slideshow;
 
 //setup mouselisterner on document load
 jQuery(document).ready(function() {
+	
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
 
-	//update global vars of map
-	var newdata = jQuery('.mapdata').val();
-	if(typeof(newdata) !='undefined'){
-		newdata = newdata.split('*');
-		data = {'lat':newdata[0], 'lng':newdata[1], 'zoom':newdata[2], 'type': newdata[3]};
-
-	}
+	//center images in header
+	center_images();
 
 	//cross browser check if page has finished translating
-	if(jQuery('.translating').length>0){
-		var title = jQuery(".description");
-		title.data('original', title.text());
-		var checktitle = setInterval(function(){
-			if(title.data('original') != title.text()) {
-				jQuery('.feeds').fadeIn();
-				jQuery('.translating').fadeOut();
-				clearInterval(checktitle);
-			}
-		}, 500);
-	} else {
-		jQuery('.feeds').fadeIn();
-	}
-
 	if(jQuery('.translating').length>0){
 		var title = jQuery(".description");
 		title.data('original', title.text());
@@ -77,41 +55,34 @@ jQuery(document).ready(function() {
 		if (pan) {
 	        var slide = jQuery(".slide:last");
 			var slidepos = slide.position();
-			var xmax = jQuery('.planet').width()-slide.width();
-			var ymax = jQuery('.planet').height()-slide.height();
-			var ymin = -parseFloat(jQuery('.planet').css('margin-top'));
+			var titleheight = jQuery('.titlebar').height()
+			var pagepos = parseFloat(jQuery('.page').css('margin-top')) + titleheight;
+			var xmax = jQuery('.planet').width() - slide.width();
+			var ymax = jQuery('.planet').height() - slide.height() + pagepos ;
 			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
-			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');
+			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');	
 			if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 			if(newx > 0) newx = 0;
 			if(newx < xmax) newx = xmax;
-			if(newy > ymin) newy = ymin;
+			if(newy > 0) newy = 0;
 			if(newy < ymax) newy = ymax;
 			slide.css({top: newy, left: newx});
 	        previousX = e.clientX;
 	        previousY = e.clientY;
 	    }
-
+		
 		if (drag) {
-	        var planet = jQuery(".planet");
-			var planetpos = parseFloat(planet.css('margin-top'));
-			var slide = jQuery('.slide:last');
-			var slidepos = slide.position();
+	        var page = jQuery(".page");
+			var pagepos = parseFloat(page.css('margin-top'));
 			var mousemove = previousY - e.clientY;
-			var newy = planetpos - mousemove;
-			var ymax = planet.height() - slide.height();
-			var overlap = slidepos.top - ymax;
-			var newtop = slidepos.top + mousemove;
-			if(overlap < 0) newtop = ymax;
+			var newy = pagepos - mousemove;
+			var ymin = jQuery(window).height()- jQuery('.planet').height()- jQuery('.page').height();
 			if(newy > 0) newy = 0;
-			if(newy < -300) {
-				newy = -300;
-				newtop = slidepos.top;
-			}
-			planet.css('margin-top', newy);
-			slide.css('top', newtop);
+			if(newy < ymin) newy = ymin;
+			page.css('margin-top', newy);
 	        previousY = e.clientY;
+			center_images();
 	    }
 	});
 
@@ -138,8 +109,9 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var slide = jQuery('.slide:last');
 	var slideimg = jQuery('.slide .mapimg');
 	var slidepos = slide.position();
+	var pagepos = parseFloat(page.css('margin-top'));
 	var xmax = jQuery('.planet').width()-slide.width();
-	var ymax = jQuery('.planet').height()-slide.height();
+	var ymax = jQuery('.planet').height()-slide.height()+pagepos;
 	var amount; var newstyle;
 
 	if(action == 'labels') {
@@ -181,6 +153,26 @@ function expand_map() {
     return null;
 }
 
+function center_images() {
+	jQuery('.slide').each(function(){
+		var viewheight = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
+		var newtop = (viewheight - jQuery(this).height()) / 2 ;
+		jQuery(this).css('top', newtop);
+	});
+}
+
+jQuery('.resizeicon').live('click', function(event){
+	event.stopPropagation();
+	var slide = jQuery('.slide:last');
+	var margin = parseFloat(jQuery('.page').css('margin-top'));
+	if(margin < 0) var amount = 0;
+	else var amount = -200;
+	var newtop = (jQuery('.planet').height() - slide.height() + amount) / 2 ;
+	jQuery('.page').animate({marginTop: amount}, 1000);
+	slide.animate({top: newtop}, 1000);
+});
+
+
 //Search form listerners
 jQuery('.dropmenu input').live('click', function(event){
 	event.stopPropagation();
@@ -196,7 +188,7 @@ jQuery('.dropmenu span').live('click', function(event){
 
 jQuery('.searchform').live('click', function(e){
 	e.preventDefault();
-	jQuery('.dropmenu').slideDown();
+	jQuery('.dropmenu').slideToggle();
 });
 
 jQuery('.closebutton').live('click', function(event){
@@ -205,11 +197,7 @@ jQuery('.closebutton').live('click', function(event){
 });
 
 
-jQuery('.resizeicon').live('click', function(event){
-	event.stopPropagation();
-	//to do add function so map doesnt fall of page
-	jQuery('.planet').animate({marginTop: 0}, 1000);
-});
+
 
 /// TAB FUNCTIONS ///
 jQuery(document).ready(function($) {
@@ -235,7 +223,7 @@ jQuery('.hidemap').live('click', function(event) {
 });
 
 //show specific slide in gallery
-jQuery('.fourths a').live('click', function(event) {
+jQuery('.gallery a').live('click', function(event) {
 	var num = jQuery(this).index();
 	var slide = jQuery('#slide-'+num);
 	event.preventDefault();
