@@ -38,7 +38,6 @@ else:
 	
 	//include hidden description for google index
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
-	echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 	//include header links
 	echo '<div class="headerlinks">';
@@ -52,36 +51,48 @@ else:
 	echo '</div>';	
 
 	//include planet/imageviewer controls
-	echo '<div class="navcontrols">';
+	echo '<div class="nav pandiv">';
 		echo '<a class="pan panleft" href="?pan=left">&#60;</a>';
 		echo '<a class="pan panright" href="?pan=right">&#62;</a>';
 		echo '<a class="pan panup" href="?pan=up">&#8743;</a>';
 		echo '<a class="pan pandown" href="?pan=down">&#8744;</a>';
+		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
+	echo '</div>';
+	echo '<div class="nav zoomindiv">';
 		echo '<a class="zoom zoomin" href="?zoom=in">+</a>';
+		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
+	echo '</div>';
+	
+	echo '<div class="nav zoomoutdiv">';
 		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
+		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
 	echo '</div>';
 	
 	//include planet/imageviewer
-	echo '<div class="planet grabcursor" '.$mapheight.'>';
-		
+	echo '<div class="planet grabcursor">';
+		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
-		echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
-		echo '<div class="shade"></div>';
-		echo '<div class="titlebar">';
-			echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
-			echo '<a class="searchform" href="?action=search">Search ▼</a>';
-			if(is_single()) $editlink = '?action=editpost';
-			else  $editlink = '?action=contribute';
-			echo '<a class="editpage" href="'.$editlink.'">Edit Page ▼</a>';
-		echo '</div>';
-		
 		echo cwb_loadmap();
 		
 	echo '</div>';
 
 	//include page
-	echo '<div class="page">';
-	
+	echo '<div class="page" '.$mapheight.'>';
+		
+		//include titlebar
+		echo '<div class="titlebar">';
+			echo '<div class="titlebox">';
+				echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
+				echo '<a class="searchform" href="?action=search">Search ▼</a>';
+				if(is_single()) $editlink = '?action=editpost';
+				else  $editlink = '?action=contribute';
+				echo '<a class="editpage" href="'.$editlink.'">Edit Page ▼</a>';
+			echo '</div>';
+			echo '<div class="shade"></div>';
+			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
+		echo '</div>';
+		
+		
 		//include dragbar to resize imageviewer
 		echo '<div class="dragbar"></div>';
 		
