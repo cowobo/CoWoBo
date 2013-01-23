@@ -17,7 +17,7 @@ if ( $query->new ) {
     $post->post_category = $postcat->term_id;
 
     // Should we insert query data?
-    $unsaved_data = ( $query->save && ! cowobo()->has_notice ( 'saved' ) ) ? true : false;
+    $unsaved_data = ( $query->url || ( $query->save && ! cowobo()->has_notice ( 'saved' ) ) ) ? true : false;
 
 } else {
     if( $query->post_ID ) $postid = $query->post_ID;
@@ -197,8 +197,8 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
                 $post_content = $query->post_content;
             }
 			//hide extra formating so its easier to edit
-			$stripped = str_replace(array('<br/>','</p>'), '\n', $post_content);
-			$stripped = str_replace('<p>', '', $stripped);
+			//$stripped = str_replace(array('<br/>','</p>'), '\n', $post_content);
+			//$stripped = str_replace('<p>', '', $stripped);
 			echo '<span class="richbuttons">';
 				echo '<a class="makebold" href="#">Bold</a>';
 				echo '<a class="makeitalic" href="#">Italic</a>';
@@ -207,7 +207,7 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 				echo '<a class="htmlmode" href="#">HTML</a>';
 				echo '<a class="richmode" href="#">WYSIWYG</a>';
 			echo '</span>';
-			echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.$stripped.'</div>';
+			echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.trim ( $post_content ).'</div>';
 			echo '<textarea name="post_content" rows="12" class="htmlbox"></textarea>';
 		endif;
 		echo '</div>';

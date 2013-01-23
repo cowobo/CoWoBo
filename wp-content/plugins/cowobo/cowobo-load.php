@@ -259,6 +259,8 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->sendemail && ! $query->user ) $notices = $this->send_email();
             elseif( $verify->request ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
+
+            elseif ( $query->new && $query->url ) $posts->post_by_url();
         }
 
         /**

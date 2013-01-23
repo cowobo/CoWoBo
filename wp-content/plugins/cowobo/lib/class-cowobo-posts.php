@@ -598,5 +598,92 @@ class CoWoBo_Posts
         return in_array( $profile_id, $authors );
     }
 
+    public function post_by_url ( $url = '' ) {
+        if ( empty ( $url ) ) $url = cowobo()->query->url;
+        //if ( empty ( $url ) ) return;
+
+		$scheme = parse_url($url, PHP_URL_SCHEME);
+		if (! $scheme || ! preg_match ( '/^https?$/', $scheme ) )
+			$url = "http://{$url}";
+
+        $warning = "There has been an error processing your link";
+        if ( empty ( $url ) ) {
+            cowobo()->add_notice( $warning,'error');
+            return;
+        }
+
+		$images = array();
+		$title = '';
+		$text = '';
+
+		$page = $this->get_page_contents($url);
+
+        if ( empty ( $page ) ) {
+            cowobo()->add_notice( $warning,'error');
+            return;
+        }
+
+        if ( ! class_exists( 'simple_html_dom' ) )
+            require_once( COWOBO_PLUGIN_LIB . 'external/simple_html_dom.php');
+
+		$html = str_get_html($page);
+		$str = $html->find('text');
+
+		if ($str) {
+			$image_els = $html->find('img');
+			foreach ($image_els as $el) {
+				if ($el->width > 100 && $el->height > 1) // Disregard spacers
+					$images[] = $el->src;
+			}
+			$og_image = $html->find('meta[property=og:image]', 0);
+			if ($og_image) array_unshift($images, $og_image->content);
+
+			$title = $html->find('title', 0);
+			$title = $title ? $title->plaintext: $url;
+
+            $selectors = array (
+                '.instapaper_body', // ReadWriteWeb (or anything with instapaper)
+                '.entrytext', // WordPress.com (most WP based blogs)
+                '.entry',
+                '.post-body', // LifeHacker
+                '.DetailedSummary', // Al Jazeera
+                'h2 + div',
+                'h1 + div', // CNN
+                'p + div',
+                'p + div',
+                'p.introduction', // BBC
+            );
+
+            $text = '';
+            foreach ( $selectors as $selector ) {
+                if ( $text = $html->find( $selector, 0)->innertext ) break;
+            }
+
+			$text = strip_tags ( $text, '<p><a><br><b><strong><i><em><u>' );
+            if ( empty ( $text ) ) cowobo()->add_notice('We could not parse the content for this article, try pasting it in manually.', 'error');
+		} else {
+			$url = '';
+		}
+
+        $query = cowobo()->query;
+        $query->post_title = trim ( $title );
+        $query->post_content = trim ( $text );
+        $query->images = $images;
+        $query->website = $url;
+    }
+
+	/**
+	 * Remote page retrieving routine.
+	 *
+	 * @param string Remote URL
+	 * @return mixed Remote page as string, or (bool)false on failure
+	 * @access private
+	 */
+	function get_page_contents ($url) {
+		$response = wp_remote_get($url);
+		if (is_wp_error($response)) return false;
+		return $response['body'];
+	}
+
 }
 
