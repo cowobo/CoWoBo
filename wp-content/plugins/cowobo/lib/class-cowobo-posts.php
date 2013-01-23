@@ -348,7 +348,7 @@ class CoWoBo_Posts
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-		
+
         return $gallery;
     }
 
@@ -356,9 +356,9 @@ class CoWoBo_Posts
      * Return list of thumbs for post
      */
     function load_thumbs($postid, $catslug = false){
-        
+
         $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-			
+
 		//create thumbs for other images
         for ($x=0; $x<4; $x++):
             //store slide info
@@ -376,22 +376,34 @@ class CoWoBo_Posts
         $remaining = 5 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
         $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
-		
+
 		return $gallery;
     }
 
     /**
-     * Return thumbnail of post
+     * Echo thumbnail of post
      */
     function the_thumbnail($postid, $catslug = false){
-        if($catslug == 'location'):
+        if($catslug == 'location') {
             echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
-        else:
-            foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
-                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
-                echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-            endforeach;
-        endif;
+            return;
+        }
+        if ( $catslug == 'coder' ) {
+            $fallback = '';
+            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
+                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID, 'thumbnail' );
+                if ( is_array ( $attached_src ) )
+                    $fallback = $attached_src[0];
+            }
+            echo get_avatar( cowobo()->users->get_users_by_profile_id( $postid, true )->ID, '140', $fallback );
+            return;
+        }
+
+        foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image) {
+            $imgsrc = wp_get_attachment_image_src( $image->ID );
+            echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+        }
+
     }
 
     /**
