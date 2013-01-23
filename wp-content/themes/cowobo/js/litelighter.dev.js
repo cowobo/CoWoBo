@@ -1,7 +1,7 @@
 /*
  * jQuery Litelighter
  * By: Trent Richardson [http://trentrichardson.com]
- * 
+ *
  * Copyright 2012 Trent Richardson
  * Dual licensed under the MIT or GPL licenses.
  * http://trentrichardson.com/Impromptu/GPL-LICENSE.txt
@@ -84,7 +84,7 @@
 				txt = txt.replace(lang[i].re, "___"+ i +"___$1___end"+ i +"___");
 			}
 		}
-		
+
 		var lvls = [];
 		txt = txt.replace(/___(?!subtmpl)\w+?___/g, function($0){
 			var end = ($0.substr(3,3)=='end')? true:false,
@@ -110,7 +110,7 @@
 		// finally replace those sub templates
 		for(var i in lang){
 			if(lang.hasOwnProperty(i) && lang[i].language !== undefined && $.litelighter.languages[lang[i].language] !== undefined){
-				txt = txt.replace(/___subtmpl\d+___/g, function($tmpl){ 
+				txt = txt.replace(/___subtmpl\d+___/g, function($tmpl){
 								var i = parseInt($tmpl.replace(/___subtmpl(\d+)___/, "$1"), 10);
 								return sublangs[i];
 							});
@@ -121,16 +121,24 @@
 
 	$.litelighter.styles = {
 		light: {
-			code: 'background-color:#ffffff;color:#555;',
-			comment: 'color:#999',
-			string: 'color:#8F9657',
-			number: 'color:#CF6745;',
-			keyword: 'color:#6F87A8;',
-			operators: 'color:#9e771e;'
+			code: 'background-color:#ffffff;color:#999;',
+			comment: 'color:#ccc',
+			string: 'color:#C2C79E',
+			number: 'color:#E8B6A6;',
+			keyword: 'color:#DEDEDE;',
+			operators: 'color:#F1DFB6;'
 		}
+//		light: {
+//			code: 'background-color:#ffffff;color:#555;',
+//			comment: 'color:#999',
+//			string: 'color:#8F9657',
+//			number: 'color:#CF6745;',
+//			keyword: 'color:#6F87A8;',
+//			operators: 'color:#9e771e;'
+//		}
 	};
 	$.litelighter.languages = {
-		
+
 		html: {
 			comment: { re: /(\&lt\;\!\-\-([\s\S]*?)\-\-\&gt\;)/g, style: 'comment' },
 			tag: { re: /(\&lt\;\/?\w(.|\n)*?\/?\&gt\;)/g, style: 'keyword', embed: ['string'] },
@@ -139,5 +147,5 @@
 			script: { re: /(?:\&lt;script.*?\&gt;)([\s\S]+?)(?:\&lt;\/script\&gt;)/gi, language: 'js'}
 		}
 	}
-	
+
 })(jQuery);
