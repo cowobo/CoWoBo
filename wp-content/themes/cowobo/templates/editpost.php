@@ -77,9 +77,17 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 				else:
 					$imgid = 0; $thumb = '';
 				endif;
+                $caption_id = "caption$x";
+                if ( $unsaved_data ) {
+                    $caption =  $query->$caption_id;
+                    if ( cowobo()->posts->is_image_url ( $caption ) )
+                        $thumb = "<div style='background: url(\"$caption\") 50% 50%;background-size: cover;width:150px; height: 150px;'></div>";
+                }
+                else
+                    $caption =  get_post_meta( $postid, $caption_id, true );
 				echo '<div class="imgrow">';
 					echo '<div class="thumbcol">'.$thumb.'</div>';
-					echo '<div class="captioncol"><input type="text" name="caption'.$x.'" class="full" value="'.get_post_meta($postid, 'caption'.$x, true).'"/></div>';
+					echo '<div class="captioncol"><input type="text" name="caption'.$x.'" class="full" value="'. $caption .'"/></div>';
 					echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';
 					echo '<div class="deletecol"><input type="checkbox" class="full" name="delete'.$x.'" value="1"><input type="hidden" name="imgid'.$x.'" value="'.$imgid.'"/></div>';
 				echo '</div>';
