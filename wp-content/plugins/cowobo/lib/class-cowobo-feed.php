@@ -11,7 +11,7 @@ class CoWoBo_Feed
      * @todo When is this method really called?
      */
     public function filter_feed(){
-        
+
 
         //store variables from browse form
         $cats = cowobo()->query->cats;
@@ -67,7 +67,8 @@ class CoWoBo_Feed
      */
     function feed_title(){
         global $currentcat, $post, $cowobo;
-		
+
+        $feedtitle = '';
         if( cowobo()->query->new )
             $feedtitle .= 'Add '.cowobo()->query->new;
         elseif( is_404() )
@@ -86,9 +87,9 @@ class CoWoBo_Feed
             $feedtitle = 'Change Language';
         elseif( cowobo()->query->action == 'editpost')
             $feedtitle = 'Edit Post';
-		elseif( cowobo()->users->is_profile() ) 
+		elseif( cowobo()->users->is_profile() )
 			$feedtitle = $post->post_title;
-        elseif( is_single() or is_category()) 
+        elseif( is_single() or is_category())
             $feedtitle = $currentcat->name;
         elseif( is_home() )
             $feedtitle = 'Welcome!';
