@@ -327,20 +327,30 @@ class CoWoBo_Posts
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
+            $image_check = $this->is_image_url( $caption );
             //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
+
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+
+            } elseif ( $image_check ) {
+
+                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
+                    $slides[$x] .= '<img src="'.$caption.'" width="100%" alt=""/>';
+                    //if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption"></div>';
+                $slides[$x] .= '</div>';
+
+            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
                     if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
-            endif;
+            }
 
            unset($imgid);
 
@@ -359,23 +369,31 @@ class CoWoBo_Posts
 
 	/**
      * Return list of thumbs for post
+     *
+     * @todo We are doubling up on a lot of work here. Can't we store the whole gallery in one object?
      */
     function load_thumbs($postid, $catslug = false){
 
         $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
 
 		//create thumbs for other images
-        for ($x=0; $x<4; $x++):
+        for ($x=0; $x<4; $x++) {
             //store slide info
+            $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
+            $imagecheck = $this->is_image_url( $caption );
 		    //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
                	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
-            elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
+            } elseif ( $imagecheck ) {
+
+                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'. $caption .'" width="100%" alt=""/></a>';
+
+            } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
                 $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
-            endif;
-        endfor;
+            }
+        }
 
         //construct thumb gallery
         $remaining = 5 - count($thumbs);
