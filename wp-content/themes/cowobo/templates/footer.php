@@ -9,13 +9,6 @@ $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://
 echo '<div class="footer">';
 		
 		echo '<a href="'.home_url().'">Home</a>';
-		echo '<a href="?action=contact">Contact</a>';
-		if(is_user_logged_in()):
-			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
-		else:
-			echo '<a href="?action=login'.'">Your Profile</a>';
-		endif;
-		
 		echo '<a href="?action=rss">RSS</a>';
 		echo '<a href="?action=translate'.'">English (UK)</a>';
 		if(is_user_logged_in()):

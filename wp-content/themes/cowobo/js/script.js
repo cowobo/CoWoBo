@@ -108,11 +108,6 @@ jQuery(document).ready(function() {
 			planet.css('margin-top', newy);
 			slide.css('top', newtop);
 	        previousY = e.clientY;
-			
-			
-			
-			
-			
 	    }
 	});
 
@@ -123,9 +118,7 @@ jQuery(document).ready(function() {
 	});
 
     // Is So Meta (Even The Acronym)!
-    jQuery('div.pagesource pre').html(
-        document.documentElement.outerHTML.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-    );
+
 
 });
 
@@ -192,7 +185,8 @@ jQuery('.dropmenu span').live('click', function(event){
 	jQuery(this).toggleClass('checked');
 });
 
-jQuery('.searchform').live('click', function(){
+jQuery('.searchform').live('click', function(e){
+	e.preventDefault();
 	jQuery('.dropmenu').slideDown();
 });
 
@@ -201,6 +195,12 @@ jQuery('.closebutton').live('click', function(event){
 	jQuery('.dropmenu').slideUp();
 });
 
+
+jQuery('.resizeicon').live('click', function(event){
+	event.stopPropagation();
+	//to do add function so map doesnt fall of page
+	jQuery('.planet').animate({marginTop: 0}, 1000);
+});
 
 /// TAB FUNCTIONS ///
 jQuery(document).ready(function($) {

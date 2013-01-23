@@ -5,16 +5,12 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postcat = cowobo()->posts->get_category($postid);
 
 	//include thumbnails
-	echo cowobo()->posts->load_thumbs($post->ID);
-
-	echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID);
-	    if ( ! cowobo()->users->is_profile() || $author ) {
-			echo '<a class="feededit" href="?action=editpost">';
-			echo ( $author ) ? '+edit' : "+contribute?";
-			echo '</a>';
-		}
-	echo '</div>';
-
+	echo '<div class="tab">'.cowobo()->posts->load_thumbs($post->ID).'</div>';
+	
+	if($postcat->slug != 'coder' && $postcat->slug != 'location') {
+		echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID).'</div>';
+	}
+	   
     if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
 
         $index = 0;
@@ -139,8 +135,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 	endif;
 
 	if($author) {
-		echo '<div class="tabthumb right">+</div>';
-		echo '<div class="tabtext left">';
+		echo '<div class="tabthumb left">+</div>';
+		echo '<div class="tabtext right">';
 			echo '<h2>Add posts to this page &raquo;</h2>';
 			echo '<div class="horlist">';
 				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners').','.$postcat->term_id;

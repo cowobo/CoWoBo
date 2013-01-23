@@ -191,14 +191,12 @@ class CoWoBo_Posts
         if(empty($postmsg)) {
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
 
-
             if ( ! isset ( $GLOBALS['newpostid'] ) || empty ( $GLOBALS['newpostid'] ) ) {
                 do_action( 'cowobo_post_updated', $postid, $post_title );
             }
 
             if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
             if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
-
             cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
@@ -339,7 +337,7 @@ class CoWoBo_Posts
                 $slides[$x] .= '</div>';
             endif;
 
-            unset($caption); unset($imgid);
+           unset($imgid);
 
         endfor;
 
@@ -350,7 +348,7 @@ class CoWoBo_Posts
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-
+		
         return $gallery;
     }
 
@@ -358,54 +356,42 @@ class CoWoBo_Posts
      * Return list of thumbs for post
      */
     function load_thumbs($postid, $catslug = false){
-
-        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-
+        
+        $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
+			
 		//create thumbs for other images
-        for ($x=0; $x<3; $x++):
+        for ($x=0; $x<4; $x++):
             //store slide info
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
 		    //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
-               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+               	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
             elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
-                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
             endif;
         endfor;
 
         //construct thumb gallery
-        $remaining = 4 - count($thumbs);
-        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-        $gallery .= '<div class="fourths">'.implode('',$thumbs).'</div>';
-
+        $remaining = 5 - count($thumbs);
+        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
+        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
+		
 		return $gallery;
     }
 
     /**
-     * Echo thumbnail of post
+     * Return thumbnail of post
      */
     function the_thumbnail($postid, $catslug = false){
-        if($catslug == 'location') {
+        if($catslug == 'location'):
             echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
-            return;
-        }
-        if ( $catslug == 'coder' ) {
-            $fallback = '';
-            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
-                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID, 'thumbnail' );
-                if ( is_array ( $attached_src ) )
-                    $fallback = $attached_src[0];
-            }
-            echo get_avatar( cowobo()->users->get_users_by_profile_id( $postid, true )->ID, '140', $fallback );
-            return;
-        }
-
-        foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
-            $imgsrc = wp_get_attachment_image_src( $image->ID );
-            echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-        endforeach;
-
+        else:
+            foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
+                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
+                echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+            endforeach;
+        endif;
     }
 
     /**
