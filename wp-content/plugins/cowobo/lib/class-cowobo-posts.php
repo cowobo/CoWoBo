@@ -322,25 +322,26 @@ class CoWoBo_Posts
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
-            //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+            
+			//check if the slide is video or image;
+            if(is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
+				$captions[] = '';
             elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-                    if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
-            endif;
+				$captions[] = $caption;
+			endif;
 
            unset($imgid);
 
         endfor;
-
 
         //construct gallery
         $gallery = '';
@@ -348,8 +349,9 @@ class CoWoBo_Posts
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-
-        return $gallery;
+		echo $gallery;
+		
+        return $captions;
     }
 
 	/**
