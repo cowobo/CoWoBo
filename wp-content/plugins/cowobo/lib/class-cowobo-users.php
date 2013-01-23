@@ -231,8 +231,10 @@ class CoWoBo_Users
         update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
     }
 
-    public function get_users_by_profile_id( $id ) {
-        return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+    public function get_users_by_profile_id( $id, $single = false ) {
+        $users = get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+        if ( ! $single ) return $users;
+        return current ( $users );
     }
 
     public function is_profile( $post_id = 0 ) {

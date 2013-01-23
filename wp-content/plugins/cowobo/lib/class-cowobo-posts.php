@@ -383,17 +383,29 @@ class CoWoBo_Posts
     }
 
     /**
-     * Return thumbnail of post
+     * Echo thumbnail of post
      */
     function the_thumbnail($postid, $catslug = false){
-        if($catslug == 'location'):
+        if($catslug == 'location') {
             echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
-        else:
-            foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
-                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
-                echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-            endforeach;
-        endif;
+            return;
+        }
+        if ( $catslug == 'coder' ) {
+            $fallback = '';
+            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
+                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID, 'thumbnail' );
+                if ( is_array ( $attached_src ) )
+                    $fallback = $attached_src[0];
+            }
+            echo get_avatar( cowobo()->users->get_users_by_profile_id( $postid, true )->ID, '140', $fallback );
+            return;
+        }
+
+        foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
+            $imgsrc = wp_get_attachment_image_src( $image->ID );
+            echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+        endforeach;
+
     }
 
     /**
