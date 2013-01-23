@@ -81,7 +81,7 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
                 if ( $unsaved_data ) {
                     $caption =  $query->$caption_id;
                     if ( cowobo()->posts->is_image_url ( $caption ) )
-                        $thumb = "<div style='background: url(\"$caption\") 50% 50%;background-size: cover;width:150px; height: 150px;'></div>";
+                        $thumb = "<div style='background: url(\"$caption\") no-repeat 50% 50%;background-size: cover;width:40px; height:30px;'></div>";
                 }
                 else
                     $caption =  get_post_meta( $postid, $caption_id, true );
