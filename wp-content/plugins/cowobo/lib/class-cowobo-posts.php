@@ -35,6 +35,7 @@ class CoWoBo_Posts
      */
     public function save_post(){
         global $post, $cowobo, $profile_id;
+        $linkedid = 0;
 
         //store all data
         $postid = cowobo()->query->post_ID;
@@ -56,7 +57,7 @@ class CoWoBo_Posts
         }
 
         //check if post is created from within another post
-        if($postid != $post->ID) $linkedid = $post->ID;
+        //if($postid != $post->ID) $linkedid = $post->ID;
 
         if ( empty ( $post_content ) ) {
             $postmsg['largetext'] = "Please add some content to your post!";
@@ -156,7 +157,7 @@ class CoWoBo_Posts
             $tagarray = array_map('intval', $tagarray);
             $tagarray = array_unique($tagarray);
         } elseif($postcat->slug != 'location') {
-             $postmsg['tags'] = 'You must add atleast one.';
+             //$postmsg['tags'] = 'You must add atleast one.';
         }
 
         //handle images
@@ -194,7 +195,8 @@ class CoWoBo_Posts
                 do_action( 'cowobo_post_updated', $postid, $post_title );
             }
 
-            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, array($linkedid));
+            if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
+            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
             cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
             $GLOBALS['newpostid'] = null;
         } else {
@@ -346,7 +348,7 @@ class CoWoBo_Posts
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-		
+
         return $gallery;
     }
 
@@ -354,9 +356,9 @@ class CoWoBo_Posts
      * Return list of thumbs for post
      */
     function load_thumbs($postid, $catslug = false){
-        
+
         $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-			
+
 		//create thumbs for other images
         for ($x=0; $x<4; $x++):
             //store slide info
@@ -374,22 +376,34 @@ class CoWoBo_Posts
         $remaining = 5 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
         $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
-		
+
 		return $gallery;
     }
 
     /**
-     * Return thumbnail of post
+     * Echo thumbnail of post
      */
     function the_thumbnail($postid, $catslug = false){
-        if($catslug == 'location'):
+        if($catslug == 'location') {
             echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
-        else:
-            foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image):
-                $imgsrc = wp_get_attachment_image_src($image->ID, $size = 'thumbnail');
-                echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-            endforeach;
-        endif;
+            return;
+        }
+        if ( $catslug == 'coder' ) {
+            $fallback = '';
+            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
+                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID, 'thumbnail' );
+                if ( is_array ( $attached_src ) )
+                    $fallback = $attached_src[0];
+            }
+            echo get_avatar( cowobo()->users->get_users_by_profile_id( $postid, true )->ID, '140', $fallback );
+            return;
+        }
+
+        foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image) {
+            $imgsrc = wp_get_attachment_image_src( $image->ID );
+            echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+        }
+
     }
 
     /**

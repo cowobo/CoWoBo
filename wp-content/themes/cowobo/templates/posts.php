@@ -106,6 +106,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	//include main text if post has content
 	if(get_the_content()):
 		echo '<div class="tab">';
+            do_action ( 'cowobo_before_postcontent' );
 			echo apply_filters('the_content',  cowobo()->L10n->the_content(get_the_ID()));
 			if($translate) echo '<br/><a href="?action=correct">Correct this translation</a>';
 		echo '</div>';
@@ -140,7 +141,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<div class="horlist">';
 				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners').','.$postcat->term_id;
 				foreach(get_categories('parent=0&exclude='.$exclude.'&hide_empty=0') as $cat):
-					echo '<a href="?new=' . wp_create_nonce( 'new' ). '&cat='.$cat->name.'">'.$cat->name.'</a>';
+					echo '<a href="?new=' .$cat->name.'">'.$cat->name.'</a>';
 				endforeach;
 			echo '</div>';
 			echo '<form method="post" action="">';

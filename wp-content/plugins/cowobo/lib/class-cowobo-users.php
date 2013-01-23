@@ -12,6 +12,7 @@ if (!defined('ABSPATH'))
 class CoWoBo_Users
 {
     public $current_user_profile_id = 0;
+    public $current_user_profile_name = '';
     public $displayed_user = null;
 
     public function __construct() {
@@ -29,7 +30,9 @@ class CoWoBo_Users
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
         add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
-        add_action('current_user_box',              array ( &$this, 'show_avatar_with_upload_form' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
+        add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
 
         add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
 
@@ -38,11 +41,22 @@ class CoWoBo_Users
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
         echo "<div class='tab'>";
-        do_action ( 'current_user_box');
+        do_action ( 'current_user_box' );
         echo "</div>";
     }
 
-    public function show_avatar_with_upload_form() {
+    public function do_user_link() {
+        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
+    }
+
+    public function do_profile_avatar() {
+        if ( ! $this->is_profile() ) return;
+        echo "<p class='left'>";
+        echo get_avatar( get_current_user_id() );
+        echo "</p>";
+    }
+
+    public function do_avatar_with_upload_form() {
         if( isset ( $_POST['user_avatar_edit_submit'] ) ) {
            do_action('edit_user_profile_update', get_current_user_id() );
         }
@@ -50,7 +64,7 @@ class CoWoBo_Users
 
         $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
 
-        echo "<p class='hide-if-no-js left'><a href='?upload-avatar' class='upload-avatar-link'>";
+        echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
         echo get_avatar( get_current_user_id() );
         echo "</a></p>";
 
@@ -167,9 +181,10 @@ class CoWoBo_Users
      * @return type
      */
     public function get_current_user_profile_id() {
-        if ( ! $this->current_user_profile_id ) {
+        if ( ! $this->current_user_profile_id || empty ( $this->current_user_profile_id ) ) {
             $user_id = wp_get_current_user()->ID;
             $this->current_user_profile_id = $this->get_user_profile_id( $user_id );
+            $this->current_user_profile_name = get_the_title ( $this->current_user_profile_id );
         }
 
         return $this->current_user_profile_id;
@@ -207,6 +222,8 @@ class CoWoBo_Users
      * Save profile id field
      */
     public function save_extra_profile_fields( $user_id = false ) {
+        if ( ! is_admin() || ! cowobo()->query->cowobo_profile ) return;
+
         if ( ! $user_id ) $user_id = get_current_user_id();
 
         if ( !current_user_can( 'edit_user', $user_id ) )
@@ -214,11 +231,20 @@ class CoWoBo_Users
         update_usermeta( $user_id, 'cowobo_profile', $_POST['cowobo_profile'] );
     }
 
-    public function get_users_by_profile_id( $id ) {
-        return get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+    public function get_users_by_profile_id( $id, $single = false ) {
+        $users = get_users ( array ( 'meta_key' => 'cowobo_profile', 'meta_value' => $id ) );
+        if ( ! $single ) return $users;
+        return current ( $users );
     }
 
-    public function is_profile() {
+    public function is_profile( $post_id = 0 ) {
+        if ( $post_id ) {
+            $category = cowobo()->posts->get_category( $post_id );
+            if ( ! is_object ( $category ) || $category->slug != 'coder' ) return false;
+            $users = cowobo()->users->get_users_by_profile_id( get_the_ID() );
+            if ( empty ( $users ) ) return false;
+            return current ( $users );
+        }
 
         if ( $this->displayed_user && ! empty ( $this->displayed_user ) )
             return $this->displayed_user;

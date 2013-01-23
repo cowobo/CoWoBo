@@ -30,6 +30,10 @@ jQuery(document).ready(function() {
         jQuery(".upload-avatar").slideToggle();
     });
 
+    jQuery(".tab span.close").click( function() {
+        jQuery(this).parent('.tab').fadeOut();
+    })
+
 	//Enable Map Resizing and Panning
 	var pan = false; var drag = false; var previousX; var previousY;
 
@@ -89,6 +93,11 @@ jQuery(document).ready(function() {
 	});
 
     // Is So Meta (Even The Acronym)!
+    var pagesource = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' + document.documentElement.outerHTML;
+    jQuery('div.pagesource div.code').html(
+        pagesource.replace(/></g, '> <').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/(\r\n|\n|\r)/gm," ")
+    );
+    jQuery('div.pagesource div.code').litelighter();
 
 
 });
@@ -281,3 +290,14 @@ function getInputSelection() {
     }
     return null;
 }
+
+/*
+ * jQuery Litelighter
+ * By: Trent Richardson [http://trentrichardson.com]
+ *
+ * Copyright 2012 Trent Richardson
+ * Dual licensed under the MIT or GPL licenses.
+ * http://trentrichardson.com/Impromptu/GPL-LICENSE.txt
+ * http://trentrichardson.com/Impromptu/MIT-LICENSE.txt
+ */
+(function(e){e.litelighter=function(t,n){this.settings=e.extend({},{clone:false,style:"light",language:"html",tab:"    "},n);this.code=t;this.enable()};e.extend(e.litelighter.prototype,{enable:function(){this.codelite=this.code.data("llcode",this.code.text());if(this.settings.clone==true)this.codelite=e("<div />").text(this.code.text()).addClass("litelighter").insertAfter(this.code.css("display","none"));var t=e.litelighter.styles[this.settings.style],n=e.litelighter.languages[this.settings.language],r=e.litelighter.highlight(this.codelite.html(),t,n).replace(/\t/g,this.settings.tab);this.codelite.attr("style",t.code).html(r);return this.code},disable:function(){if(this.settings.clone){this.codelite.remove();return this.code.css("display","block")}return this.code.html("").text(this.code.data("llcode"))},destroy:function(){this.disable();return this.code.removeData("litelighter")},option:function(e,t){if(t!==undefined){this.code.data("ll"+e,t);this.settings[e]=t;this.disable();return this.enable()}return this[e]}});e.fn.extend({litelighter:function(t){t=t||{};var n=Array.prototype.slice.call(arguments);if(typeof t=="string")return this.each(function(){var r=e(this).data("litelighter");r[t].apply(r,n.slice(1))});else return this.each(function(){var n=e(this);n.data("litelighter",new e.litelighter(n,t))})}});e.litelighter.highlight=function(t,n,r){var i=0,s=[];for(var o in r){if(r.hasOwnProperty(o)&&r[o].language!==undefined&&e.litelighter.languages[r[o].language]!==undefined){t=t.replace(r[o].re,function(t,u,a){s[i++]=e.litelighter.highlight(u,n,e.litelighter.languages[r[o].language]);return t.replace(u,"___subtmpl"+(i-1)+"___")})}}for(var o in r){if(r.hasOwnProperty(o)&&r[o].language===undefined){t=t.replace(r[o].re,"___"+o+"___$1___end"+o+"___")}}var u=[];t=t.replace(/___(?!subtmpl)\w+?___/g,function(t){var n=t.substr(3,3)=="end"?true:false,i=(!n?t.substr(3):t.substr(6)).replace(/_/g,""),s=u.length>0?u[u.length-1]:null;if(!n&&(s==null||i==s||s!=null&&r[s].embed!=undefined&&e.inArray(i,r[s].embed)>=0)){u.push(i);return t}else if(n&&i==s){u.pop();return t}return""});for(var o in r){if(r.hasOwnProperty(o)){t=t.replace(new RegExp("___end"+o+"___","g"),"</span>").replace(new RegExp("___"+o+"___","g"),"<span class='litelighterstyle' style='"+n[r[o].style]+"'>")}}for(var o in r){if(r.hasOwnProperty(o)&&r[o].language!==undefined&&e.litelighter.languages[r[o].language]!==undefined){t=t.replace(/___subtmpl\d+___/g,function(e){var t=parseInt(e.replace(/___subtmpl(\d+)___/,"$1"),10);return s[t]})}}return t};e.litelighter.styles={light:{code:"color:#e7e7e7;",comment:"color:#eee",string:"color:#ddd",number:"color:#d0d0d0;",keyword:"color:#eee;",operators:"color:#F1DFB6;"}};e.litelighter.languages={html:{comment:{re:/(\&lt\;\!\-\-([\s\S]*?)\-\-\&gt\;)/g,style:"comment"},tag:{re:/(\&lt\;\/?\w(.|\n)*?\/?\&gt\;)/g,style:"keyword",embed:["string"]},string:{re:/((\'.*?\')|(\".*?\"))/g,style:"string"},css:{re:/(?:\<style.*?\>)([\s\S]+?)(?:\<\/style\>)/gi,language:"css"},script:{re:/(?:\<script.*?\>)([\s\S]+?)(?:\<\/script\>)/gi,language:"js"}}}})(jQuery)

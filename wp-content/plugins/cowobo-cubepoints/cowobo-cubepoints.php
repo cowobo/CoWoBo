@@ -22,7 +22,9 @@ define('COWOBO_CP_VERSION', '0.1');
 
 define ( 'COWOBO_CP_POST_KUDOS', 10 );
 define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
-
+define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
+define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
+define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
 
 /**
  * PATHs and URLs
@@ -94,10 +96,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
+                add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
             add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
 
         }
 
@@ -109,6 +113,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        public function no_points_for_profiles( $points ) {
+            if ( cowobo()->query->confirm || cowobo()->query->postcat == get_cat_ID ( 'Coders' ) ) return 0;
+            else return $points;
+        }
 
         public function add_notification($type, $uid, $points, $data) {
             if (get_current_user_id() != $uid )
@@ -221,8 +230,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function do_awesome_box() {
             //echo "<div class='tab'>";
             echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
-            echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
-            $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+            if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
+                echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
+                $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+            }
             echo "</p>";
             //echo "</div>";
         }
@@ -237,13 +248,14 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $goal = (int) $next_rank['points'] - (int) $current_rank['points'];
             if ( $goal == 0 ) return false;
             $percentage = round ( ($current_points / $goal) * 100 );
+            if ( $percentage < 10 ) $percentage = 100;
 
             $image_url = COWOBO_CP_INC_URL . 'progress_bar.png';
 
             ?>
             <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
                 <div class="stat-bar" style="width:<?php echo $percentage;?>px; overflow: hidden;">
-                    <img title="You need another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
+                    <img title="Another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
                 </div>
             </div>
             <?php
@@ -364,8 +376,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
-                if ( ! isset ( $data_arr['userid'] ) ) return false;
-                $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+                if ( isset ( $data_arr['userid'] ) )
+                    $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
 
                 switch ( $type ) {
                     case 'kudos_profile' :
@@ -376,6 +388,17 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         $post = get_post( $data_arr['postid'] );
                         echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
                         break;
+                    case 'post_updated' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                        break;
+                    case 'profile_updated' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
+                        break;
+
                 }
             } else {
                 switch ( $type ) {
@@ -437,6 +460,30 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $query = 'SELECT * FROM `' . CP_DB . '` ' . $q . ' ORDER BY timestamp DESC ' . $limitq;
                 return $wpdb->get_results( $query );
             }
+
+        public function record_post_edited( $post_id ) {
+            global $wpdb;
+
+            $type = '';
+            if ( cowobo()->users->is_profile( $post_id ) )
+                $type = "cowobo_profile_updated";
+            else
+                $type = "cowobo_post_updated";
+
+            $uid = get_current_user_id();
+            $time = COWOBO_UPDATE_POINTS_MIN_INTERVAL;
+            $difference = time() - $time;
+            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='$type'");
+            if( $count!= 0 ) {
+                cowobo()->add_notice("That was fast! You know you won't get any points for updating so fast?");
+                return;
+            }
+
+            if ( cowobo()->users->is_profile( $post_id ) )
+                cp_points( $type, get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
+            else
+                cp_points( $type, get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+        }
 
     }
 
