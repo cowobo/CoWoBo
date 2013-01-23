@@ -91,7 +91,7 @@ class CoWoBo_Feed
         elseif( is_single() or is_category()) 
             $feedtitle = $currentcat->name;
         elseif( is_home() )
-            $feedtitle = '<a href="/category/take-the-tour">Take the Tour &raquo;</a>';
+            $feedtitle = 'Welcome!';
 
         return $feedtitle;
     }
