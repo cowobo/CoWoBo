@@ -656,8 +656,8 @@ class CoWoBo_Posts
 			$image_els = $html->find('img');
 
 			foreach ($image_els as $el) {
-				if ($el->width > 100 && $el->height > 1) // Disregard spacers
-					$images[] = $el->src;
+				if ($el->width > 100 && $el->height > 100) // Disregard spacers
+                        $images[] = $el->src;
 
                 if ( count ( $images ) == 5 ) break;
 			}
