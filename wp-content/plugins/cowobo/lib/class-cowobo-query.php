@@ -34,6 +34,10 @@ class CoWoBo_Query
         return $this->get($key);
     }
 
+    public function __set( $key, $value ) {
+        $this->req[ $key ] = $value;
+    }
+
     public function __isset($key) {
         return ($this->get($key) !== null);
     }
