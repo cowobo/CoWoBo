@@ -40,7 +40,7 @@ form {margin:0 auto;}
 .blue {color: #4f5db8!important;}
 .green {color:#2b832c;}
 .red {color: red!important;}
-.grey {color:#999;}
+.grey {color:#ccc;}
 .center {text-align:center}
 .horlist {list-style:none;}
 .horlist li, .horlist span, .horlist a{margin:0 15px 0 0; display:inline-block; cursor:pointer;}

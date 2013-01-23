@@ -154,7 +154,7 @@ function expand_map() {
 }
 
 function center_images() {
-	jQuery('.slide').each(function(){
+	jQuery('.slide, .markerlinks').each(function(){
 		var viewheight = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
 		var newtop = (viewheight - jQuery(this).height()) / 2 ;
 		jQuery(this).css('top', newtop);
@@ -165,10 +165,12 @@ jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
 	var slide = jQuery('.slide:last');
 	var margin = parseFloat(jQuery('.page').css('margin-top'));
+	if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 	if(margin < 0) var amount = 0;
 	else var amount = -jQuery('.planet').height()/2;
 	var newtop = (jQuery('.planet').height() - slide.height() + amount) / 2 ;
 	jQuery('.page').animate({marginTop: amount}, 1000);
+	jQuery('html, body').animate({scrollTop: 0}, 1000);
 	slide.animate({top: newtop}, 1000);
 });
 

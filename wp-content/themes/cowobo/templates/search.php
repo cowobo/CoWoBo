@@ -7,8 +7,8 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 		echo '<ul class="horlist searchbar">';
 			echo '<li><a id="searchmenu" href="?action=search">Search ▼</a></li>';
 			echo '<li><a id="sortmenu" href="?action=sort">Sort ▼</a></li>';
-			echo '<li><a id="layoutmenu" href="?action=layout">Layout ▼</a></li>';
 			echo '<li><a id="addmenu" class="blue" href="?action=add">Add New ▼</a></li>';
+			echo '<li class="grey"><a id="layoutmenu" href="?action=layout">Layout ▼</a></li>';
 		echo '</ul>';
 		
 		echo '<div class="hide dropmenu searchmenu">';
