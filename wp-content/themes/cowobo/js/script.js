@@ -166,7 +166,7 @@ jQuery('.resizeicon').live('click', function(event){
 	var slide = jQuery('.slide:last');
 	var margin = parseFloat(jQuery('.page').css('margin-top'));
 	if(margin < 0) var amount = 0;
-	else var amount = -200;
+	else var amount = -jQuery('.planet').height()/2;
 	var newtop = (jQuery('.planet').height() - slide.height() + amount) / 2 ;
 	jQuery('.page').animate({marginTop: amount}, 1000);
 	slide.animate({top: newtop}, 1000);
@@ -174,29 +174,25 @@ jQuery('.resizeicon').live('click', function(event){
 
 
 //Search form listerners
-jQuery('.dropmenu input').live('click', function(event){
+
+jQuery('.searchbar a').live('click', function(e){
+	e.preventDefault();
+	var menu = jQuery('.' + jQuery(this).attr('id'))
+	menu.slideToggle();
+	jQuery('.dropmenu').not(menu).slideUp();
+});
+
+jQuery('.searchform input').live('click', function(event){
 	event.stopPropagation();
 	jQuery(this).parent().toggleClass('checked');
 });
 
-jQuery('.dropmenu span').live('click', function(event){
+jQuery('.searchform span').live('click', function(event){
 	var checkbox = jQuery(this).children('input');
 	var type = jQuery(this).parents('.dropmenu').attr('id');
 	checkbox.prop("checked", !checkbox.prop("checked"));
 	jQuery(this).toggleClass('checked');
 });
-
-jQuery('.searchform').live('click', function(e){
-	e.preventDefault();
-	jQuery('.dropmenu').slideToggle();
-});
-
-jQuery('.closebutton').live('click', function(event){
-	event.stopPropagation();
-	jQuery('.dropmenu').slideUp();
-});
-
-
 
 
 /// TAB FUNCTIONS ///

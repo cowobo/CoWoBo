@@ -10,6 +10,8 @@ else:
 	//VARIABLES
 	$action = cowobo()->query->action;
 	$feedtitle = $langnames[$lang][2];
+	$mapheight = 'style="margin-top:-150px"';
+	
 	if(is_home()):
 		$feedtitle = $langnames[$lang][1];
 		$subtitle = $langnames[$lang][2];
@@ -27,14 +29,6 @@ else:
 		cowobo()->posts->update_views($post->ID);
 		$coordinates = get_post_meta($post->ID, 'coordinates', true);
 	endif;
-
-	if(is_home() && !$cowobo->query->s && !$cowobo->query->new){
-		$mapheight = 'style="margin-top:-100px"'; $ishome = true;
-	} else if(is_single()){
-		$mapheight = 'style="margin-top:-100px"';
-	} else {
-		$mapheight = 'style="margin-top:-200px"';
-	}
 	
 	//include hidden description for google index
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
@@ -72,8 +66,8 @@ else:
 	echo '<div class="planet grabcursor">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
-		echo cwb_loadmap();
-		
+		cwb_loadmap();
+		$captions = cowobo()->posts->loadgallery($postid);
 	echo '</div>';
 
 	//include page
@@ -81,26 +75,26 @@ else:
 		
 		//include titlebar
 		echo '<div class="titlebar">';
-			echo '<div class="titlebox">';
-				echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
-				echo '<a class="searchform" href="?action=search">Search ▼</a>';
-				if(is_single()) $editlink = '?action=editpost';
-				else  $editlink = '?action=contribute';
-				echo '<a class="editpage" href="'.$editlink.'">Edit Page ▼</a>';
-			echo '</div>';
+			echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
+			echo '<span class="captions">If you are new here, take the tour >>'.$captions.'</span>';
+			echo '<img class="resizeicon right" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
+			echo '<a class="next right" href="?img=3">Next</a>';
+			echo '<a class="prev right" href="?img=3">Last</a>';
 			echo '<div class="shade"></div>';
-			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
 		echo '</div>';
 		
-		
-		//include dragbar to resize imageviewer
+		//include dragbar and mapcover
 		echo '<div class="dragbar"></div>';
 		
-		//include shadow
-				
-		//include feed (hide if we are translating with javascript)
+		//include preloader to cover map while feed loads
+		echo '<div class="cover">';
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+		echo '</div>';
+
+		//include feed
 		echo '<div class="feed">';
 			
+			//include shadow	
 			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 			//include searchform
@@ -114,8 +108,9 @@ else:
 	
 			//include the appropriate feed template
 			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
-				include(TEMPLATEPATH.'/templates/home.php');
+				include(TEMPLATEPATH.'/templates/categories.php');
 			endif;
+			
 			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
 				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
 					include(TEMPLATEPATH.'/templates/login.php');
