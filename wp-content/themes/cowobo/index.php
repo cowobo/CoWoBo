@@ -18,7 +18,7 @@ else:
 		$userid = $profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);
-		$canedit = current_user_can('edit_settings');
+		$canedit = current_user_can('edit_others_posts') || WP_DEBUG;
 		if(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
 		if( cowobo()->query->post_ID ) $postid = $_POST['post_ID'];
 		if( $post->ID == $userid || $canedit ) $author = true;
@@ -35,7 +35,7 @@ else:
 	} else {
 		$mapheight = 'style="margin-top:-200px"';
 	}
-	
+
 	//include hidden description for google index
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
 
@@ -48,7 +48,7 @@ else:
 		else:
 			echo '<a href="?action=login'.'">Your Profile</a>';
 		endif;
-	echo '</div>';	
+	echo '</div>';
 
 	//include planet/imageviewer controls
 	echo '<div class="nav pandiv">';
@@ -62,23 +62,23 @@ else:
 		echo '<a class="zoom zoomin" href="?zoom=in">+</a>';
 		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
 	echo '</div>';
-	
+
 	echo '<div class="nav zoomoutdiv">';
 		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
 		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
 	echo '</div>';
-	
+
 	//include planet/imageviewer
 	echo '<div class="planet grabcursor">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
 		echo cwb_loadmap();
-		
+
 	echo '</div>';
 
 	//include page
 	echo '<div class="page" '.$mapheight.'>';
-		
+
 		//include titlebar
 		echo '<div class="titlebar">';
 			echo '<div class="titlebox">';
@@ -91,27 +91,27 @@ else:
 			echo '<div class="shade"></div>';
 			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
 		echo '</div>';
-		
-		
+
+
 		//include dragbar to resize imageviewer
 		echo '<div class="dragbar"></div>';
-		
+
 		//include shadow
-				
+
 		//include feed (hide if we are translating with javascript)
 		echo '<div class="feed">';
-			
+
 			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 			//include searchform
 			include(TEMPLATEPATH.'/templates/search.php');
-	
+
 			//if translating show notice
 			if($translate) echo '<h2 class="translating">'.$subtitle.'<span class="loading"></span></h2>';
-	
+
 			//include any notifications to user
 			include( TEMPLATEPATH . '/templates/notify.php');
-	
+
 			//include the appropriate feed template
 			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
 				include(TEMPLATEPATH.'/templates/home.php');
@@ -135,22 +135,22 @@ else:
 			elseif(is_category() or cowobo()->query->s):
 				include(TEMPLATEPATH.'/templates/categories.php');
 			endif;
-		
+
 				do_action ( 'cowobo_after_content' );
-	
+
 	        do_action ( 'cowobo_after_content' );
 	        if (is_user_logged_in() )
 	            do_action ( 'cowobo_after_content_loggedin' );
-	
+
 			//clear floats in feed
 			echo '<div class="clear"></div>';
-			
+
 			include(TEMPLATEPATH.'/templates/footer.php');
-	
+
 		echo '</div>';
 
 		echo '<div class="background">';
-			
+
 			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 			echo '<div class="pagesource unselectable" unselectable="on">';
@@ -160,7 +160,7 @@ else:
 				echo '<div class="notranslate code">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</div>';
 			echo '</div>';
 		echo '</div>';
-	
+
 	echo '</div>';
 
 	get_footer();

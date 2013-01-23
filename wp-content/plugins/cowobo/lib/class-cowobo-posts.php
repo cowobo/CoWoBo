@@ -398,7 +398,7 @@ class CoWoBo_Posts
         //construct thumb gallery
         $remaining = 5 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
-        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
+        $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
 
 		return $gallery;
     }
@@ -682,6 +682,8 @@ class CoWoBo_Posts
 
             $text = '';
             foreach ( $selectors as $selector ) {
+                $obj = $html->find( $selector, 0);
+                if ( empty ( $obj ) ) continue;
                 if ( $text = $html->find( $selector, 0)->innertext ) break;
             }
 

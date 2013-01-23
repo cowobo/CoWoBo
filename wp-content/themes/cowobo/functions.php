@@ -1,5 +1,5 @@
 <?php
-if ( ! defined ( COWOBO_DEFAULT_AVATAR_URL ) || ! COWOBO_DEFAULT_AVATAR_URL )
+if ( ! defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) || ! COWOBO_DEFAULT_AVATAR_URL )
     define ( 'COWOBO_DEFAULT_AVATAR_URL', get_template_directory_uri() . '/images/angel3.png' );
 
 
@@ -91,7 +91,7 @@ function wpsx_5505_modify_uploaded_file_names($arr) {
     //  the media section rather than uploading an image from a post.
     if($post_id && is_numeric($post_id)) {
         // Get the post slug
-        $post_obj = get_post($post_id); 
+        $post_obj = get_post($post_id);
         $post_slug = $post_obj->post_name;
 
         // If we found a slug
