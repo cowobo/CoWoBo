@@ -98,7 +98,7 @@ function cwb_geocode($address) {
 function cwb_loadmap() {
 	global $cowobo, $post;
 	$linkedmarkers = array();
-	
+
 	$data = array('lat'=> '20', 'lng'=>'0', 'zoom'=>1);
 
 	//get coordinates if specified in url or post
@@ -107,20 +107,19 @@ function cwb_loadmap() {
 		else $postid = $post->ID;
 		$postcoordinates = get_post_meta($postid, 'coordinates', true);
 		$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
-		echo cowobo()->posts->loadgallery($postid);
 	endif;
-	
+
 	$tileurl = get_bloginfo('template_url').'/images/maps/zoom_1.jpg';
-	
+
 	//construct new maplayer
 	$map = '<div class="slide zoom1" id="slide-0" style="width:110%">';
-	$newlayer .= '<img class="mapimg" src="'.$tileurl.'" alt="" width="100%">';
+	$newlayer = '<img class="mapimg" src="'.$tileurl.'" alt="" width="100%">';
 
 	//sort $posts by related count
 	$markerposts = get_posts('cat='.get_cat_id('Locations').'&numberposts=-1');
-	
+
 	//find marker position and add it to map
-    $id = 0; $xmid = 500; $ymid = 250;
+    $id = 0; $xmid = 500; $ymid = 250; $max = 0;
 	foreach($markerposts as $markerpost): $id++;
 		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
         if ( empty ( $coordinates ) ) continue;
@@ -130,15 +129,16 @@ function cwb_loadmap() {
    		$marker_x = ($xmid + $delta_x)/($xmid*2)*100;
    		$marker_y = ($ymid + $delta_y)/($ymid*2)*100;
 		if($max == 0) $max = 1;
-		$percentage = $countarray[$markerpost->ID]/$max;
-		$newsize = 15 + round($percentage * 20);
-		$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2).'px';
+		//$percentage = $countarray[$markerpost->ID]/$max;
+		//$newsize = 15 + round($percentage * 20);
+		//$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2).'px';
+        $newsize = $newmargin = 0;
 		$markerstyle = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:'.$newmargin;
 		$marker = '<img class="marker" style="'.$markerstyle.'" src="'.get_bloginfo("template_url").'/images/mapnav.png"/>';
 		$markerlinks[] = '<a class="markerlink" style="'.$markerstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
 	endforeach;
-	
+
 	$map .= $newlayer;
 	$map .= '</div>';
 
@@ -151,5 +151,5 @@ function cwb_loadmap() {
 		$map .= '</div>';
 	endif;
 
-	return $map;
+	echo $map;
 }

@@ -167,7 +167,10 @@ class CoWoBo_Posts
         for ($x=0; $x<5; $x++):
             $imgid = $_POST['imgid'.$x];
             $file = $_FILES['file'.$x]['name'];
-            $videocheck = explode("?v=", $_POST['caption'.$x]);
+            $caption_id = "caption$x";
+            $caption = cowobo()->query->$caption_id;
+            $videocheck = explode("?v=", $caption );
+            $imagecheck = $this->is_image_url ( $caption );
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
             if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
@@ -322,20 +325,28 @@ class CoWoBo_Posts
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
+            $image_check = $this->is_image_url( $caption );
             //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
+            } elseif ( $image_check ) {
+
+                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
+                    $slides[$x] .= '<img src="'.$caption.'" width="100%" alt=""/>';
+                    //if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption"></div>';
+                $slides[$x] .= '</div>';
+
+            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
                     if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
-            endif;
+            }
 
            unset($imgid);
 
@@ -354,28 +365,36 @@ class CoWoBo_Posts
 
 	/**
      * Return list of thumbs for post
+     *
+     * @todo We are doubling up on a lot of work here. Can't we store the whole gallery in one object?
      */
     function load_thumbs($postid, $catslug = false){
 
         $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
 
 		//create thumbs for other images
-        for ($x=0; $x<4; $x++):
+        for ($x=0; $x<4; $x++) {
             //store slide info
+            $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
+            $imagecheck = $this->is_image_url( $caption );
 		    //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
                	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
-            elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
+            } elseif ( $imagecheck ) {
+
+                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'. $caption .'" width="100%" alt=""/></a>';
+
+            } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
                 $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
-            endif;
-        endfor;
+            }
+        }
 
         //construct thumb gallery
         $remaining = 5 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
-        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
+        $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
 
 		return $gallery;
     }
@@ -598,5 +617,107 @@ class CoWoBo_Posts
         return in_array( $profile_id, $authors );
     }
 
+    public function post_by_url ( $url = '' ) {
+        if ( empty ( $url ) ) $url = cowobo()->query->url;
+        //if ( empty ( $url ) ) return;
+
+		$scheme = parse_url($url, PHP_URL_SCHEME);
+		if (! $scheme || ! preg_match ( '/^https?$/', $scheme ) )
+			$url = "http://{$url}";
+
+        $warning = "There has been an error processing your link";
+        if ( empty ( $url ) ) {
+            cowobo()->add_notice( $warning,'error');
+            return;
 }
 
+		$images = array();
+		$title = '';
+		$text = '';
+
+		$page = $this->get_page_contents($url);
+
+        if ( empty ( $page ) ) {
+            cowobo()->add_notice( $warning,'error');
+            return;
+        }
+
+        if ( ! class_exists( 'simple_html_dom' ) )
+            require_once( COWOBO_PLUGIN_LIB . 'external/simple_html_dom.php');
+
+		$html = str_get_html($page);
+		$str = $html->find('text');
+
+		if ($str) {
+			$image_els = $html->find('img');
+
+			foreach ($image_els as $el) {
+				if ($el->width > 100 && $el->height > 100) // Disregard spacers
+                        $images[] = $el->src;
+
+                if ( count ( $images ) == 5 ) break;
+			}
+			$og_image = $html->find('meta[property=og:image]', 0);
+			if ($og_image) array_unshift($images, $og_image->content);
+
+			$title = $html->find('title', 0);
+			$title = $title ? $title->plaintext: $url;
+
+            $selectors = array (
+                '.instapaper_body', // ReadWriteWeb (or anything with instapaper)
+                '.entrytext', // WordPress.com (most WP based blogs)
+                '.entry',
+                '.post-body', // LifeHacker
+                '.DetailedSummary', // Al Jazeera
+                'h2 + div',
+                'h1 + div', // CNN
+                'p + div',
+                'p + div',
+                'p.introduction', // BBC
+            );
+
+            $text = '';
+            foreach ( $selectors as $selector ) {
+                $obj = $html->find( $selector, 0);
+                if ( empty ( $obj ) ) continue;
+                if ( $text = $html->find( $selector, 0)->innertext ) break;
+            }
+
+			$text = strip_tags ( $text, '<p><a><br><b><strong><i><em><u>' );
+            if ( empty ( $text ) ) cowobo()->add_notice('We could not parse the content for this article, try pasting it in manually.', 'error');
+		} else {
+			$url = '';
+		}
+
+        $query = cowobo()->query;
+        $query->post_title = trim ( $title );
+        $query->post_content = trim ( $text );
+        $query->website = $url;
+
+        $x = 0;
+        foreach ( $images as $image ) {
+            $caption_id = "caption$x";
+            $query->$caption_id = $image;
+            $x++;
+        }
+    }
+
+	/**
+	 * Remote page retrieving routine.
+	 *
+	 * @param string Remote URL
+	 * @return mixed Remote page as string, or (bool)false on failure
+	 * @access private
+	 */
+	private function get_page_contents ($url) {
+		$response = wp_remote_get($url);
+		if (is_wp_error($response)) return false;
+		return $response['body'];
+	}
+
+    public function is_image_url ( $url ) {
+        $image_extensions = array ( 'jpg', 'jpeg', 'png', 'gif' );
+        return in_array ( substr(strrchr ( $url,'.'), 1 ), $image_extensions );
+    }
+
+}

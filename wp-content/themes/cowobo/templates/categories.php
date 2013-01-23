@@ -1,7 +1,5 @@
 <?php
 
-	include(TEMPLATEPATH.'/templates/search.php');		
-
 	if (have_posts()):
 		//$sort = $sort[$cat->term_id];
 		while (have_posts()) : the_post();
