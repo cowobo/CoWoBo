@@ -163,11 +163,16 @@ class CoWoBo_Posts
         //handle images
         /**
          * @todo check for malicious code in jpg?
+         *
          */
         for ($x=0; $x<5; $x++):
             $imgid = $_POST['imgid'.$x];
             $file = $_FILES['file'.$x]['name'];
-            $videocheck = explode("?v=", $_POST['caption'.$x]);
+            $caption_id = "caption$x";
+            $caption = cowobo()->query->$caption_id;
+            $videocheck = explode("?v=", $caption );
+            $imagecheck = $this->is_image_url ( $caption );
+
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
             if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
@@ -688,10 +693,15 @@ class CoWoBo_Posts
 	 * @return mixed Remote page as string, or (bool)false on failure
 	 * @access private
 	 */
-	function get_page_contents ($url) {
+	private function get_page_contents ($url) {
 		$response = wp_remote_get($url);
 		if (is_wp_error($response)) return false;
 		return $response['body'];
 	}
+
+    public function is_image_url ( $url ) {
+        $image_extensions = array ( 'jpg', 'jpeg', 'png', 'gif' );
+        return in_array ( substr(strrchr ( $url,'.'), 1 ), $image_extensions );
+    }
 
 }
