@@ -114,24 +114,22 @@ form {margin:0 auto;}
 .searchform {position:relative; z-index:20; margin-bottom:20px;}
 .searchbar {height: 25px;}
 .searchbar a {color:#666; font-size:17px;}
-.searchfield {width:500px;}
+.searchfield {width:200px;}
+.extracturl {width:300px; margin-right:10px;}
+.addnew {width:100px; margin-right:10px;}
 .dropmenu {overflow:hidden; margin-top:15px;}
 .dropmenu span {float:left; width:25%; cursor:pointer; opacity:0.8}
 .dropmenu span:hover, .checked {opacity:1!important; font-size:17px}
-.dropmenu input {width:auto; margin:0 10px 0 5px;}
+.dropmenu span input {width:auto; margin:0 10px 0 5px;}
 .dropmenu li:hover {color:#333;}
 
 /* Tab Styles */
-.tab {margin-bottom:20px; clear:both; }
+.tab {margin-bottom:20px; clear:both; overflow:hidden;}
 .tabthumb {width:140px; height:100px; cursor:pointer; background:#eee; overflow:hidden;}
-.tabthumb {text-align:center; line-height:90px; font-size:100px; color:#ccc; margin-bottom:20px}
-.tabthumb.left { clear: left; }
-.tabthumb.right { clear: right; }
-.tabthumb .avatar { margin-top: -20px; }
-.tabtext.left { clear: left; }
-.tabtext.right { clear: right; }
-.nextthumb {float:left; width:40px; height:30px; overflow:hidden; background:#eee;}
-.thumb {overflow:hidden; background:#eee; opacity:0.9; display:block;}
+.tabthumb {text-align:center; line-height:90px; font-size:100px; color:#ccc;}
+.tabthumb .avatar {margin-top: -20px;}
+.tabtext {width:460px; height:100px; overflow:hidden;}
+.thumb {overflow:hidden; background:#ddd; opacity:0.9; display:block;}
 .gallery {overflow:hidden; width:630px;}
 .gallery a:hover {opacity:1;}
 .third {float:left; width:200px; height:130px; margin-right:10px;}
@@ -168,7 +166,7 @@ body.js.notice { padding-right: 60px; }
 .deletecol input {vertical-align:top; width:auto;}
 .country {width:170px}
 .zoomlevel {width:70px; margin-left: 15px; float:left;}
-.button, .form-submit input {font-size:15px; color:#5c63b3; border:none; background:none; font-weight:bold; margin: 0 15px 0 0; padding:0; cursor:pointer; }
+.button, .form-submit input {font-size:15px; color:#5c63b3; border:none; width:auto; background:none; font-weight:bold; margin: 0 15px 0 0; padding:0; cursor:pointer; }
 .form-submit input {width:auto;}
 .field {display:inline-block; zoom: 1; display: inline; margin-right:15px}
 .field h3 {display:inline;}

@@ -12,14 +12,14 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 		echo '</ul>';
 		
 		echo '<div class="hide dropmenu searchmenu">';
-			echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.'" placeholder="Enter keywords and/or select categories below"/>';
-			echo '<br/><input type="submit" class="button" value="Update"/>';
 			if($querycats = cowobo()->query->cats) $selected = $querycats; 
 			else $selected = array(get_cat_ID('Coders'), get_cat_ID('Jobs'));
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
 				if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
 				echo '<span class="'.$state.'"><input type="checkbox" name="cats[]" value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</span>';
 			endforeach;
+			echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.'" placeholder="Keywords.."/>';
+			echo '<br/><input type="submit" class="button" value="Search"/>';
 		echo '</div>';
 		
 		$sorttypes = array(
@@ -49,8 +49,8 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 		echo '</div>';
 		
 		echo '<div class="hide dropmenu addmenu">';
-			echo '<input type="text" class="smallfield" name="url"/>';
-			echo '<select name="addnew" class="smallfield">';
+			echo '<input type="text" class="extracturl" name="url"/>';
+			echo '<select name="addnew" class="addnew">';
 				foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
 					if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
 					echo '<option value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</option>';
