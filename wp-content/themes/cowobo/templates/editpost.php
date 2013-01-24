@@ -71,7 +71,7 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 				echo '<div class="browsecol">New image</div>';
 				echo '<div class="deletecol">Delete</div>';
 			echo '</div>';
-			for ($x=0; $x<5; $x++):
+			for ($x=0; $x<4; $x++):
 				if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
 					$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail');
 				else:
