@@ -325,8 +325,9 @@ class CoWoBo_Posts
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
+            
             $image_check = $this->is_image_url( $caption );
-            //check if the slide is video or image;
+			//check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
@@ -352,15 +353,15 @@ class CoWoBo_Posts
 
         endfor;
 
-
         //construct gallery
         $gallery = '';
         if( ! empty ( $slides ) ) {
             $slides = array_reverse($slides); //so they appear in the correct order
             $gallery = implode('', $slides);
         }
-
-        return $gallery;
+		echo $gallery;
+		
+        return $captions;
     }
 
 	/**
@@ -370,7 +371,7 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
 
-        $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
+        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
 
 		//create thumbs for other images
         for ($x=0; $x<4; $x++) {
@@ -388,13 +389,13 @@ class CoWoBo_Posts
 
             } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
                 $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
-            }
-        }
+            endif;
+        endfor;
 
         //construct thumb gallery
-        $remaining = 5 - count($thumbs);
-        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
-        $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
+        $remaining = 4 - count($thumbs);
+        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
+        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
 
 		return $gallery;
     }

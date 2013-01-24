@@ -51,9 +51,9 @@ class CoWoBo_Users
 
     public function do_profile_avatar() {
         if ( ! $this->is_profile() ) return;
-        echo "<p class='left'>";
+        echo "<div class='fourth'>";
         echo get_avatar( get_current_user_id() );
-        echo "</p>";
+        echo "</div>";
     }
 
     public function do_avatar_with_upload_form() {

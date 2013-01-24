@@ -38,6 +38,7 @@ jQuery(document).ready(function() {
 	var pan = false; var drag = false; var previousX; var previousY;
 
 	jQuery(".planet").mousedown(function(e) {
+		e.preventDefault();
 		jQuery('body').addClass('unselectable');
 	    previousX = e.clientX;
 	    previousY = e.clientY;
@@ -45,28 +46,30 @@ jQuery(document).ready(function() {
 	});
 
 	jQuery(".dragbar").mousedown(function(e) {
+		e.preventDefault();
 		jQuery('body').addClass('unselectable');
 	    previousY = e.clientY;
 	    drag = true;
 	});
 
 	jQuery("body").mousemove(function(e) {
-
 		if (pan) {
 	        var slide = jQuery(".slide:last");
 			var slidepos = slide.position();
-			var titleheight = jQuery('.titlebar').height()
-			var pagepos = parseFloat(jQuery('.page').css('margin-top')) + titleheight;
-			var xmax = jQuery('.planet').width() - slide.width();
-			var ymax = jQuery('.planet').height() - slide.height() + pagepos ;
+			var titleheight = jQuery('.titlebar').outerHeight();
+			var viewheight = parseFloat(jQuery('.page').css('margin-top')) + titleheight;
+			var xmax = jQuery(window).width() - slide.width();
+			var ymax = jQuery('.planet').height() - slide.height() +viewheight ;
 			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
 			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');	
 			if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
+			if(ymax > 0) ymax =0;
 			if(newx > 0) newx = 0;
 			if(newx < xmax) newx = xmax;
 			if(newy > 0) newy = 0;
 			if(newy < ymax) newy = ymax;
+			//alert(newy);
 			slide.css({top: newy, left: newx});
 	        previousX = e.clientX;
 	        previousY = e.clientY;
@@ -92,13 +95,6 @@ jQuery(document).ready(function() {
 		jQuery('body').removeClass('unselectable');
 	});
 
-    // Is So Meta (Even The Acronym)!
-    var pagesource = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' + document.documentElement.outerHTML;
-    jQuery('div.pagesource div.code').html(
-        pagesource.replace(/></g, '> <').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/(\r\n|\n|\r)/gm," ")
-    );
-    jQuery('div.pagesource div.code').litelighter();
-
 
 });
 
@@ -107,13 +103,17 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	event.preventDefault();
 	var action = jQuery(this).attr('class').split(' ')[1];
 	var slide = jQuery('.slide:last');
-	var slideimg = jQuery('.slide .mapimg');
 	var slidepos = slide.position();
+	var slideimg = slide.children('.slideimg');
 	var pagepos = parseFloat(jQuery('.page').css('margin-top'));
+	var titleheight = jQuery('.titlebar').outerHeight();
+	var viewheight = jQuery('.planet').height() + pagepos + titleheight;
+	var curzoom = parseFloat(slide.children('.zoomlevel').val());
 	var xmax = jQuery('.planet').width() - slide.width();
-	var ymax = jQuery('.planet').height() - slide.height() + pagepos + 40;
+	var ymax = viewheight - slide.height();
+	if(ymax > 0) ymax =0;
 	var amount; var newstyle;
-
+	
 	if(action == 'labels') {
 		//to do: change day/night maptype
 	} else if(action == 'panleft') {
@@ -128,17 +128,26 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	} else if(action == 'pandown') {
 		if(slidepos.top > ymax + 200) amount = slidepos.top - 200; else amount = ymax;
 		newstyle = {top: amount}
-	} else if(action == 'zoomin') {
-		var curzoom = parseFloat(slide[0].style.width.split('%')[0]);
-		if(curzoom < 400) {
-			var newzoom = curzoom * 2 + '%';
-			var newtop = slidepos.top - (slide.height()/2) + 'px';
-			var newleft = slidepos.left - (slide.width()/2) + 'px';
-			var imgname = slideimg.attr('src').split('_')[0];
-			newstyle = {width:newzoom, height:newzoom, top:newtop, left:newleft};
-			slideimg.clone().appendTo(slide).attr('src', imgname + '_3.jpg');
+	} else if(action == 'zoomin' && curzoom < 2) {
+		var newlevel = curzoom + 1;
+		var newzoom = newlevel * 200 + '%';
+		var newtop = slidepos.top - (slide.height()/2) + 'px';
+		var newleft = slidepos.left - (slide.width()/2) + 'px';
+		var newsrc = jQuery('.zoomsrc'+newlevel).val();	
+		newstyle = {width:newzoom, height:newzoom, top:newtop, left:newleft}
+		slide.children('.zoomlevel').val(newlevel);
+		
+		//load larger image if available
+		if(typeof(newsrc) != 'undefined' && newsrc.length > 0) {
+			newimg = slideimg.clone();
+			newimg.appendTo(slide).attr('src', newsrc);
+			var oldimgs = slide.children('.slideimg').not(newimg);
+			if(newimg.complete) newimg.load(function() {oldimgs.remove()});					
+			else newimg.load(function() {oldimgs.remove()});
 		}
-	} else if(action ==  'zoomout') {
+	} else if(action ==  'zoomout' && curzoom > 0) {
+		var newlevel = curzoom - 1
+		slide.children('.zoomlevel').val(newlevel);
 		newstyle = {width:"100%", height:"100%", top:"0", left:"0"};
 	}
 
@@ -154,7 +163,7 @@ function expand_map() {
 }
 
 function center_images() {
-	jQuery('.slide').each(function(){
+	jQuery('.slide, .markerlinks').each(function(){
 		var viewheight = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
 		var newtop = (viewheight - jQuery(this).height()) / 2 ;
 		jQuery(this).css('top', newtop);
@@ -165,24 +174,28 @@ jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
 	var slide = jQuery('.slide:last');
 	var margin = parseFloat(jQuery('.page').css('margin-top'));
+	if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 	if(margin < 0) var amount = 0;
 	else var amount = -jQuery('.planet').height()/2;
-	var newtop = (jQuery('.planet').height() - slide.height() + amount) / 2 ;
 	jQuery('.page').animate({marginTop: amount}, 1000);
-	slide.animate({top: newtop}, 1000);
+	jQuery('html, body').animate({scrollTop: 0}, 1000);
+	jQuery('.slide, .markerlinks').each(function(){
+		var newtop = (jQuery('.planet').height() - slide.height() + amount) / 2 ;
+		jQuery(this).animate({top: newtop}, 1000);
+	});
 });
 
 
 //Search form listerners
 
-jQuery('.searchbar a').live('click', function(e){
+jQuery('.searchbar li').live('click', function(e){
 	e.preventDefault();
 	var menu = jQuery('.' + jQuery(this).attr('id'))
 	menu.slideToggle();
 	jQuery('.dropmenu').not(menu).slideUp();
 });
 
-jQuery('.searchform input').live('click', function(event){
+jQuery('.searchform span input').live('click', function(event){
 	event.stopPropagation();
 	jQuery(this).parent().toggleClass('checked');
 });
@@ -228,6 +241,34 @@ jQuery('.gallery a').live('click', function(event) {
 	slide.hide().appendTo(jQuery('.planet')).fadeIn(1000);
 });
 
+//show next or previous slide
+jQuery('.next, .prev').live('click', function(event) {
+	event.preventDefault();
+	if(jQuery(this).hasClass('next')) {
+		jQuery('.slide:last').fadeOut();
+	}
+});
+
+
+//start slideshow
+function startslideshow() {
+	if(jQuery('.slide').length>1){
+		slideshow = setInterval(function(){
+			var newnum = jQuery('.slide:visible').length;
+			if(newnum == jQuery('.slide').length) newnum = 0;
+			var newslide = jQuery('.slide').eq(newnum);
+			var newcaption = jQuery('.caption').eq(newnum);
+			
+			//fade in new slide
+			if(newslide.is(':visible')) newslide.nextAll('.slide').fadeOut(2000);
+			else newslide.fadeIn(2000);
+			
+			//update caption
+			newcaption.fadeIn(2000).siblings().fadeOut(2000);
+			
+		}, 4000);
+	}
+}
 
 //TEXT EDITOR FUNCTIONS
 

@@ -12,6 +12,7 @@ else:
 	$action = cowobo()->query->action;
 	$feedtitle = $langnames[$lang][2];
 	$mapheight = 'style="margin-top:-150px"';
+	
 	if(is_home()):
 		$feedtitle = $langnames[$lang][1];
 		$subtitle = $langnames[$lang][2];
@@ -29,7 +30,7 @@ else:
 		cowobo()->posts->update_views($post->ID);
 		$coordinates = get_post_meta($post->ID, 'coordinates', true);
 	endif;
-
+	
 	//include hidden description for google index
 	echo '<div class="description hide">'.get_bloginfo('description').'</div>';
 
@@ -38,78 +39,72 @@ else:
 		echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
 		echo '<a href="?action=contact">Contact</a>';
 		if(is_user_logged_in()):
-			echo '<a href="'.get_permalink($profile_id).'">Your Profile</a>';
+			echo '<a href="'.get_permalink($profile_id).'">Profile</a>';
 		else:
-			echo '<a href="?action=login'.'">Your Profile</a>';
+			echo '<a href="?action=login'.'">Profile</a>';
 		endif;
-	echo '</div>';
+	echo '</div>';	
 
 	//include planet/imageviewer controls
-	echo '<div class="nav pandiv">';
-		echo '<a class="pan panleft" href="?pan=left">&#60;</a>';
-		echo '<a class="pan panright" href="?pan=right">&#62;</a>';
-		echo '<a class="pan panup" href="?pan=up">&#8743;</a>';
-		echo '<a class="pan pandown" href="?pan=down">&#8744;</a>';
-		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
-	echo '</div>';
-	echo '<div class="nav zoomindiv">';
-		echo '<a class="zoom zoomin" href="?zoom=in">+</a>';
-		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
-	echo '</div>';
-
-	echo '<div class="nav zoomoutdiv">';
-		echo '<a class="zoom zoomout" href="?zoom=out">-</a>';
-		echo '<img src="'.get_bloginfo('template_url').'/images/circle.png" alt=""/>';
-	echo '</div>';
-
+	echo '<a class="pan panleft" href="?pan=left"></a>';
+	echo '<a class="pan panright" href="?pan=right"></a>';
+	echo '<a class="pan panup" href="?pan=up"></a>';
+	echo '<a class="pan pandown" href="?pan=down"></a>';
+	echo '<a class="zoom zoomin" href="?zoom=in"></a>';
+	echo '<a class="zoom zoomout" href="?zoom=out"></a>';
+	
 	//include planet/imageviewer
 	echo '<div class="planet grabcursor">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
 		cwb_loadmap();
 		$captions = cowobo()->posts->loadgallery($postid);
-
 	echo '</div>';
 
 	//include page
 	echo '<div class="page" '.$mapheight.'>';
-
+		
 		//include titlebar
 		echo '<div class="titlebar">';
 			echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
-			echo '<span class="captions">If you are new here, take the tour >>'.$captions.'</span>';
+			echo '<span class="captions">If you are new here, take the tour >></span>';
 			echo '<img class="resizeicon right" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
+			echo '<a class="nextpost right hide" href="?img=3">Next Post</a>';
 			echo '<a class="next right" href="?img=3">Next</a>';
 			echo '<a class="prev right" href="?img=3">Last</a>';
 			echo '<div class="shade"></div>';
-			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Expand" alt=""/>';
 		echo '</div>';
-
-
+		
+		//include feed
+		echo '<div class="wrapper">';
 		//include dragbar and mapcover
 		echo '<div class="dragbar"></div>';
-
-		//include shadow
+		
+		//include preloader to cover map while feed loads
+		echo '<div class="cover">';
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+		echo '</div>';
 
 		//include feed
 		echo '<div class="feed">';
-
-			//include shadow
+			
+			//include shadow	
 			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 			//include searchform
 			include(TEMPLATEPATH.'/templates/search.php');
-
+	
 			//if translating show notice
 			if($translate) echo '<h2 class="translating">'.$subtitle.'<span class="loading"></span></h2>';
-
+	
 			//include any notifications to user
 			include( TEMPLATEPATH . '/templates/notify.php');
-
+	
 			//include the appropriate feed template
 			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
-				include(TEMPLATEPATH.'/templates/categories.php');
+					include(TEMPLATEPATH.'/templates/home.php');
 			endif;
+			
 			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
 				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
 					include(TEMPLATEPATH.'/templates/login.php');
@@ -129,34 +124,35 @@ else:
 			elseif(is_category() or cowobo()->query->s):
 				include(TEMPLATEPATH.'/templates/categories.php');
 			endif;
-
-				do_action ( 'cowobo_after_content' );
+		
+				//include plugin boxes
 
 	        do_action ( 'cowobo_after_content' );
 	        if (is_user_logged_in() )
 	            do_action ( 'cowobo_after_content_loggedin' );
-
+	
 			//clear floats in feed
 			echo '<div class="clear"></div>';
-
+			
 			include(TEMPLATEPATH.'/templates/footer.php');
-
+	
 		echo '</div>';
 
 		echo '<div class="background">';
-
+			
 			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 
 			echo '<div class="pagesource unselectable" unselectable="on">';
 				echo '<div class="rownumbers">';
 					for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
 				echo '</div>';
-				echo '<div class="notranslate code">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</div>';
+					echo '<div class="notranslate code"><pre>'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre></div>';
 			echo '</div>';
 		echo '</div>';
-
+	
 	echo '</div>';
 
+	echo '</div>';
 	get_footer();
 
 endif;?>
