@@ -57,7 +57,7 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 	
 echo '</form>';	
 
-echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
+echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab">';
 	echo '<div class="hide dropmenu addmenu">';
 		echo '<select name="addnew" class="addnew">';
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):

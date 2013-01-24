@@ -60,4 +60,6 @@ if ( have_comments() ) :
 	echo '</div>';
 endif;
 
+paginate_comments_links();
+
 ?>

@@ -372,10 +372,12 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
 
-        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-
+		$coordinates = get_post_meta($postid, 'coordinates', true);
+		$position = get_map_position(149, 100, $coordinates);
+		$thumbs[] = '<a href="?img=map" class="fourth"><img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/></a>';
+		
 		//create thumbs for other images
-        for ($x=0; $x<4; $x++) {
+        for ($x=0; $x<3; $x++) {
             //store slide info
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
@@ -383,18 +385,18 @@ class CoWoBo_Posts
             $imagecheck = $this->is_image_url( $caption );
 		    //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
-               	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
             } elseif ( $imagecheck ) {
 
-                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'. $caption .'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'. $caption .'" width="100%" alt=""/></a>';
 
             } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
-                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
             }
         }
 
         //construct thumb gallery
-        $remaining = 4 - count($thumbs);
+        $remaining = 3 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
         $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
 
@@ -406,7 +408,9 @@ class CoWoBo_Posts
      */
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location') {
-            echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
+			$coordinates = get_post_meta($postid, 'coordinates', true);
+            $position = get_map_position(149, 100, $coordinates);
+			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
             return;
         }
         if ( $catslug == 'coder' ) {
