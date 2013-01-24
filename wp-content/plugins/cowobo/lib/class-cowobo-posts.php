@@ -360,8 +360,10 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
 
-        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
-
+		$coordinates = get_post_meta($postid, 'coordinates', true);
+		$position = get_map_position(149, 100, $coordinates);
+		$thumbs[] = '<a href="?img=map" class="fourth"><img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/></a>';
+		
 		//create thumbs for other images
         for ($x=0; $x<3; $x++):
             //store slide info
