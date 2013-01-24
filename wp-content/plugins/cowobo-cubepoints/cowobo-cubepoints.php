@@ -98,7 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             }
 
-            add_action ( 'cowobo_after_layouts', array ( &$this, 'do_user_profile_points'), 10, 3 );
+            add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
             add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
             add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
 
@@ -275,7 +275,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
             // Authors don't need to see this
             if ( $author ) return;
 
-
             echo "<div class='tab'>";
 
                 // Different box for profiles
@@ -392,7 +391,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function get_post_points ( $post_id ) {
             $likes = $this->get_post_likes( $post_id );
             $comments = get_comment_count( $post_id );
-            return (int) $likes + $comments;
+            return (int) $likes + (int) $comments['approved'];
         }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
@@ -453,14 +452,18 @@ if (!class_exists('CoWoBo_CubePoints')) :
             return;
         }
 
-        public function do_user_profile_points ( $postid, $postcat, $author ) {
-            if ( ! cowobo()->users->is_profile() ) return;
+        public function do_post_points ( $post_id, $postcat, $author ) {
+            if ( cowobo()->users->is_profile() ) {
 
-            $this->setup_displayed_user();
+                $this->setup_displayed_user();
 
-            echo '<span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
-            echo '<span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
-            $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
+                echo ' <span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+                echo ' <span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
+                $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
+            } else {
+                echo ' <span class="field"><h3>Points:</h3><span class="hint">' . $this->get_post_points( $post_id ) . '</span></span>';
+            }
+
         }
 
         public function do_points_log_box( $postid, $postcat, $author ) {
