@@ -101,13 +101,14 @@ function latlng_to_percent($coordinates) {
 	$xmid = 1000; $ymid = 500;
 	$map_center_lat = 20;
 	$map_center_lng = 0;
-	
+
+    if ( empty ( $coordinates ) ) return;
 	$latlng = explode(',', $coordinates);
 	$delta_x  = (LonToX($latlng[1]) - LonToX($map_center_lng)) >> 1;
 	$delta_y  = (LatToY($latlng[0]) - LatToY($map_center_lat)) >> 1;
 
     $pos['left'] = ($xmid + $delta_x)/($xmid*2);
-   	$pos['top'] = ($ymid + $delta_y)/($ymid*2);	  	
+   	$pos['top'] = ($ymid + $delta_y)/($ymid*2);
 	return $pos;
 }
 
@@ -124,7 +125,7 @@ function get_map_position($width, $height, $coordinates) {
 	if($x < $xmax) $x = $xmax;
 	if($y < $ymax) $y = $ymax;
 	$position = 'position:absolute; top:'.$y.'px; left:'.$x.'px';
-	
+
 	return $position;
 }
 
@@ -155,7 +156,7 @@ function cwb_loadmap() {
 
 	//construct new maplayer
 	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" style="top:'.$y.'%; left:'.$x.'%">';
-	$newlayer .= '<img class="mapimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
+	$newlayer = '<img class="mapimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
 
@@ -210,7 +211,7 @@ function cwb_loadmap() {
 	$map .= '</div>';
 
 	//now add the links to a layer above the cloud mask
-	if($markerlinks):
+	if( isset ( $markerlinks ) && $markerlinks ):
 		$map .= '<div class="markerlinks zoom'.$zoomlevel.'">';
 		foreach($markerlinks as $markerlink):
 			$map .= $markerlink;
