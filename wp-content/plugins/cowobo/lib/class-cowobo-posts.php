@@ -416,8 +416,10 @@ class CoWoBo_Posts
                 if ( is_array ( $attached_src ) )
                     $fallback = $attached_src[0];
             }
-            echo get_avatar( cowobo()->users->get_users_by_profile_id( $postid, true )->ID, '140', $fallback );
-            return;
+            if ( $user = cowobo()->users->get_users_by_profile_id( $postid, true ) ) {
+                echo get_avatar( $user->ID, '140', $fallback );
+                return;
+            }
         }
 
         foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image) {
