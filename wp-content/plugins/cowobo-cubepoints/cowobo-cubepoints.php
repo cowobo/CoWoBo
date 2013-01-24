@@ -26,6 +26,9 @@ define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
 define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
 define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
 
+define ( 'COWOBO_CP_POST_KUDOS_GIVES_POINTS', 1 ); // The love we give the giver
+define ( 'COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS', 2 );
+
 /**
  * PATHs and URLs
  *
@@ -328,6 +331,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         }
 
                         $this->add_post_likes ( $object_id );
+                        cp_points("cowobo_post_kudos_given",
+                                get_current_user_id(),
+                                COWOBO_CP_POST_KUDOS_GIVES_POINTS,
+                                "postid=" . get_the_ID()
+                        );
 
                         $authors = cowobo()->posts->get_post_authors( $object_id );
                         foreach ( $authors as $author_profile_id ) {
@@ -335,9 +343,16 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         }
                         break;
                     case 'profile' :
-                        if ( $origin == $object && $this->kudos_already_given() ) {
-                            cowobo()->add_notice("You must really like this angel! Sorry, but you can't give props to the same person twice.");
-                            return;
+                        if ( $origin == $object ) {
+                            if ($this->kudos_already_given() ) {
+                                cowobo()->add_notice("You must really like this angel! Sorry, but you can't give props to the same person twice.");
+                                return;
+                            }
+                            cp_points("cowobo_profile_kudos_given",
+                                    get_current_user_id(),
+                                    COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS,
+                                    "postid=" . get_the_ID()
+                            );
                         }
                         if ( ! $amount ) $amount = COWOBO_CP_PROFILE_KUDOS;
                         $users = cowobo()->users->get_users_by_profile_id( $object_id );
@@ -426,6 +441,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
                         $post = get_post( $data_arr['postid'] );
                         echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
+                        break;
+                    case 'post_kudos_given' :
+                        $post = get_post( $data_arr['postid'] );
+                        echo "Liked the post <a href='".get_permalink( $post )."'>{$post->post_title}</a>. Check it out!";
+                        break;
+                    case 'profile_kudos_given' :
+                        if ( ! isset ( $data_arr['postid'] ) ) return false;
+                        $post = get_post( $data_arr['postid'] );
+                        echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
                         break;
 
                 }
