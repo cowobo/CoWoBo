@@ -1,5 +1,5 @@
 <?php
-if ( ! defined ( COWOBO_DEFAULT_AVATAR_URL ) || ! COWOBO_DEFAULT_AVATAR_URL )
+if ( ! defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) || ! COWOBO_DEFAULT_AVATAR_URL )
     define ( 'COWOBO_DEFAULT_AVATAR_URL', get_template_directory_uri() . '/images/angel3.png' );
 
 
@@ -56,5 +56,7 @@ function check_website_status($url){
 	else return true;
 }
 
+
 add_theme_support( 'post-thumbnails' );
 add_image_size( 'extra-large', 2000, 9999 ); //300 pixels wide (and unlimited height)
+

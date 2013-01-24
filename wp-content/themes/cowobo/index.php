@@ -8,6 +8,7 @@ else:
 	get_header();
 
 	//VARIABLES
+    if ( ! isset ( $postid ) ) $postid = 0;
 	$action = cowobo()->query->action;
 	$feedtitle = $langnames[$lang][2];
 	$mapheight = 'style="margin-top:-150px"';
@@ -20,8 +21,8 @@ else:
 		$userid = $profile_id;
 		$location = get_post_meta($post->ID, 'location', true);
 		$profiles = get_post_meta($post->ID, 'author', false);
-		$canedit = current_user_can('edit_settings');
-		if(! isset ( $postid ) || ! $postid ) $postid = $post->ID;
+		$canedit = current_user_can('edit_others_posts') || cowobo()->debug;
+		if( ! $postid ) $postid = $post->ID;
 		if( cowobo()->query->post_ID ) $postid = $_POST['post_ID'];
 		if( $post->ID == $userid || $canedit ) $author = true;
 		else $author = false;
@@ -73,81 +74,81 @@ else:
 			echo '<a class="prev right" href="?img=3">Last</a>';
 			echo '<div class="shade"></div>';
 		echo '</div>';
-
+		
 		//include feed
 		echo '<div class="wrapper">';
-				
-			//include dragbar and mapcover
-			echo '<div class="dragbar"></div>';
+		//include dragbar and mapcover
+		echo '<div class="dragbar"></div>';
+		
+		//include preloader to cover map while feed loads
+		echo '<div class="cover">';
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+		echo '</div>';
+
+		//include feed
+		echo '<div class="feed">';
 			
-			//include preloader to cover map while feed loads
-			echo '<div class="cover">';
-				echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
-			echo '</div>';
+			//include shadow	
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+
+			//include searchform
+			include(TEMPLATEPATH.'/templates/search.php');
 	
-			//include feed
-			echo '<div class="feed">';
-				
-				//include shadow	
-				echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+			//include any notifications to user
+			include( TEMPLATEPATH . '/templates/notify.php');
 	
-				//include searchform
-				include(TEMPLATEPATH.'/templates/search.php');
-		
-				//include any notifications to user
-				include( TEMPLATEPATH . '/templates/notify.php');
-		
-				//include the appropriate feed template
-				if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
+			//include the appropriate feed template
+			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
 					include(TEMPLATEPATH.'/templates/home.php');
+			endif;
+			
+			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
+				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
+					include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/'.$action.'.php');
 				endif;
-				
-				if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
-					if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
-						include(TEMPLATEPATH.'/templates/login.php');
-					else:
-						include(TEMPLATEPATH.'/templates/'.$action.'.php');
-					endif;
-				elseif( cowobo()->query->new ): $author = true;
-					if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
-						 include(TEMPLATEPATH.'/templates/login.php');
-					else:
-						include(TEMPLATEPATH.'/templates/editpost.php');
-					endif;
-				elseif(is_404()):
-					include(TEMPLATEPATH.'/templates/404.php');
-				elseif(is_single()):
-					include(TEMPLATEPATH.'/templates/posts.php');
-				elseif(is_category() or cowobo()->query->s):
-					include(TEMPLATEPATH.'/templates/categories.php');
+			elseif( cowobo()->query->new ): $author = true;
+				if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
+					 include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/editpost.php');
 				endif;
-				
+			elseif(is_404()):
+				include(TEMPLATEPATH.'/templates/404.php');
+			elseif(is_single()):
+				include(TEMPLATEPATH.'/templates/posts.php');
+			elseif(is_category() or cowobo()->query->s):
+				include(TEMPLATEPATH.'/templates/categories.php');
+			endif;
+		
 				//include plugin boxes
-		        do_action ( 'cowobo_after_content' );
-		        if (is_user_logged_in() )
-		            do_action ( 'cowobo_after_content_loggedin' );
-		
-				//clear floats in feed
-				echo '<div class="clear"></div>';
-				
-				include(TEMPLATEPATH.'/templates/footer.php');
-		
-			echo '</div>';
+
+	        do_action ( 'cowobo_after_content' );
+	        if (is_user_logged_in() )
+	            do_action ( 'cowobo_after_content_loggedin' );
 	
-			echo '<div class="background">';
-				
-				echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+			//clear floats in feed
+			echo '<div class="clear"></div>';
+			
+			include(TEMPLATEPATH.'/templates/footer.php');
 	
-				echo '<div class="pagesource unselectable" unselectable="on">';
-					echo '<div class="rownumbers">';
-						for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
-					echo '</div>';
-					echo '<div class="notranslate code"><pre>'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre></div>';
+		echo '</div>';
+
+		echo '<div class="background">';
+			
+			echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+
+			echo '<div class="pagesource unselectable" unselectable="on">';
+				echo '<div class="rownumbers">';
+					for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
 				echo '</div>';
+					echo '<div class="notranslate code"><pre>'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre></div>';
 			echo '</div>';
-		
 		echo '</div>';
 	
+	echo '</div>';
+
 	echo '</div>';
 	get_footer();
 

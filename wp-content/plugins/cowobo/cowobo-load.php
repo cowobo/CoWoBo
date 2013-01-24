@@ -12,6 +12,9 @@
 if (!defined('ABSPATH'))
     exit;
 
+if ( ! defined ( 'COWOBO_DEBUG' ) )
+    define ( 'COWOBO_DEBUG', true );
+
 /**
  * Version number
  *
@@ -43,7 +46,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'notices.php' );
 
-require_once ( COWOBO_PLUGIN_LIB . 'simple-local-avatars.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'external/simple-local-avatars.php' );
 
 if (!class_exists('CoWoBo')) :
 
@@ -135,6 +138,8 @@ if (!class_exists('CoWoBo')) :
                 "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
             );
 
+        public $debug = false;
+
 
         static $instance = false;
 
@@ -172,6 +177,7 @@ if (!class_exists('CoWoBo')) :
          * @since 0.1
          */
         public function __construct() {
+            if ( COWOBO_DEBUG ) $this->debug = true;
 
             $this->query = new CoWoBo_Query;
             $this->verified_query = new CoWoBo_Query ( true );
@@ -259,6 +265,8 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->sendemail && ! $query->user ) $notices = $this->send_email();
             elseif( $verify->request ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
+
+            elseif ( $query->new && $query->url ) $posts->post_by_url();
         }
 
         /**

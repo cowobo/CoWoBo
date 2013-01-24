@@ -12,6 +12,7 @@ class CoWoBo_Feed
      */
     public function filter_feed(){
         
+
         //store variables from browse form
         $cats = cowobo()->query->cats;
         $sortby = cowobo()->query->sort;
@@ -21,6 +22,7 @@ class CoWoBo_Feed
         $catstring = '';
         if( $cats && $cats[0] != 'all' ) $catstring = implode(',',$cats);
         elseif( is_category() ) $catstring = get_query_var('cat');
+
 
 		//todo: handle multiple sort values
 		$sort = $sortby[0];
@@ -40,6 +42,7 @@ class CoWoBo_Feed
 
         //query filtered posts
         query_posts( array( 'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' => $metaquery ) );
+
     }
 
     /**
@@ -58,6 +61,7 @@ class CoWoBo_Feed
     function feed_title(){
         global $currentcat, $post, $cowobo;
 		
+        $feedtitle = '';
         if( cowobo()->query->new )
             $feedtitle .= 'Add '.cowobo()->query->new;
         elseif( is_404() )

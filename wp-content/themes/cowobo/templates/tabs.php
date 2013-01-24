@@ -7,22 +7,22 @@ if($tabtype == 'cat'):
 	if ( isset ( $tabposts ) && ! empty ( $tabposts ) ) $catposts = $tabposts;
     /** @todo something is wrong with $sort **/
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
-	
+
 	if(is_single()):
-		if($postcat->slug !='coder') $prefix = 'Related ';
+		if( isset ( $postcat ) && is_object( $postcat ) && $postcat->slug !='coder') $prefix = 'Related ';
 		$catlink = '?showall='.$tabcat->name;
 	else:
 		$catlink = get_category_link($tabcat->term_id);
 	endif;
 
     if ( ! isset ( $catposts[0] ) ) return;
-	
+
 	echo '<div class="tab">';
-	
+
 		echo '<div class="tabthumb fourth">';
 	    cowobo()->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 		echo '</div>';
-	
+
 		echo '<div class="tabtext right">';
 			echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 			if($catposts):
@@ -46,9 +46,9 @@ if($tabtype == 'cat'):
 				echo '<span class="grey">No posts here yet, check back soon</span>';
 			endif;
 		echo '</div>';
-		
+
 	echo '</div>';
-	
+
 else:
 
 	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).'</a>';
@@ -67,11 +67,11 @@ else:
     }
 
 	echo '<div class="tab">';
-	
+
 		echo '<div class="tabthumb fourth">';
 			cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
 		echo '</div>';
-	
+
 		echo '<div class="tabtext right">';
 			if($tabtype->slug == 'wiki'):
 				echo $title.'<br/><ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
@@ -84,6 +84,6 @@ else:
 				echo $title.'<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 			endif;
 		echo '</div>';
-	
+
 	echo '</div>';
 endif;

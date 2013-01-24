@@ -117,7 +117,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 		foreach($linkedids as $linkedid):
 			$typecat = cowobo()->posts->get_category($linkedid);
 			$excludecats = array(get_cat_ID('Uncategorized'));
-			if($postcat->slug == 'coder' or $postcat->slug == 'location') $excludecats[] = $postcat->term_id;
+			if( $postcat &&  ( $postcat->slug == 'coder' || $postcat->slug == 'location' ) )
+                $excludecats[] = $postcat->term_id;
 			if($typecat && !in_array($typecat->term_id, $excludecats)):
 				$types[$typecat->term_id][] = $linkedid;
 			endif;
@@ -140,7 +141,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 			echo '<div class="tabtext right">';
 				echo '<h2>Add posts to this page &raquo;</h2>';
 				echo '<div class="horlist">';
-					$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners').','.$postcat->term_id;
+					$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners');
+                    if ( $postcat && is_object ( $postcat ) ) $exclude .= ','. $postcat->term_id;
 					foreach(get_categories('parent=0&exclude='.$exclude.'&hide_empty=0') as $cat):
 						echo '<a href="?new=' .$cat->name.'">'.$cat->name.'</a>';
 					endforeach;
@@ -164,7 +166,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 
 	//show comments
-    if ( $postcat->slug != 'coder' )
+    //if ( !  ) { var_dump ( $postcat );  die; }
+    if (  is_object ( $postcat ) && $postcat->slug != 'coder' )
         comments_template();
 endwhile;
 endif;
