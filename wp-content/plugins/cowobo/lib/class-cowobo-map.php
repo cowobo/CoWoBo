@@ -98,11 +98,11 @@ function cwb_geocode($address) {
 function cwb_loadmap() {
 	global $cowobo, $post;
 	$linkedmarkers = array();
-	
+
 	$data = array('lat'=> '20', 'lng'=>'0', 'zoom'=>1);
 	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
 	$zoom2src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
-		
+
 	//get coordinates if specified in url or post
 	if(is_single()):
 		if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
@@ -112,10 +112,10 @@ function cwb_loadmap() {
 	else:
 		$zoomlevel = 0;
 	endif;
-	
+
 	//construct new maplayer
 	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0">';
-	$newlayer .= '<img class="slideimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
+	$newlayer = '<img class="slideimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
 
@@ -162,7 +162,7 @@ function cwb_loadmap() {
 		$markerlinks[] = '<a class="markerlink" style="'.$markerstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
 	endforeach;
-	
+
 	$map .= $newlayer;
 	$map .= '</div>';
 

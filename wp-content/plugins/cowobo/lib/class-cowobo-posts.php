@@ -216,11 +216,9 @@ class CoWoBo_Posts
      * Get primal category of post
      */
     public function get_category( $postid = 0 ) {
-        if ( ! $postid ) {
-            $post = get_post();
-            if ( ! $post ) return false;
-            $postid = $post->ID;
-        }
+        if ( ! $postid )
+            $postid = get_the_ID();
+
         if ( ! $postid ) return false;
 
         $cat = get_the_category($postid);
@@ -325,8 +323,9 @@ class CoWoBo_Posts
             $caption = get_post_meta($postid, 'caption'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
-            
+
             $image_check = $this->is_image_url( $caption );
+            $captions = '';
 			//check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
@@ -335,18 +334,20 @@ class CoWoBo_Posts
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
+                $captions .= '<div class="caption" id=""></div>';
             } elseif ( $image_check ) {
 
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$caption.'" width="100%" alt=""/>';
                     //if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption"></div>';
                 $slides[$x] .= '</div>';
-
+                $captions .= '<div class="caption" id=""></div>';
             } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
                     if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
                 $slides[$x] .= '</div>';
+                $captions .= '<div class="caption">'.$caption.'</div>';
             }
 
            unset($imgid);
@@ -360,7 +361,7 @@ class CoWoBo_Posts
             $gallery = implode('', $slides);
         }
 		echo $gallery;
-		
+
         return $captions;
     }
 
@@ -389,13 +390,13 @@ class CoWoBo_Posts
 
             } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
                 $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
-            endif;
-        endfor;
+            }
+        }
 
         //construct thumb gallery
         $remaining = 4 - count($thumbs);
         for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-        $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
+        $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
 
 		return $gallery;
     }
