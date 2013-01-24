@@ -439,7 +439,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         echo 'Added a new post, <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                         break;
 
-
                     default:
                         do_action('cp_logs_description', $type, $uid, $points, $data );
                         break;
