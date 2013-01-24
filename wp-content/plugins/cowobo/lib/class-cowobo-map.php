@@ -141,18 +141,23 @@ function cwb_loadmap() {
 		if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
 		else $postid = $post->ID;
 		$postcoordinates = get_post_meta($postid, 'coordinates', true);
-		$position = implode(',', latlng_to_percent($postcoordinates));
+		$pos= latlng_to_percent($postcoordinates);
+		$x = (-$pos['left']*200) + 50;
+		$y = (-$pos['top']*200) + 40;
+		if($x > 0) $x = 0;
+		if($y > 0) $y = 0;
+		if($x < -100) $x = -100;
+		if($y < -100) $y = -100;
 		$zoomlevel = 1;
 	else:
 		$zoomlevel = 0;
 	endif;
 	
 	//construct new maplayer
-	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0">';
-	$newlayer .= '<img class="slideimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
+	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" style="top:'.$y.'%; left:'.$x.'%">';
+	$newlayer .= '<img class="mapimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
-	$newlayer .= '<input type="hidden" class="position" value="'.$position.'"/>';
 
 	//sort $posts by related count
 	if( is_search() or is_category() && have_posts() ){
