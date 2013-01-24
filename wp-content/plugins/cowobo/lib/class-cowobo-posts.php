@@ -331,16 +331,17 @@ class CoWoBo_Posts
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-				$captions[] = '';
-            elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')):
-                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
-                    $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
+				$captions .= '<div class="caption" id=""></div>';
+            elseif($largesrc = wp_get_attachment_image_src($imgid, $size ='large')):
+                $zoom1src = wp_get_attachment_image_src($imgid, $size ='extra-large');
+				$slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
+					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
+					$slides[$x] .= '<input type="hidden" class="zoomsrc1" value="'.$zoom1src.'"/>';
+                    $slides[$x] .= '<img src="'.$largesrc[0].'" width="100%" alt=""/>';
                 $slides[$x] .= '</div>';
-				$captions[] = $caption;
+				$captions .= '<div class="caption">'.$caption.'</div>';
 			endif;
-
            unset($imgid);
-
         endfor;
 
         //construct gallery
@@ -359,24 +360,24 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
 
-        $thumbs[] = '<a href="?img=map" class="fifth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
+        $thumbs[] = '<a href="?img=map" class="fourth"><img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/></a>';
 
 		//create thumbs for other images
-        for ($x=0; $x<4; $x++):
+        for ($x=0; $x<3; $x++):
             //store slide info
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
             $videocheck = explode("?v=", $caption);
 		    //check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]):
-               	$thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
             elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')):
-                $thumbs[] = '<a href="?img='.$x.'" class="fifth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
             endif;
         endfor;
 
         //construct thumb gallery
-        $remaining = 5 - count($thumbs);
-        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fifth"><div class="thumb"></div></div>';
+        $remaining = 4 - count($thumbs);
+        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
         $gallery .= '<div class="gallery">'.implode('',$thumbs).'</div>';
 
 		return $gallery;
