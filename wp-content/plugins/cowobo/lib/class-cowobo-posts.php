@@ -388,7 +388,9 @@ class CoWoBo_Posts
      */
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location') {
-            echo '<img src="'.get_bloginfo('template_url').'/images/maps/mapthumb.jpg" width="100%" alt=""/>';
+			$coordinates = get_post_meta($postid, 'coordinates', true);
+            $position = get_map_position(149, 100, $coordinates);
+			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
             return;
         }
         if ( $catslug == 'coder' ) {

@@ -34,31 +34,35 @@
 //MAP FUNCTIONS
 global $offset, $mapdata, $cowobo;
 
-//define the center in pixels of google maps
+//offset is the horizontal center in pixels of the custom map at max zoom level (3)
 
 function LonToX($lon) {
 	$offset = 2000;
 	$radius = $offset / pi();
-	return round($offset + $radius * $lon * pi() / 180);
+	$x = round($offset + $radius * $lon * pi() / 180);
+	return $x;
 }
 
 function LatToY($lat) {
 	$offset = 2000;
 	$radius = $offset / pi();
-	return round($offset - $radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
+	$y = round($offset - $radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
+	return $y;
 }
 
 
 function XToLon($x) {
 	$offset = 268435456;
 	$radius = $offset / pi();
-	return ((round($x) - $offset) / $radius) * 180/ pi();
+	$lon = ((round($x) - $offset) / $radius) * 180/ pi();
+	return $lon;
 }
 
 function YToLat($y) {
 	$offset = 268435456;
 	$radius = $offset / pi();
-	return (pi() / 2 - 2 * atan(exp((round($y) - $offset) / $radius))) * 180 / pi();
+	$y = (pi() / 2 - 2 * atan(exp((round($y) - $offset) / $radius))) * 180 / pi();
+	return $y;
 }
 
 function adjustLonByPx($lon, $amount, $zoom) {
@@ -93,13 +97,42 @@ function cwb_geocode($address) {
 	return $latlng;
 }
 
+function latlng_to_percent($coordinates) {
+	$xmid = 1000; $ymid = 500;
+	$map_center_lat = 20;
+	$map_center_lng = 0;
+	
+	$latlng = explode(',', $coordinates);
+	$delta_x  = (LonToX($latlng[1]) - LonToX($map_center_lng)) >> 1;
+	$delta_y  = (LatToY($latlng[0]) - LatToY($map_center_lat)) >> 1;
 
+    $pos['left'] = ($xmid + $delta_x)/($xmid*2);
+   	$pos['top'] = ($ymid + $delta_y)/($ymid*2);	  	
+	return $pos;
+}
+
+function get_map_position($width, $height, $coordinates) {
+	$xmapsize = 500;
+	$ymapsize = 250;
+	$pos = latlng_to_percent($coordinates);
+	$x =  $width - ($pos['left'] * $xmapsize) - ($width/2);
+	$y = $height - ($pos['top']* $ymapsize) - ($height/2);
+	$xmax = $width - $xmapsize;
+	$ymax = $height - $ymapsize;
+	if($x > 0) $x = 0;
+	if($y > 0) $y = 0;
+	if($x < $xmax) $x = $xmax;
+	if($y < $ymax) $y = $ymax;
+	$position = 'position:absolute; top:'.$y.'px; left:'.$x.'px';
+	
+	return $position;
+}
 
 function cwb_loadmap() {
 	global $cowobo, $post;
 	$linkedmarkers = array();
 	
-	$data = array('lat'=> '20', 'lng'=>'0', 'zoom'=>1);
+	$data = array('lat'=> '20', 'lng'=>'0');
 	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
 	$zoom2src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
 		
@@ -108,6 +141,7 @@ function cwb_loadmap() {
 		if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
 		else $postid = $post->ID;
 		$postcoordinates = get_post_meta($postid, 'coordinates', true);
+		$position = implode(',', latlng_to_percent($postcoordinates));
 		$zoomlevel = 1;
 	else:
 		$zoomlevel = 0;
@@ -118,9 +152,10 @@ function cwb_loadmap() {
 	$newlayer .= '<img class="slideimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
+	$newlayer .= '<input type="hidden" class="position" value="'.$position.'"/>';
 
 	//sort $posts by related count
-	if(is_search() or is_category() && have_posts()){
+	if( is_search() or is_category() && have_posts() ){
 		while (have_posts()) : the_post();
 			if($coordinates = get_post_meta($post->ID, 'coordinates', true)){
 				$linkedids = $cowobo->relations->get_related_ids($post->ID);
@@ -129,6 +164,9 @@ function cwb_loadmap() {
 				$linkedmarkers[] = $post;
 			}
 		endwhile;
+	} elseif( is_single() ) {
+		$countarray[$post->ID] = 1;
+		$linkedmarkers[] = $post;
 	} else {
 		$markerposts = get_posts('cat='.get_cat_id('Locations').'&numberposts=-1');
 		foreach ($markerposts as $markerpost):
@@ -144,13 +182,13 @@ function cwb_loadmap() {
 	if($max == 0) $max = 1;
 
 	//find marker position and add it to map
-    $id = 0; $xmid = 500; $ymid = 250;
+    $id = 0; $xmid = 1000; $ymid = 500;
 	foreach($linkedmarkers as $markerpost): $id++;
 		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
         if ( empty ( $coordinates ) ) continue;
 		$latlng = explode(',', $coordinates);
-		$delta_x  = (LonToX($latlng[1]) - LonToX($data['lng'])) >> (3 - $data['zoom']);
-		$delta_y  = (LatToY($latlng[0]) - LatToY($data['lat'])) >> (3 - $data['zoom']);
+		$delta_x  = (LonToX($latlng[1]) - LonToX($data['lng'])) >> 1;
+		$delta_y  = (LatToY($latlng[0]) - LatToY($data['lat'])) >> 1;
    		$marker_x = ($xmid + $delta_x)/($xmid*2)*100;
    		$marker_y = ($ymid + $delta_y)/($ymid*2)*100;
 		if($max == 0) $max = 1;

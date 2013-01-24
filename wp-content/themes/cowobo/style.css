@@ -120,7 +120,7 @@ form {margin:0 auto;}
 
 /* Tab Styles */
 .tab {margin-bottom:20px; clear:both; overflow:hidden;}
-.tabthumb {cursor: pointer; text-align:center; line-height:90px; font-size:100px; color:#ccc;}
+.tabthumb {position:relative; cursor: pointer; text-align:center; line-height:90px; font-size:100px; color:#888;}
 .tabthumb .avatar {margin-top: -20px;}
 .tabtext {width:460px; height:100px; overflow:hidden;}
 .thumb {overflow:hidden; background:#ddd; opacity:0.9; display:block;}

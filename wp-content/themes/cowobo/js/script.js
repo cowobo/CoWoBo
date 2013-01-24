@@ -1,13 +1,19 @@
 //VARIABLES//
 var rooturl;
-
+var pan = false; 
+var drag = false; 
+var previousX; 
+var previousY; 
+var offset = 0;
+		
+		
 //setup mouselisterner on document load
 jQuery(document).ready(function() {
 	
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
 
 	//center images in header
-	center_images();
+	center_images(offset);
 
 	//cross browser check if page has finished translating
 	if(jQuery('.translating').length>0){
@@ -35,7 +41,6 @@ jQuery(document).ready(function() {
     })
 
 	//Enable Map Resizing and Panning
-	var pan = false; var drag = false; var previousX; var previousY;
 
 	jQuery(".planet").mousedown(function(e) {
 		e.preventDefault();
@@ -47,6 +52,7 @@ jQuery(document).ready(function() {
 
 	jQuery(".dragbar").mousedown(function(e) {
 		e.preventDefault();
+		get_offset();
 		jQuery('body').addClass('unselectable');
 	    previousY = e.clientY;
 	    drag = true;
@@ -59,7 +65,7 @@ jQuery(document).ready(function() {
 			var titleheight = jQuery('.titlebar').outerHeight();
 			var viewheight = parseFloat(jQuery('.page').css('margin-top')) + titleheight;
 			var xmax = jQuery(window).width() - slide.width();
-			var ymax = jQuery('.planet').height() - slide.height() +viewheight ;
+			var ymax = jQuery('.planet').height() - slide.height() + viewheight ;
 			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
 			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');	
@@ -69,7 +75,6 @@ jQuery(document).ready(function() {
 			if(newx < xmax) newx = xmax;
 			if(newy > 0) newy = 0;
 			if(newy < ymax) newy = ymax;
-			//alert(newy);
 			slide.css({top: newy, left: newx});
 	        previousX = e.clientX;
 	        previousY = e.clientY;
@@ -85,7 +90,7 @@ jQuery(document).ready(function() {
 			if(newy < ymin) newy = ymin;
 			page.css('margin-top', newy);
 	        previousY = e.clientY;
-			center_images();
+			center_images(offset);
 	    }
 	});
 
@@ -162,11 +167,41 @@ function expand_map() {
     return null;
 }
 
-function center_images() {
+function get_map_position () {
+	var slide = jQuery('slide:last');
+	var pos = slide.children('.position').val().split(',');
+	var width = jQuery(window).width();
+	var height = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
+	var xmapsize; var ymapsize; 
+	var newx =  width - (pos[0] * xmapsize) - (width/2);
+	var newy = height - (pos[1]* ymapsize) - (height/2);
+	var xmax = width - xmapsize;
+	var ymax = height - ymapsize;
+	if(newx > 0) newx = 0;
+	if(newy > 0) newy = 0;
+	if(newx < xmax) newx = xmax;
+	if(newy < ymax) newy = ymax;
+	var position = 'position:absolute; top:'+newy+'px; left:'+newx+'px';
+	return position;
+}
+
+function get_offset() {
+	var slide = jQuery('.slide:last');
+	var currpos = slide.position();
+	var viewheight = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
+	var ycenter = (viewheight - slide.height()) / 2;
+	offset = currpos.top - ycenter;
+}
+		
+function center_images(offset) {
 	jQuery('.slide, .markerlinks').each(function(){
 		var viewheight = jQuery('.planet').height() + parseFloat(jQuery('.page').css('margin-top'));
-		var newtop = (viewheight - jQuery(this).height()) / 2 ;
-		jQuery(this).css('top', newtop);
+		var ycenter = (viewheight - jQuery(this).height()) / 2;
+		var newy = ycenter + offset;
+		var ymax = viewheight - jQuery(this).height();
+		if(newy > 0) newy = 0;
+		if(newy < ymax) newy = ymax;
+		jQuery(this).css('top', newy);
 	});
 }
 
