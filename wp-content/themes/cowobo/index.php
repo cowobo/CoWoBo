@@ -94,9 +94,6 @@ else:
 				//include searchform
 				include(TEMPLATEPATH.'/templates/search.php');
 		
-				//if translating show notice
-				if($translate) echo '<h2 class="translating">'.$subtitle.'<span class="loading"></span></h2>';
-		
 				//include any notifications to user
 				include( TEMPLATEPATH . '/templates/notify.php');
 		

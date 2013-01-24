@@ -6,13 +6,11 @@ $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://
 
 //cowobo()->posts->print_rss_links();
 
-echo '<div class="footer">';
-		
+echo '<div class="footer">';	
 		echo '<a href="'.home_url().'">Home</a>';
 		if(is_single()) $editlink = '?action=editpost';
 		else  $editlink = '?action=contribute';
 		echo '<a class="editpage" href="'.$editlink.'">Edit Page</a>';
-		echo '<a href="?action=translate'.'">English (UK)</a>';
 		if(is_user_logged_in()):
 			echo '<a href="'.wp_logout_url(get_bloginfo('url')).'">Logout</a>';
 		else: 
@@ -23,7 +21,9 @@ echo '<div class="footer">';
 		echo '<br/><div class="fb-like" data-href="'.$url.'" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>';
 		//echo '<a href="'.$tweeturl.'">Twitter</a>';
 		//echo '<a href="?action=rss">RSS</a>';
-		
+		echo '<div class="transposh">';
+			if(function_exists("transposh_widget")) { transposh_widget(); }
+		echo '</div>';
 echo '</div>';
 
 //include share forms below feeds
