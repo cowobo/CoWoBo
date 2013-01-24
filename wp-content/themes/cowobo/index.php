@@ -56,8 +56,8 @@ else:
 	echo '<div class="planet grabcursor">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
-		cwb_loadmap();
 		$captions = cowobo()->posts->loadgallery($postid);
+		cwb_loadmap();
 	echo '</div>';
 
 	//include page
