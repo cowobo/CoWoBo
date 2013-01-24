@@ -56,53 +56,5 @@ function check_website_status($url){
 	else return true;
 }
 
-
-add_filter( 'image_make_intermediate_size', 'rename_intermediates_wpse_82193' );
-
-function rename_intermediates_wpse_82193( $image ) {
-    $info = pathinfo($image);
-    $dir = $info['dirname'] . '/';
-    $ext = '.' . $info['extension'];
-    $name = wp_basename( $image, "$ext" );
-
-    $name_prefix = substr( $name, 0, strrpos( $name, '-' ) );
-    $size_extension = substr( $name, strrpos( $name, '-' ) + 1 );
-    $new_name = $dir . $size_extension . '-' . $name_prefix . $ext;
-
-    $did_it = rename( $image, $new_name );
-
-    if( $did_it )
-        return $new_name;
-
-    return $image;
-}
-
-
-add_filter('wp_handle_upload_prefilter', 'wpsx_5505_modify_uploaded_file_names', 1, 1);
-
-function wpsx_5505_modify_uploaded_file_names($arr) {
-    // Get the parent post ID, if there is one
-    if( isset($_REQUEST['post_id']) ) {
-        $post_id = $_REQUEST['post_id'];
-    } else {
-        $post_id = false;
-    }
-    // Only do this if we got the post ID--otherwise they're probably in
-    //  the media section rather than uploading an image from a post.
-    if($post_id && is_numeric($post_id)) {
-        // Get the post slug
-        $post_obj = get_post($post_id); 
-        $post_slug = $post_obj->post_name;
-
-        // If we found a slug
-        if($post_slug) {
-            $random_number = rand(10000,99999);
-            $arr['name'] = $post_slug . '-' . $random_number . '.jpg';
-
-        }
-
-    }
-
-    return $arr;
-}
-
+add_theme_support( 'post-thumbnails' );
+add_image_size( 'extra-large', 2000, 9999 ); //300 pixels wide (and unlimited height)
