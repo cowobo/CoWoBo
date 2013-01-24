@@ -12,24 +12,15 @@ class CoWoBo_Feed
      */
     public function filter_feed(){
         
-
         //store variables from browse form
         $cats = cowobo()->query->cats;
         $sortby = cowobo()->query->sort;
         $keywords = cowobo()->query->s;
-        $country = cowobo()->query->country;
 
         //store cats to filter
         $catstring = '';
-        if( $cats && $cats[0] != 'all' )
-            $catstring = implode(',',$cats);
-        elseif( is_category() )
-            $catstring = get_query_var('cat');
-
-        $metaquery = array();
-        if($country != 'all')
-            $metaquery[] = array( 'key' => 'country', 'value' => $country );
-
+        if( $cats && $cats[0] != 'all' ) $catstring = implode(',',$cats);
+        elseif( is_category() ) $catstring = get_query_var('cat');
 
 		//todo: handle multiple sort values
 		$sort = $sortby[0];
@@ -49,7 +40,6 @@ class CoWoBo_Feed
 
         //query filtered posts
         query_posts( array( 'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' => $metaquery ) );
-
     }
 
     /**
