@@ -322,13 +322,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 switch ( $object ) {
                     case 'post' :
                         if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
-                        $authors = cowobo()->posts->get_post_authors( $object_id );
 
                         if ( $this->kudos_already_given() ) {
                             cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
                             return;
                         }
 
+                        $this->add_post_likes ( $object_id );
+
+                        $authors = cowobo()->posts->get_post_authors( $object_id );
                         foreach ( $authors as $author_profile_id ) {
                             $this->give_kudos( 'profile', $author_profile_id, $amount, $origin );
                         }
@@ -363,6 +365,35 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $results = $wpdb->get_results( $query, 'ARRAY_A' );
                 return ( ! empty ( $results ) );
             }
+
+        /**
+         * Add a like to a post
+         * @param int (optional) $post_id
+         * @param int (optional) $amount
+         * @return bool
+         */
+        public function add_post_likes ( $post_id = 0, $amount = 1 ) {
+            if ( ! $post_id ) $post_id = get_the_ID();
+            if ( ! $post_id ) return;
+
+            $old_amount = $this->get_post_likes ( $post_id );
+            $new_amount = (int) $amount + $old_amount;
+            return $this->set_post_likes( $post_id, $new_amount );
+        }
+
+            public function get_post_likes ( $post_id  ) {
+                return (int) get_post_meta( $post_id, 'cowobo_likes', true );
+            }
+
+            public function set_post_likes ( $post_id, $new_amount = 0 ) {
+                return update_post_meta( $post_id, 'cowobo_likes', $new_amount );
+            }
+
+        public function get_post_points ( $post_id ) {
+            $likes = $this->get_post_likes( $post_id );
+            $comments = get_comment_count( $post_id );
+            return (int) $likes + $comments;
+        }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
             if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
