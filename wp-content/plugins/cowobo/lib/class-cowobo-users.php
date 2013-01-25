@@ -19,6 +19,7 @@ class CoWoBo_Users
         global $profile_id;
         $profile_id = $this->get_current_user_profile_id();
         $this->has_sent_email();
+        $this->_maybe_save_avatar();
 
         $this->actions_and_filters();
     }
@@ -36,6 +37,12 @@ class CoWoBo_Users
 
         add_filter( 'avatar_defaults' ,             array( &$this , 'avatar_defaults' ) );
 
+    }
+
+    private function _maybe_save_avatar() {
+        if ( cowobo()->query->user_avatar_edit_submit ) {
+           do_action('edit_user_profile_update', get_current_user_id() );
+        }
     }
 
     public function current_user_box() {
@@ -57,10 +64,6 @@ class CoWoBo_Users
     }
 
     public function do_avatar_with_upload_form() {
-        if( isset ( $_POST['user_avatar_edit_submit'] ) ) {
-           do_action('edit_user_profile_update', get_current_user_id() );
-        }
-
 
         $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
 
