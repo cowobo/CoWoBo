@@ -207,24 +207,20 @@ function cwb_loadmap() {
 		$percentage = $countarray[$markerpost->ID]/$max;
 		$newsize = 15 + round($percentage * 20);
 		$angelsrc = get_bloginfo("template_url").'/images/angel'.rand(1,2).'.png';
-		$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2).'px';
-		$markerstyle = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:'.$newmargin;
+		$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2);
+		$linkmargin = $newmargin - 10;
+		$posstyle = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:';
+		$markerstyle = $posstyle.$newmargin.'px';
+		$linkstyle = $posstyle.$linkmargin.'px';
 		$marker = '<img class="marker" style="'.$markerstyle.'" src="'.$angelsrc.'"/>';
-		$markerlinks[] = '<a class="markerlink" style="'.$markerstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
+		
+		$markerlink = '<a class="markerlink" style="'.$linkstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
+		$newlayer .= $markerlink;
 	endforeach;
 
 	$map .= $newlayer;
 	$map .= '</div>';
-
-	//now add the links to a layer above the cloud mask
-	if( isset ( $markerlinks ) && $markerlinks ):
-		$map .= '<div class="markerlinks zoom'.$zoomlevel.'" '.$position.'>';
-		foreach($markerlinks as $markerlink):
-			$map .= $markerlink;
-		endforeach;
-		$map .= '</div>';
-	endif;
 
 	echo $map;
 }

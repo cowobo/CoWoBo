@@ -56,10 +56,10 @@ form {margin:0 auto;}
 .imageviewer {position:relative; overflow:hidden; min-height: 300px;}
 .imageholder {position:absolute; top:0; left:0; width:100%; min-width:640px; background:#020514; overflow:hidden;}
 .marker, .markerlink, .markerlinks, .shadow, .slide, .largeangel {position:absolute;}
-.shadow  {top:0; left:0; width:100%; height:60px; background:url(images/shadow.png) top repeat-x; z-index:5;}
+.shadow  {top:0; left:0; width:100%; height:45px; z-index:5;}
 .slide { top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:1}
 .markerlinks {top:0; left:0; width:100%; height:100%; z-index:6;}
-.markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0;}
+.markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0; padding:10px;}
 .markerlink:hover {opacity:1; color:#fff;}
 .marker {z-index:4;}
 .zoom0 {width:110%; height:110%; left: -5%; top:-5%}

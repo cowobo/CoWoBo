@@ -50,7 +50,6 @@ jQuery(document).ready(function() {
 			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
 			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');	
-			if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 			if(ymax > 0) ymax =0;
 			if(newx > 0) newx = 0;
 			if(newx < xmax) newx = xmax;
@@ -134,8 +133,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		newstyle = {width:"100%", height:"100%", top:"0", left:"0"};
 	}
 
-	//if slide contains markers than animate that too
-	if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
+	//animate slide
 	slide.animate(newstyle, 2000);
 });
 
@@ -154,9 +152,9 @@ function get_offset() {
 }
 		
 function center_images(offset) {
-	jQuery('.slide, .markerlinks').each(function(){
+	jQuery('.slide').each(function(){
 		var viewheight = jQuery('.imageviewer').height();
-		if(jQuery(this).children('.mapimg, .markerlink').length > 0 && offset == 0) {
+		if(jQuery(this).children('.mapimg').length > 0 && offset == 0) {
 			//NOTHING	
 		} else {		
 			var newy = (viewheight - jQuery(this).height()) / 2;
@@ -210,8 +208,6 @@ jQuery('.smallthumbs a').live('click', function(event) {
 	var num = jQuery(this).index();
 	var slide = jQuery('#slide-'+num);
 	event.preventDefault();
-	if(num == 0) jQuery('.markerlinks').show();
-	else jQuery('.markerlinks').hide();
 	slide.hide().appendTo(jQuery('.imageholder')).fadeIn(1000);
 });
 
@@ -222,12 +218,11 @@ jQuery('.resizeicon').live('click', function(event){
 	var viewer = jQuery('.imageviewer');
 	var holderheight = jQuery('.imageholder').height();
 	var viewheight = viewer.height();
-	if(slide.find('.marker').length > 0) slide = jQuery(".slide:last, .markerlinks");
 	if(viewheight < holderheight) var amount = holderheight;
 	else var amount = holderheight / 2;
 	viewer.animate({height: amount}, 1000);
 	jQuery('html, body').animate({scrollTop: 0}, 1000);
-	jQuery('.slide, .markerlinks').each(function(){
+	jQuery('.slide').each(function(){
 		var newtop = (amount - slide.height()) / 2 ;
 		jQuery(this).animate({top: newtop}, 1000);
 	});
