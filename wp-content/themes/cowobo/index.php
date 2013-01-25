@@ -145,7 +145,7 @@ else:
 				echo '<div class="rownumbers">';
 					for($x=1; $x<300; $x++): echo $x.'<br/>'; endfor;
 				echo '</div>';
-					echo '<div class="notranslate code">'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</div>';
+					echo '<div class="notranslate code"><pre>'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre></div>';
 			echo '</div>';
 		echo '</div>';
 
