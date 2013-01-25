@@ -4,9 +4,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postid = get_the_ID();
 	$postcat = cowobo()->posts->get_category($postid);
 
-	//include thumbnails
-	echo '<div class="tab">'.cowobo()->posts->load_thumbs($post->ID).'</div>';
-
 	if($postcat->slug != 'coder' && $postcat->slug != 'location') {
 		echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID).'</div>';
 	}

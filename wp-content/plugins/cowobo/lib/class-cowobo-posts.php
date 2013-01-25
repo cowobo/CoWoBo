@@ -371,10 +371,9 @@ class CoWoBo_Posts
      * @todo We are doubling up on a lot of work here. Can't we store the whole gallery in one object?
      */
     function load_thumbs($postid, $catslug = false){
-
-		$coordinates = get_post_meta($postid, 'coordinates', true);
-		$position = get_map_position(149, 100, $coordinates);
-		$thumbs[] = '<a href="?img=map" class="fourth"><img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/></a>';
+		
+		//include map thumb
+		$thumbs[] = '<a href="?img=map"><img src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg" height="100%" /></a>';
 		
 		//create thumbs for other images
         for ($x=0; $x<3; $x++) {
@@ -384,23 +383,16 @@ class CoWoBo_Posts
             $videocheck = explode("?v=", $caption);
             $imagecheck = $this->is_image_url( $caption );
 		    //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
-               	$thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" alt=""/></a>';
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1] ) {
+               	$thumbs[] = '<a href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" height="100%" alt=""/></a>';
             } elseif ( $imagecheck ) {
-
-                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'. $caption .'" width="100%" alt=""/></a>';
-
-            } elseif($thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
-                $thumbs[] = '<a href="?img='.$x.'" class="fourth"><img src="'.$thumbsrc[0].'" width="100%" alt=""/></a>';
+                $thumbs[] = '<a href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
+            } elseif( $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail') ) {
+                $thumbs[] = '<a href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
             }
         }
 
-        //construct thumb gallery
-        $remaining = 3 - count($thumbs);
-        for ($x=0; $x<$remaining; $x++) $thumbs[] = '<div class="fourth"><div class="thumb"></div></div>';
-        $gallery = '<div class="gallery">'.implode('',$thumbs).'</div>';
-
-		return $gallery;
+		return implode('',$thumbs);
     }
 
     /**
