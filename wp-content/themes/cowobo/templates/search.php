@@ -59,14 +59,14 @@ echo '</form>';
 
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab">';
 	echo '<div class="hide dropmenu addmenu">';
+		echo '<input type="text" class="extracturl" name="url" placeholder="Optional Url"/>';
+		echo '<br/><input type="submit" class="button clear" value="Add Post"/>';
 		echo '<select name="new" class="addnew">';
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
-				if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
+				if($cat->slug == 'news') $state = 'selected'; else $state='';
 				echo '<option value="'.$cat->name.'" '.$state.'>'.$cat->name.'</option>';
 			endforeach;
 		echo '</select>';
-		echo '<input type="text" class="extracturl" name="url" placeholder="Optional Url"/>';
-		echo '<br/><input type="submit" class="button clear" value="Add Post"/>';
-		echo '<input type="checkbox" class="auto" name="selectcat" value="1"> To this page';
+		echo '<input type="checkbox" class="auto" name="selectcat" value="1"> Add to this page';
 	echo '</div>';
 echo '</form>';
