@@ -153,6 +153,7 @@ function cwb_loadmap() {
 		$zoomlevel = 1;
 	else:
 		$zoomlevel = $x = $y = 0;
+        $position = '';
 	endif;
 
 	//construct new maplayer
