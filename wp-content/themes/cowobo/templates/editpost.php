@@ -17,7 +17,7 @@ if ( $query->new ) {
     $post->post_category = $postcat->term_id;
 
     // Should we insert query data?
-    $unsaved_data = ( $query->url || ( $query->save && ! cowobo()->has_notice ( 'saved' ) ) ) ? true : false;
+    $unsaved_data = ( ( $query->url || $query->save ) && ! cowobo()->has_notice ( 'saved' ) ) ? true : false;
 
 } else {
     if( $query->post_ID ) $postid = $query->post_ID;

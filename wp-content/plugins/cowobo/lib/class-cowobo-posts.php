@@ -165,8 +165,9 @@ class CoWoBo_Posts
          * @todo check for malicious code in jpg?
          */
         for ($x=0; $x<5; $x++):
-            $imgid = $_POST['imgid'.$x];
-            $file = $_FILES['file'.$x]['name'];
+            $imgid = "imgid$x";
+            $imgid = cowobo()->query->imgid;
+            $file = ( isset ( $_FILES['file'.$x] ) ) ? $_FILES['file'.$x]['name'] : '';
             $caption_id = "caption$x";
             $caption = cowobo()->query->$caption_id;
             $videocheck = explode("?v=", $caption );
@@ -371,10 +372,10 @@ class CoWoBo_Posts
      * @todo We are doubling up on a lot of work here. Can't we store the whole gallery in one object?
      */
     function load_thumbs($postid, $catslug = false){
-		
+
 		//include map thumb
 		$thumbs[] = '<a href="?img=map"><img src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg" height="100%" /></a>';
-		
+
 		//create thumbs for other images
         for ($x=0; $x<3; $x++) {
             //store slide info
@@ -629,7 +630,7 @@ class CoWoBo_Posts
         if ( empty ( $url ) ) {
             cowobo()->add_notice( $warning,'error');
             return;
-}
+        }
 
 		$images = array();
 		$title = '';
