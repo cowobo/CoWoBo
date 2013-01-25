@@ -151,7 +151,7 @@ function cwb_loadmap() {
 		if($y < -100) $y = -100;
 		$zoomlevel = 1;
 	else:
-		$zoomlevel = 0;
+		$zoomlevel = $x = $y = 0;
 	endif;
 
 	//construct new maplayer
