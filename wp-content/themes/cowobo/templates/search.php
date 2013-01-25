@@ -59,7 +59,7 @@ echo '</form>';
 
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab">';
 	echo '<div class="hide dropmenu addmenu">';
-		echo '<input type="text" class="extracturl" name="url" placeholder="Optional Url"/>';
+		echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
 		echo '<br/><input type="submit" class="button clear" value="Add Post"/>';
 		echo '<select name="new" class="addnew">';
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
