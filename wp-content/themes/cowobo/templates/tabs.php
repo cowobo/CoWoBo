@@ -32,8 +32,8 @@ if($tabtype == 'cat'):
 					$views = '<li>'.cowobo()->posts->get_views($catpost->ID).' Views</li>';
 					//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
-					$postcat = get_the_category($catpost->ID);
-					$catlink = '<li><a href="'.get_category_link($postcat[0]->term_id).'">'.$postcat[0]->name.'</a></li>';
+					$postcat_catpost = get_the_category($catpost->ID);
+					$catlink = '<li><a href="'.get_category_link($postcat_catpost[0]->term_id).'">'.$postcat_catpost[0]->name.'</a></li>';
 					if($tabcat->slug == 'wiki'):
 						echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
 					elseif($tabcat->slug == 'news'):

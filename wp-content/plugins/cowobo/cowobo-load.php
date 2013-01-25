@@ -13,7 +13,7 @@ if (!defined('ABSPATH'))
     exit;
 
 if ( ! defined ( 'COWOBO_DEBUG' ) )
-    define ( 'COWOBO_DEBUG', true );
+    define ( 'COWOBO_DEBUG', false );
 
 /**
  * Version number
