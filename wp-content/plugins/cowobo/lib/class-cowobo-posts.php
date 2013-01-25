@@ -630,7 +630,7 @@ class CoWoBo_Posts
         if ( empty ( $url ) ) {
             cowobo()->add_notice( $warning,'error');
             return;
-}
+        }
 
 		$images = array();
 		$title = '';

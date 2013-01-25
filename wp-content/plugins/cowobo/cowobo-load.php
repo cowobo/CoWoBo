@@ -266,7 +266,7 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->request ) $notices = $posts->edit_request();
             elseif( $query->correctlang ) $notices = $L10n->correct_translation();
 
-            elseif ( $query->new && $query->url ) $posts->post_by_url();
+            elseif ( $query->new && $query->url && ! $this->has_notice( array ( 'saved', 'savepost' )) ) $posts->post_by_url();
         }
 
         /**
