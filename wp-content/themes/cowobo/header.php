@@ -28,10 +28,10 @@ extract ($current_category);
 $userid = wp_get_current_user()->ID;
 
 //include rtl styles if required
-$rtlarray = array('ar', 'zh-CN', 'ja', 'iw');
-if(in_array($lang, $rtlarray)):?>
-	<link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/rtl.css"/><?php
-endif;
+//$rtlarray = array('ar', 'zh-CN', 'ja', 'iw');
+//if(in_array($lang, $rtlarray)):?>
+	<link rel="stylesheet" type="text/css" href="//<?php bloginfo('template_url') ?>/rtl.css"/><?php
+//endif;
 
 wp_head();?>
 
