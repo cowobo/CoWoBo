@@ -57,8 +57,11 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 
 echo '</form>';
 
+//Add Post form
+if (is_user_logged_in() or is_category()) $onload = 'show'; else $onload = 'hide';
+
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab">';
-	echo '<div class="hide dropmenu addmenu">';
+	echo '<div class="dropmenu addmenu '.$onload.'">';
 		echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
 		echo '<br/><input type="submit" class="button clear" value="Add Post"/>';
 		echo '<select name="new" class="addnew">';
