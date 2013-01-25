@@ -148,16 +148,22 @@ function cwb_loadmap() {
 		if($y > 0) $y = 0;
 		if($x < -100) $x = -100;
 		if($y < -100) $y = -100;
+		$position = 'style="top:'.$y.'%; left:'.$x.'%"';
 		$zoomlevel = 1;
 	else:
 		$zoomlevel = 0;
 	endif;
 
 	//construct new maplayer
-	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" style="top:'.$y.'%; left:'.$x.'%">';
+	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" '.$position.'>';
 	$newlayer .= '<img class="mapimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
+
+	//include large angel on homepage
+	if(is_home()) {
+		$newlayer .= '<img class="largeangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" height="20%" alt="">';
+	}
 
 	//sort $posts by related count
 	if( is_search() or is_category() && have_posts() ){
@@ -199,9 +205,10 @@ function cwb_loadmap() {
 		if($max == 0) $max = 1;
 		$percentage = $countarray[$markerpost->ID]/$max;
 		$newsize = 15 + round($percentage * 20);
+		$angelsrc = get_bloginfo("template_url").'/images/angel'.rand(1,2).'.png';
 		$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2).'px';
 		$markerstyle = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:'.$newmargin;
-		$marker = '<img class="marker" style="'.$markerstyle.'" src="'.get_bloginfo("template_url").'/images/mapnav.png"/>';
+		$marker = '<img class="marker" style="'.$markerstyle.'" src="'.$angelsrc.'"/>';
 		$markerlinks[] = '<a class="markerlink" style="'.$markerstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
 	endforeach;
@@ -211,7 +218,7 @@ function cwb_loadmap() {
 
 	//now add the links to a layer above the cloud mask
 	if($markerlinks):
-		$map .= '<div class="markerlinks zoom'.$zoomlevel.'">';
+		$map .= '<div class="markerlinks zoom'.$zoomlevel.'" '.$position.'>';
 		foreach($markerlinks as $markerlink):
 			$map .= $markerlink;
 		endforeach;
