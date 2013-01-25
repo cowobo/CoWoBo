@@ -535,6 +535,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         public function record_post_edited( $post_id ) {
+            if ( $post_id == 0 ) return;
+
             global $wpdb;
 
             $type = '';
