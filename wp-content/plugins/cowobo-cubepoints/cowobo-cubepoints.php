@@ -29,6 +29,8 @@ define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
 define ( 'COWOBO_CP_POST_KUDOS_GIVES_POINTS', 1 ); // The love we give the giver
 define ( 'COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS', 2 );
 
+define ( 'COWOBO_AVATAR_UPDATED_POINTS', 5 );
+
 /**
  * PATHs and URLs
  *
@@ -99,6 +101,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
                 add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
+
+                add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
+
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
@@ -115,6 +120,14 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        public function _maybe_has_updated_avatar ( $meta_id, $object_id, $meta_key, $_meta_value ) {
+            if ( $meta_key != 'simple_local_avatar' || empty ( $_meta_value ) ) return;
+
+            if ( $this->is_recently_updated( 'cowobo_updated_avatar' ) ) return;
+
+            cp_points( 'cowobo_updated_avatar', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+        }
 
         public function no_points_for_profiles( $points ) {
             if ( cowobo()->query->confirm || cowobo()->query->postcat == get_cat_ID ( 'Coders' ) ) return 0;
@@ -297,7 +310,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function _maybe_give_kudos() {
             if ( ! is_single() ) return;
 
-                $postid = get_the_ID();
+            $postid = get_the_ID();
             if ( cowobo()->query->post_kudos ) {
                 $object = 'post';
                 if ( ! wp_verify_nonce ( cowobo()->query->post_kudos, "post_kudos_$postid" ) )
@@ -451,6 +464,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         $post = get_post( $data_arr['postid'] );
                         echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
                         break;
+                    case 'updated_avatar' :
+                        //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+                        echo "Updated avatar!";
+                        break;
 
                 }
             } else {
@@ -526,11 +543,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             else
                 $type = "cowobo_post_updated";
 
-            $uid = get_current_user_id();
-            $time = COWOBO_UPDATE_POINTS_MIN_INTERVAL;
-            $difference = time() - $time;
-            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='$type'");
-            if( $count!= 0 ) {
+            if ( $this->is_recently_updated ( $type ) ) {
                 cowobo()->add_notice("That was fast! You know you won't get any points for updating so fast?");
                 return;
             }
@@ -539,6 +552,19 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 cp_points( $type, get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
             else
                 cp_points( $type, get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+        }
+
+        public function is_recently_updated ( $type, $uid = 0 ) {
+            global $wpdb;
+
+            if ( ! $uid ) $uid = get_current_user_id ();
+            if ( ! $uid ) return;
+
+            $time = COWOBO_UPDATE_POINTS_MIN_INTERVAL;
+            $difference = time() - $time;
+
+            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='$type'");
+            return ( $count != 0 );
         }
 
     }
