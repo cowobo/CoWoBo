@@ -12,9 +12,9 @@ echo '</ul>';
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';		
 		
 		echo '<div class="hide dropmenu searchmenu">';
-			echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.' " placeholder="Enter keywords to search for here.."/>';
+			echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.'" placeholder="Enter keywords to search for here.."/>';
 			echo '<input type="submit" class="button" value="Search"/>';
-			echo '<input type="checkbox" class="auto" name="selectcat" value="1"> In selected categories';
+			echo '<input type="checkbox" class="auto" name="allcats" value="1"> All Categories';
 		echo '</div>';
 		
 		echo '<div class="hide dropmenu catmenu">';
