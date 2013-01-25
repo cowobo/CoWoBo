@@ -5,34 +5,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=<?php bloginfo('charset'); ?>" />
 <meta name="generator" content="Dev-PHP 2.4.0" />
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-<meta name="google-translate-customization" content="93f6657559603d76-7e7edad7dc284f4d-gb3835bb67c1913c9-a"></meta>
 <meta name="rooturl" content="<?php bloginfo('url'); ?>/"/>
 <link rel="shortcut icon" href="<?php bloginfo('template_url');?>/images/favicon.ico" />
 <link rel="icon" type="image/gif" href="<?php bloginfo('template_url');?>/images/animated_favicon1.gif" />
-<link href='http://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/style.css" media="screen"/>
 <link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/print.css" media="print"/>
 <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php bloginfo('rss2_url'); ?>" />
 <link rel="alternate" type="text/xml" title="RSS .92" href="<?php bloginfo('rss_url'); ?>" />
 <link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="<?php bloginfo('atom_url'); ?>" />
 <link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" /><?php
-
-
-// SETUP GLOBAL VARIABLES
-global $translate, $lang;
-
-//check user language before loading anything else
-if(!$lang):?>
-	<script>
-		var detectlang = window.navigator.userLanguage || window.navigator.language;
-		var currurl = window.location+'';
-		var currlang = currurl.split('?lang=')[1];
-		if(typeof(detectlang)!='undefined' && typeof(currlang) == 'undefined') {
-			var langcode = detectlang.split('-')[0];
-			if(langcode != 'en') window.location = '?lang=' + langcode + '#googtrans(en|' + langcode + ')';
-		}
-	</script><?php
-endif;
 
 // LOAD TEMPLATE SCRIPTS
 wp_enqueue_script("jquery");
@@ -45,14 +26,6 @@ extract ($current_category);
 
 //$feed_query = ($catid = get_query_var('cat')) ? "'c',$catid" : "'p',".$post->ID;
 $userid = wp_get_current_user()->ID;
-
-//include google translator plugin if required
-if($lang && $lang !='en'): $translate = true;?>
-	<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-	<script type="text/javascript">
-		function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: 'en'});}
-	</script><?php
-endif;
 
 //include rtl styles if required
 $rtlarray = array('ar', 'zh-CN', 'ja', 'iw');
