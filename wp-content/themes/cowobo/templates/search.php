@@ -21,10 +21,12 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 			if($querycats = cowobo()->query->cats) $selected = $querycats;
 			else $selected = array(get_cat_ID('Coders'), get_cat_ID('Jobs'));
 			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners');
-			foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
-				if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
-				echo '<span class="'.$state.'"><input type="checkbox" name="cats[]" value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</span>';
-			endforeach;
+			echo '<div class="clear dropoptions">';
+				foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
+					if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
+					echo '<span class="'.$state.'"><input type="checkbox" name="cats[]" value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</span>';
+				endforeach;
+			echo '</div>';
 			echo '<input type="submit" class="button clear" value="Search"/>';
 		echo '</div>';
 
@@ -42,7 +44,7 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 		echo '<div class="hide dropmenu sortmenu">';
 			if( $querysort = cowobo()->query->sort ) $selected = $querysort;
 			else $selected = array( 'modified' );
-			echo '<div class="clear">';
+			echo '<div class="clear dropoptions">';
 				foreach( $sorttypes as $sortslug => $sortlabel ):
 					if( in_array($sortslug, $selected) ) $state = 'checked'; else $state='';
 					echo '<span class="'.$state.'"><input type="checkbox" name="sort[]" value="'.$sortslug.'" '.$state.'>'.$sortlabel.'</span>';
@@ -58,12 +60,12 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 echo '</form>';
 
 //Add Post form
-if (is_user_logged_in() or is_category()) $onload = 'show'; else $onload = 'hide';
+if (is_user_logged_in() && is_category() or is_user_logged_in() && is_home()) $onload = 'show'; else $onload = 'hide';
 
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="tab">';
 	echo '<div class="dropmenu addmenu '.$onload.'">';
 		echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
-		echo '<br/><input type="submit" class="button clear" value="Add Post"/>';
+		echo '<br/><input type="submit" class="button clear" value="Create Post"/>';
 		echo '<select name="new" class="addnew">';
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
 				if($cat->slug == 'news') $state = 'selected'; else $state='';
