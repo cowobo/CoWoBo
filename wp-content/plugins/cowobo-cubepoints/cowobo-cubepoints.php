@@ -46,7 +46,7 @@ define('COWOBO_CP_INC_URL', COWOBO_CP_URL . '_inc/');
 if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
-     * @todo Add specific CoWoBo point actions
+     * @todo Create our own cubepoints based on profiles with postmeta instead of users
      */
     class CoWoBo_CubePoints    {
 
@@ -89,6 +89,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 return;
             }
 
+            /**
+             * Bogfix!
+             */
+            add_filter ( 'update_user_metadata', array ( &$this, 'bogfix_user_to_profile' ), 10, 4 );
+
             cowobo()->points = &$this;
 
             $this->setup_context();
@@ -116,6 +121,23 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        /**
+         * Bogfixing ftw!
+         * 
+         * @param type $null
+         * @param type $object_id
+         * @param type $meta_key
+         * @param type $meta_value
+         * @return type
+         */
+        public function bogfix_user_to_profile( $null, $object_id, $meta_key, $meta_value ) {
+            if ( $meta_key == 'cpoints' ) {
+                $profile_id = cowobo()->users->get_user_profile_id( $object_id );
+                update_post_meta ( $profile_id, 'cp_points', $meta_value );
+            }
+            return $null;
+        }
 
         private function record_actions() {
             add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
