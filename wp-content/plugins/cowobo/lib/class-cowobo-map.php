@@ -137,7 +137,7 @@ function cwb_loadmap() {
 
 	$data = array('lat'=> '20', 'lng'=>'0');
 	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
-	$zoom2src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
+	$zoom3src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
 
 	//get coordinates if specified in url or post
 	if(is_single()):
@@ -152,21 +152,21 @@ function cwb_loadmap() {
 		if($x < -100) $x = -100;
 		if($y < -100) $y = -100;
 		$position = 'style="top:'.$y.'%; left:'.$x.'%"';
-		$zoomlevel = 1;
+		$zoomlevel = 2;
 	else:
 		$zoomlevel = $x = $y = 0;
-        $position = '';
+        $position = 'style="top:-20%;"';
 	endif;
 
 	//construct new maplayer
 	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" '.$position.'>';
-	$newlayer = '<img class="mapimg" src="'.$zoom1src.'" alt="" width="100% height="100%">';
+	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
-	$newlayer .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src.'"/>';
+	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
 
 	//include large angel on homepage
-	if(is_home()) {
-		$newlayer .= '<img class="largeangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" height="20%" alt="">';
+	if(!is_single()) {
+		$newlayer .= '<img class="largeangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" alt="">';
 	}
 
 	//sort $posts by related count

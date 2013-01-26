@@ -4,22 +4,24 @@ var pan = false;
 var drag = false; 
 var previousX; 
 var previousY; 
-var offset = 0;
-		
 		
 //setup mouselisterner on document load
 jQuery(document).ready(function() {
 	
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
-
+	
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
         jQuery(".upload-avatar").slideToggle();
     });
 
-	//center all images in current header height
-	center_images(offset);
+	//center all images in header except maps
+	jQuery('.slideimg').not('.map').each(function(){
+		var slide = jQuery(this).parent('.slide');
+		jQuery(this).load(function() {center_slide(slide)});
+		center_slide(slide); //for slides that are already loaded
+	});
 
 	//Enable Map Resizing and Panning
 	jQuery(".imageviewer").mousedown(function(e) {
@@ -32,7 +34,7 @@ jQuery(document).ready(function() {
 
 	jQuery(".dragbar").mousedown(function(e) {
 		e.preventDefault();
-		get_offset();
+		get_offsets();
 		jQuery('body').addClass('unselectable');
 	    previousY = e.clientY;
 	    drag = true;
@@ -69,7 +71,7 @@ jQuery(document).ready(function() {
 			if(newy < ymin) newy = ymin;
 			viewer.height(newy);
 	        previousY = e.clientY;
-			center_images(offset);
+			jQuery('.slide').each(function(){ center_slide(jQuery(this)) });
 	    }
 	});
 
@@ -90,6 +92,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var slidepos = slide.position();
 	var slideimg = slide.children('.slideimg');
 	var viewheight = jQuery('.imageviewer').height();
+	var viewholder = jQuery('.imageholder').height();
 	var curzoom = parseFloat(slide.children('.zoomlevel').val());
 	var xmax = jQuery('.planet').width() - slide.width();
 	var ymax = viewheight - slide.height();
@@ -110,31 +113,34 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	} else if(action == 'pandown') {
 		if(slidepos.top > ymax + 200) amount = slidepos.top - 200; else amount = ymax;
 		newstyle = {top: amount}
-	} else if(action == 'zoomin' && curzoom < 2) {
+	} else if(action == 'zoomin' && curzoom < 6) {
 		var newlevel = curzoom + 1;
-		var newzoom = newlevel * 200 + '%';
-		var newtop = slidepos.top - (slide.height()/2) + 'px';
-		var newleft = slidepos.left - (slide.width()/2) + 'px';
-		var newsrc = jQuery('.zoomsrc'+newlevel).val();	
-		newstyle = {width:newzoom, height:newzoom, top:newtop, left:newleft}
+		var newzoom = (newlevel * 50) + 100;
+		var vieweroffset = (((viewheight/viewholder)-1)/2)*100;
+		var y_offset = (store_y_offset(slide) / slide.height()) * newzoom + vieweroffset;
+		var x_offset = (store_x_offset(slide) / slide.width()) * newzoom;
+		var new_y = (-newzoom / 2) + 50 + y_offset + '%';
+		var new_x = (-newzoom / 2) + 50 + x_offset + '%';
+		var newsrc = slide.children('.zoomsrc'+newlevel).val();	
+		newstyle = {width:newzoom +'%', height:newzoom +'%', top:new_y, left:new_x}
 		slide.children('.zoomlevel').val(newlevel);
 		
 		//load larger image if available
 		if(typeof(newsrc) != 'undefined' && newsrc.length > 0) {
-			newimg = slideimg.clone();
+			var newimg = slideimg.clone();
 			newimg.appendTo(slide).attr('src', newsrc);
 			var oldimgs = slide.children('.slideimg').not(newimg);
-			if(newimg.complete) newimg.load(function() {oldimgs.remove()});					
+			if(newimg.complete) oldimgs.remove();					
 			else newimg.load(function() {oldimgs.remove()});
 		}
 	} else if(action ==  'zoomout' && curzoom > 0) {
-		var newlevel = curzoom - 1
+		var newlevel = 0;
 		slide.children('.zoomlevel').val(newlevel);
-		newstyle = {width:"100%", height:"100%", top:"0", left:"0"};
+		newstyle = {width:"110%", height:"110%", top:"-5%", left:"-5%"};
 	}
 
 	//animate slide
-	slide.animate(newstyle, 2000);
+	slide.animate(newstyle, 1500);
 });
 
 
@@ -143,28 +149,40 @@ function expand_map() {
     return null;
 }
 
-function get_offset() {
-	var slide = jQuery('.slide:last');
+//get vertical offset of slide from center
+function store_y_offset(slide) {
 	var currpos = slide.position();
 	var viewheight = jQuery('.imageviewer').height();
 	var ycenter = (viewheight - slide.height()) / 2;
-	offset = currpos.top - ycenter;
+	var offset = currpos.top - ycenter;
+	return offset;
 }
-		
-function center_images(offset) {
+
+//get horizontal offset of slide from center
+function store_x_offset(slide) {
+	var currpos = slide.position();
+	var viewwidth = jQuery(window).width();
+	var xcenter = (viewwidth - slide.width()) / 2;
+	var offset = currpos.left - xcenter;
+	return offset;
+}
+
+//get vertical offsets of each slide
+function get_offsets() {
 	jQuery('.slide').each(function(){
-		var viewheight = jQuery('.imageviewer').height();
-		if(jQuery(this).children('.mapimg').length > 0 && offset == 0) {
-			//NOTHING	
-		} else {		
-			var newy = (viewheight - jQuery(this).height()) / 2;
-			var newy = newy + offset;
-			var ymax = viewheight - jQuery(this).height();
-			if(newy > 0) newy = 0;
-			if(newy < ymax) newy = ymax;
-			jQuery(this).css({top: newy});
-		}
-	});
+		var offset = store_y_offset(jQuery(this));
+		jQuery(this).data('offset', offset);
+	});	
+}
+
+function center_slide(slide) {
+	var viewheight = jQuery('.imageviewer').height();
+	var newy = (viewheight - slide.height()) / 2;
+	if(slide.data('offset')) newy += parseFloat(slide.data('offset'));
+	var ymax = viewheight - slide.height();
+	if(newy > 0) newy = 0;
+	if(newy < ymax) newy = ymax;
+	slide.css({top: newy});
 }
 
 
@@ -214,7 +232,6 @@ jQuery('.smallthumbs a').live('click', function(event) {
 
 jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
-	var slide = jQuery('.slide:last');
 	var viewer = jQuery('.imageviewer');
 	var holderheight = jQuery('.imageholder').height();
 	var viewheight = viewer.height();
@@ -223,7 +240,7 @@ jQuery('.resizeicon').live('click', function(event){
 	viewer.animate({height: amount}, 1000);
 	jQuery('html, body').animate({scrollTop: 0}, 1000);
 	jQuery('.slide').each(function(){
-		var newtop = (amount - slide.height()) / 2 ;
+		var newtop = (amount - jQuery(this).height()) / 2 ;
 		jQuery(this).animate({top: newtop}, 1000);
 	});
 });
