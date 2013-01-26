@@ -130,8 +130,8 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 			echo '<input tabindex="'.$index.'" type="text" name="email" class="blue bold" value="'.$email.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'country'):
-			$cat = ( ! $unsaved_data ) ? get_the_category($postid) : array ( get_category( $query->country ) );
-			echo '<input type="text" class="righthalf" tabindex="'.$index.'" name="country" value="'.$cat->name.'"/>';
+			$cat = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country ;
+			echo '<input type="text" class="" tabindex="'.$index.'" name="country" value="'.$cat->name.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'location'):
 			$city = ( ! $unsaved_data ) ? get_post_meta($postid, 'city', true) : $query->city;

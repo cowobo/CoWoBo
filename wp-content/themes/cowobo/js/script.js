@@ -94,7 +94,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var viewheight = jQuery('.imageviewer').height();
 	var viewholder = jQuery('.imageholder').height();
 	var curzoom = parseFloat(slide.children('.zoomlevel').val());
-	var xmax = jQuery('.planet').width() - slide.width();
+	var xmax = jQuery(window).width() - slide.width();
 	var ymax = viewheight - slide.height();
 	if(ymax > 0) ymax =0;
 	var amount; var newstyle;
