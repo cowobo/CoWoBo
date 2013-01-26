@@ -128,6 +128,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_action ( 'current_user_box', array ( &$this, 'do_awesome_box' ) );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
+
+            add_action ( 'cowobo_after_searchbar', array ( &$this, 'do_your_score_box') );
+        }
+
+        public function do_your_score_box() {
+            echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
         }
 
         public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {

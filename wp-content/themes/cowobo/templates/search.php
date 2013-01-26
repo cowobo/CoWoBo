@@ -6,8 +6,8 @@ echo '<ul class="tab horlist searchbar">';
 	echo '<li id="catmenu">Categories ▼</li>';
 	echo '<li id="sortmenu">Sort ▼</li>';
 	echo '<li id="addmenu" class="blue">Add New ▼</li>';
-	echo '<li id="profilemenu">Your Score: 0 ▼</li>';
-	//do_action ( 'cowobo_after_layouts', $postid, $postcat, $author );
+	//echo '<li id="profilemenu">Your Score: 0 ▼</li>';
+	do_action ( 'cowobo_after_searchbar' );
 echo '</ul>';
 
 echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
@@ -58,7 +58,7 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 			if (is_user_logged_in() ) :
 				do_action ( 'cowobo_after_content_loggedin' );
 				echo '<a href="'.get_permalink($profile_id).'">Go to your profile</a>';
-			else: 
+			else:
 				include(TEMPLATEPATH.'/templates/login.php');
 			endif;
 		echo '</div>';
@@ -66,7 +66,7 @@ echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
 echo '</form>';
 
 //Add Post form
-if(! is_user_logged_in() or cowobo()->query->new or cowobo()->query->action or is_single()) 
+if(! is_user_logged_in() or cowobo()->query->new or cowobo()->query->action or is_single())
 $onload = 'hide'; else $onload = 'show';
 
 echo '<form method="GET" action="'.get_bloginfo('url').'">';
@@ -74,7 +74,7 @@ echo '<form method="GET" action="'.get_bloginfo('url').'">';
 		echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
 		echo '<br/><input type="submit" class="button clear" value="Create Post"/>';
 		echo '<select name="new" class="addnew">';
-			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners').','.get_cat_ID('Coders');		
+			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners').','.get_cat_ID('Coders');
 			foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
 				if($cat->slug == 'news') $state = 'selected'; else $state='';
 				echo '<option value="'.$cat->name.'" '.$state.'>'.$cat->name.'</option>';
