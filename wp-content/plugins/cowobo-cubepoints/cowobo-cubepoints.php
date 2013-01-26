@@ -20,8 +20,8 @@ if (!defined('ABSPATH'))
 define('COWOBO_CP_VERSION', '0.1');
 
 
-define ( 'COWOBO_CP_POST_KUDOS', 10 );
-define ( 'COWOBO_CP_PROFILE_KUDOS', 40 );
+define ( 'COWOBO_POST_KUDOS', 10 );
+define ( 'COWOBO_PROFILE_KUDOS', 40 );
 define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
 define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
 define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
@@ -30,6 +30,9 @@ define ( 'COWOBO_CP_POST_KUDOS_GIVES_POINTS', 1 ); // The love we give the giver
 define ( 'COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS', 2 );
 
 define ( 'COWOBO_AVATAR_UPDATED_POINTS', 5 );
+
+define ( 'COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER', 10 );
+define ( 'COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER', 5 );
 
 /**
  * PATHs and URLs
@@ -95,7 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->setup_current_user();
                 $this->logged_in_templates();
                 $this->record_actions();
-                
+
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
             }
 
@@ -118,6 +121,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
+            add_action ( 'editrequest_accepted', array ( &$this, 'record_editrequest_accepted' ), 10, 4 );
         }
 
         private function logged_in_templates() {
@@ -134,6 +138,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             $data['postid'] = $post_id;
             if ( $data_user_id ) $data['userid'] = $data_user_id;
+            elseif ( $recipient_id != get_current_user_id() ) $data['userid'] = get_current_user_id();
             $data_str = http_build_query($data);
 
             cp_points( $type, $recipient_id, $points, $data_str );
@@ -354,7 +359,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 switch ( $object ) {
                     case 'post' :
-                        if ( ! $amount ) $amount = COWOBO_CP_POST_KUDOS;
+                        if ( ! $amount ) $amount = COWOBO_POST_KUDOS;
 
                         if ( $this->kudos_already_given() ) {
                             cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
@@ -385,7 +390,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                                     "postid=" . get_the_ID()
                             );
                         }
-                        if ( ! $amount ) $amount = COWOBO_CP_PROFILE_KUDOS;
+                        if ( ! $amount ) $amount = COWOBO_PROFILE_KUDOS;
                         $users = cowobo()->users->get_users_by_profile_id( $object_id );
                         foreach ( $users as $user ) {
                             $this->give_kudos ( 'user', $user->ID, $amount, $origin );
@@ -451,8 +456,13 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
+                $user_profile = $post = false;
                 if ( isset ( $data_arr['userid'] ) )
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+                if ( isset ( $data_arr['postid'] ) )
+                    $post = get_post( $data_arr['postid'] );
+
+                if ( ! $user_profile && ! $post ) return;
 
                 switch ( $type ) {
                     case 'kudos_profile' :
@@ -460,31 +470,32 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         break;
                     case 'kudos_post' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        $post = get_post( $data_arr['postid'] );
                         echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
                         break;
                     case 'post_updated' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        $post = get_post( $data_arr['postid'] );
                         echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                         break;
                     case 'profile_updated' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        $post = get_post( $data_arr['postid'] );
                         echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
                         break;
                     case 'post_kudos_given' :
-                        $post = get_post( $data_arr['postid'] );
                         echo "Liked the post <a href='".get_permalink( $post )."'>{$post->post_title}</a>. Check it out!";
                         break;
                     case 'profile_kudos_given' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        $post = get_post( $data_arr['postid'] );
                         echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
                         break;
                     case 'updated_avatar' :
                         //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
                         echo "Updated avatar!";
+                        break;
+                    case 'editrequest_has_been_accepted' :
+                        echo 'Added to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> by <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                        break;
+                    case 'editrequest_accepted' :
+                        echo 'Added <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                         break;
 
                 }
@@ -572,6 +583,14 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 cp_points( $type, get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
             else
                 cp_points( $type, get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+        }
+
+        public function record_editrequest_accepted ( $rquser_profile_id, $rqpost ) {
+            $rquser = cowobo()->users->get_users_by_profile_id ( $rquser_profile_id, true )->ID;
+            // Give points to the accepter
+            $this->add_points( 'cowobo_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER, $rqpost, $rquser );
+            // Give points to the accepted
+            $this->add_points( 'cowobo_editrequest_has_been_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
         }
 
         public function is_recently_updated ( $type, $uid = 0 ) {

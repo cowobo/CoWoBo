@@ -102,7 +102,7 @@ class CoWoBo_Posts
 				if($location = cwb_geocode( $post_title.', '.$country ) ) {
 					//check if location has already been added
 					$coordinates = $location['lat'].','.$location['lng'];
-					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates); 
+					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
 					if( $citypost && $citypost[0]->ID != $postid ) {
                         $postmsg['title'] = 'The location you are trying to add already exists';
                     } else {
@@ -144,7 +144,7 @@ class CoWoBo_Posts
 							else {
 								$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 								$countrycat = $tagid['term_id'];
-							}                            
+							}
 							$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countrycat), 'post_status'=>'Publish'));
 						endif;
 						update_post_meta( $postid, 'country', $location['country'] );
@@ -459,11 +459,12 @@ class CoWoBo_Posts
         if(!$rqpost) $rqpost = $post->ID;
 
         //if we are dealing with an existing request get its meta
+        $toedit = '';
         if($rqtype != 'add'):
             $requests = get_post_meta($rqpost, 'request', false);
             foreach($requests as $request):
                 $rqdata = explode('|', $request);
-                if($rqdata[0] == $rquser) $toedit = $request;
+                if ($rqdata[0] == $rquser) $toedit =  $request;
             endforeach;
         endif;
 
@@ -474,6 +475,7 @@ class CoWoBo_Posts
         elseif($rqtype == 'accept'):
             delete_post_meta($rqpost, 'request', $toedit);
             add_post_meta($rqpost, 'author', $rquser);
+            do_action ( 'editrequest_accepted', $rquser, $rqpost );
             $notices = 'editrequest_accepted';
         elseif($rqtype == 'deny'):
             delete_post_meta($rqpost, 'request', $toedit);
@@ -585,7 +587,7 @@ class CoWoBo_Posts
     }
 
     private function has_requests() {
-        global $profile_id, $cowobo;
+        global $profile_id;
         //check if the user has any pending author requests
         $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
 

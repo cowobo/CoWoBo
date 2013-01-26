@@ -416,7 +416,7 @@ if (!class_exists('CoWoBo')) :
                     the_notice_content();
                     echo "</div>";
 
-                    do_action ( "notice_printed_$notice_type", the_notice_content() );
+                    do_action ( "notice_printed_" .  get_the_notice_type(), get_the_notice_content() );
                 endwhile;
             }
         }
