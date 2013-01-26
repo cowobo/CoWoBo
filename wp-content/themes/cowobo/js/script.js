@@ -250,7 +250,7 @@ function startslideshow() {
 
 //TEXT EDITOR FUNCTIONS
 
-jQuery('#formsubmit').live('click', function(e){
+jQuery('.submitform').live('click', function(e){
 	jQuery('.htmlbox').val(jQuery('#rte').html());
 });
 
