@@ -5,6 +5,8 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Feed
 {
+    public $sort = array();
+
     /**
      * Filter feed based on parameters set in browse
      *
@@ -38,7 +40,8 @@ class CoWoBo_Feed
 			$sort = 'title';
 			$direction = 'ASC';
 		} elseif ( $sort == 'location') {
-			//$query['meta_key'] = 'cowobo_points';
+            $sort = 'meta_value';
+			$query['meta_key'] = $this->sort['meta_key'] = 'country';
 		}
 
         $query_default = array (
