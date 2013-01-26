@@ -32,7 +32,7 @@ class CoWoBo_Users
 
         //add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
-        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_cu' ), 5 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
         add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
 
@@ -48,13 +48,17 @@ class CoWoBo_Users
 
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
-        echo "<div class='tab'>";
-        do_action ( 'current_user_box' );
+        echo "<div class='current-user'>";
+            do_action ( 'current_user_box' );
         echo "</div>";
     }
 
     public function do_user_link() {
-        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
+        echo "<h3>";
+        do_action ( 'cowobo_before_user_link' );
+        echo "<a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a>";
+        do_action ( 'cowobo_after_user_link' );
+        echo "</h3>";
     }
 
     public function do_profile_avatar() {
@@ -76,6 +80,11 @@ class CoWoBo_Users
         $this->avatar_upload_form();
         echo "</div>";
     }
+
+        public function do_avatar_with_upload_form_cu() {
+            $this->do_avatar_with_upload_form();
+            echo "</div><div class='current-user-after-avatar'>";
+        }
 
     private function avatar_upload_form() {
         do_action( 'simple_local_avatar_notices' );

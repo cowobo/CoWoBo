@@ -59,7 +59,7 @@ echo '</form>';
 echo '<div class="hide dropmenu profilemenu">';
     if (is_user_logged_in() ) :
         do_action ( 'cowobo_profile_dropdown' );
-        echo '<a href="'.get_permalink($profile_id).'">Go to your profile</a>';
+        //echo '<a href="'.get_permalink($profile_id).'">Go to your profile</a>';
     else:
         include(TEMPLATEPATH.'/templates/login.php');
     endif;
