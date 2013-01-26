@@ -132,35 +132,27 @@ if (have_posts()) : while (have_posts()) : the_post();
 		endforeach;
 	endif;
 
-	if($author) {
-		echo '<div class="tab">';
-			echo '<div class="tabthumb fourth">+</div>';
-			echo '<div class="tabtext right">';
-				echo '<h2>Add posts to this page &raquo;</h2>';
-				echo '<div class="horlist">';
-					$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Partners');
-                    if ( $postcat && is_object ( $postcat ) ) $exclude .= ','. $postcat->term_id;
-					foreach(get_categories('parent=0&exclude='.$exclude.'&hide_empty=0') as $cat):
-						echo '<a href="?new=' .$cat->name.'">'.$cat->name.'</a>';
+	echo '<div class="tab">';
+		echo '<div class="tabthumb">+</div>';
+		echo '<div class="tabtext">';
+			echo '<h2>Link your posts to this page &raquo;</h2>';
+			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Locations');
+			echo '<form method="post" action="">';
+				echo '<select name="linkto">';
+					echo '<option>Select a post or scroll up and click on Add New</option>';			
+					$exclude = '-'.get_cat_ID('Uncategorized').', -'.get_cat_ID('Partners').', -'.get_cat_ID('Coders');		
+					foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&cat='.$exclude.'&numberposts=-1') as $userpost):
+						if($userpost->ID == cowobo()->query->linkto) $state = 'selected'; else $state='';
+						echo '<option value="'.$userpost->ID.'">' . $userpost->post_title.'</option>';
 					endforeach;
-				echo '</div>';
-				echo '<form method="post" action="">';
-					echo '<select name="linkto" class="smallfield">';
-					echo '<option>Or link to your other posts:</option>';
-					echo '<option></option>';
-					foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&numberposts=-1') as $userpost):
-						echo '<option value="'.$userpost->ID.'">' . cowobo()->L10n->the_title($userpost->ID).'</option>';
-					endforeach;
-					echo '</select>';
-	                wp_nonce_field( 'linkposts' );
-					echo '<button type="submit" class="button">Add</button>';
-				echo '</form>';
-			echo '</div>';
+				echo '</select>';
+	               wp_nonce_field( 'linkposts' );
+				echo '<button type="submit" class="button">Link Post</button>';
+			echo '</form>';
 		echo '</div>';
-    }
+	echo '</div>';
 
     do_action ( 'cowobo_after_post', $postid, $postcat, $author );
-
 
 	//show comments
     //if ( !  ) { var_dump ( $postcat );  die; }

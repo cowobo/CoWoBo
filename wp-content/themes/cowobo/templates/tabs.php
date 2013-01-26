@@ -19,11 +19,11 @@ if($tabtype == 'cat'):
 
 	echo '<div class="tab">';
 
-		echo '<div class="tabthumb fourth">';
+		echo '<div class="tabthumb">';
 	    cowobo()->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
 		echo '</div>';
 
-		echo '<div class="tabtext right">';
+		echo '<div class="tabtext">';
 			echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 			if($catposts):
 				foreach($catposts as $catpost):
@@ -68,11 +68,11 @@ else:
 
 	echo '<div class="tab">';
 
-		echo '<div class="tabthumb fourth">';
+		echo '<div class="tabthumb">';
 			cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
 		echo '</div>';
 
-		echo '<div class="tabtext right">';
+		echo '<div class="tabtext">';
 			if($tabtype->slug == 'wiki'):
 				echo $title.'<br/><ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
 			elseif($tabtype->slug == 'location'):

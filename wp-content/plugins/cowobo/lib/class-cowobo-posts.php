@@ -35,7 +35,7 @@ class CoWoBo_Posts
      */
     public function save_post(){
         global $post, $cowobo, $profile_id;
-        $linkedid = 0;
+        $linkedid = 0; $tagarray = array();
 
         //store all data
         $postid = cowobo()->query->post_ID;
@@ -43,7 +43,8 @@ class CoWoBo_Posts
         $post_title  = ( cowobo()->query->post_title ) ? trim(strip_tags( cowobo()->query->post_title ) ) : null;
         $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
-        $oldcity = get_post_meta( $postid, 'cityid', true );
+        $oldcity = get_post_meta( $postid, 'city', true );
+        $oldcityid = get_post_meta( $postid, 'cityid', true );
         //$oldslug = $post->post_name;
         $involvement = cowobo()->query->involvement;
         $newslug = sanitize_title($post_title);
@@ -97,51 +98,66 @@ class CoWoBo_Posts
 
         //if its a new location post geocode its location
         if( $postcat->slug == 'location' ) {
-            if( $countryid = cowobo()->query->country ) {
-                $tagarray = array( $countryid );
-                if($latlng = cwb_geocode( $post_title.', '.$countryid ) ) {
-                    $coordinates = $latlng['lat'].','.$latlng['lng'];
-                    $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
-                    //check if coordinates have already been added (avoids international spelling differences)
-                    if($citypost && $citypost[0]->ID != $postid) {
+            if( $country = cowobo()->query->country ) {
+				if($location = cwb_geocode( $post_title.', '.$country ) ) {
+					//check if location has already been added
+					$coordinates = $location['lat'].','.$location['lng'];
+					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates); 
+					if( $citypost && $citypost[0]->ID != $postid ) {
                         $postmsg['title'] = 'The location you are trying to add already exists';
                     } else {
-                        add_post_meta($postid, 'coordinates', $coordinates);
+						//use title and country returned from geocode to avoid spelling duplicates
+                        $post_title = $location['city'];
+						update_post_meta($postid, 'country', $location['country']);
+						update_post_meta($postid, 'city', $location['city']);
+						add_post_meta($postid, 'coordinates', $coordinates);
+						if($countryid = get_cat_ID( $location['country'] ))
+							$tagarray[] = $countryid;
+						else {
+							$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
+							$tagarray[] = $tagid['term_id'];
+				            $tagarray = array_map('intval', $tagarray);
+						}
                     }
                     if( ! empty( $linkedid ) ) cowobo()->relations->create_relations($postid, array($linkedid));
                 } else {
                     $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
             } else {
-                $postmsg['country'] = 'Please select a country';
+                $postmsg['country'] = 'Please enter a country';
             }
         }
 
         //if post contains a location create or link to that location post
         if( $city = cowobo()->query->city ) {
-            if($city != $oldcity ) {
-                if($countryid = $_POST['country']) {
-                    $countrycat = get_category($countryid);
-                    if($latlng = cwb_geocode($city.', '.$countrycat->name)):
-                        $coordinates = $latlng['lat'].','.$latlng['lng'];
+            if( $city != $oldcity ) {
+                if( $country = $_POST['country'] ) {
+					if( $location = cwb_geocode($city.', '.$country) ):
+                        //check if location has already been added
+						$coordinates = $location['lat'].','.$location['lng'];
                         $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
-                        //check if coordinates have already been added (avoids international spelling differences)
-                        if($citypost):
+                        if( $citypost ):
                             $cityid = $citypost[0]->ID;
                         else:
-                            // @todo use returned geocoding city name
-                            $cityid = wp_insert_post(array('post_title'=>$city, 'post_category'=>array($countryid), 'post_status'=>'Publish'));
-                            add_post_meta($cityid, 'coordinates', $coordinates);
-                        endif;
-                        cowobo()->relations->delete_relations($postid, $oldcity);
+							if( $countryid = get_cat_ID( $location['country'] ) )
+								$countrycat = $countryid;
+							else {
+								$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
+								$countrycat = $tagid['term_id'];
+							}                            
+							$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countrycat), 'post_status'=>'Publish'));
+						endif;
+						update_post_meta( $postid, 'country', $location['country'] );
+						update_post_meta( $postid, 'city', $location['city'] );
+						update_post_meta( $postid, 'cityid', $cityid );
+						update_post_meta( $postid, 'coordinates', $coordinates);
+                        cowobo()->relations->delete_relations($postid, $oldcityid);
                         cowobo()->relations->create_relations($postid, array($cityid));
-                        add_post_meta($postid, 'cityid', $cityid);  //save ID to check city next time
-                        update_post_meta($postid, 'coordinates', $coordinates);
                     else:
                         $postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
                     endif;
                 } else {
-                    $postmsg['location'] = 'Please select a country';
+                    $postmsg['location'] = 'Please enter a country';
                 }
             }
         }
