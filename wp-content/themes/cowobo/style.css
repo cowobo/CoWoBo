@@ -71,6 +71,7 @@ form {margin:0 auto;}
 .titlepadding {position:relative; z-index:1; color:#fff; padding:0 5px 5px 20px; overflow:hidden;}
 .titlepadding a:hover {color:#ccc;}
 .feedtitle {font-size:28px; margin-right:20px; line-height:40px; }
+.feedtitle a, .feedtitle a:hover { color: #fff; font-weight: normal; }
 .captions {font-size:18px; line-height: 25px;}
 .resizeicon {margin: 5px 15px 0 0; cursor:pointer;}
 .resizeicon:hover {opacity:0.8}
