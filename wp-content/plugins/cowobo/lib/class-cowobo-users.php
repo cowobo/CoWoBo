@@ -41,7 +41,7 @@ class CoWoBo_Users
     }
 
     private function _maybe_save_avatar() {
-        if ( cowobo()->query->user_avatar_edit_submit ) {
+        if ( cowobo()->query->user_avatar_edit_submit || cowobo()->query->{'simple-local-avatar-erase'} ) {
            do_action('edit_user_profile_update', get_current_user_id() );
         }
     }
@@ -70,7 +70,7 @@ class CoWoBo_Users
 
     public function do_avatar_with_upload_form() {
 
-        $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
+        //$default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
 
         echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
         echo get_avatar( get_current_user_id() );
@@ -93,15 +93,15 @@ class CoWoBo_Users
             <?php wp_nonce_field( 'simple_local_avatar_nonce', '_simple_local_avatar_nonce', false ); ?>
             <input type="file" name="simple-local-avatar" id="simple-local-avatar" /><br />
 
-            <?php
-            if ( empty( get_userdata( get_current_user_id() )->simple_local_avatar ) )
-                echo '<span class="description">' . __('No local avatar is set. Use the upload field to add a local avatar.','simple-local-avatars') . '</span>';
-            else
-                echo '
-                    <input type="checkbox" name="simple-local-avatar-erase" value="1" /> ' . __('Delete local avatar','simple-local-avatars') . '
-                ';
-            ?>
-            <p><input type="submit" class='button' name="user_avatar_edit_submit" value="Upload avatar"/></p>
+            <p>
+                <input type="submit" class='button' name="user_avatar_edit_submit" value="Upload avatar"/>
+
+                <?php if ( ! empty( get_userdata( get_current_user_id() )->simple_local_avatar ) ) : ?>
+
+                    or <input type="submit" name="simple-local-avatar-erase" value="delete avatar">
+
+                <?php endif; ?>
+            </p>
             <script type="text/javascript">var form = document.getElementById('your-profile');form.encoding = 'multipart/form-data';form.setAttribute('enctype', 'multipart/form-data');</script>
         </form>
         <div class="clear"></div>
