@@ -38,7 +38,7 @@ if( ! cowobo()->has_notice( array ( 'savepost', 'saved' ) ) ) {
             echo '<b>Please enter all text in ';
             echo '<a href="http://translate.google.com/translate?hl='.$currlang.'&sl='.$currlang.'&tl=en" target="_blank" title="Use Google Translate">English </a>';
             echo 'so we can translate it to the other languages on our site.</b><br/>';
-            echo 'When you view the page in another language you can then click on <b>Correct Translation.</b>';
+            echo 'After saving you can click on <b>Edit Translation</b> in the footer of the post';
     echo '</div>';
 }
 
@@ -131,42 +131,13 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 			echo '<br/>';
 		elseif($field['type'] == 'country'):
 			$cat = ( ! $unsaved_data ) ? get_the_category($postid) : array ( get_category( $query->country ) );
-			echo '<select name="country" class="full">';
-			echo '<option></option>';
-			foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name&hide_empty=0') as $country):
-				if($cat[0]->term_id == $country->term_id) $state = 'selected'; else $state = '';
-				echo '<option value="'.$country->term_id.'" '.$state.'> '.$country->name.'</option>';
-			endforeach;
-			echo '</select>';
+			echo '<input type="text" class="righthalf" tabindex="'.$index.'" name="country" value="'.$cat->name.'"/>';
 			echo '<br/>';
 		elseif($field['type'] == 'location'):
 			$city = ( ! $unsaved_data ) ? get_post_meta($postid, 'city', true) : $query->city;
-			$countryid = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country;
-			$zoomlevel = ( ! $unsaved_data ) ? get_post_meta($postid, 'zoomlevel', true) : $query->zoomlevel;
-			echo '<div style="overflow:hidden">';
-			echo '<div class="half"><input type="text" tabindex="'.$index.'" name="city" value="'.$city.'"/></div>';
-			echo '<div class="half">';
-			echo '<select tabindex="'.$index.'" name="country" class="country left">';
-				echo '<option></option>';
-				foreach(get_categories('parent='.get_cat_ID('Locations').'&orderby=name') as $country):
-					if($countryid == $country->term_id) $state = 'selected'; else $state = '';
-					echo '<option value="'.$country->term_id.'" '.$state.'> '.$country->name.'</option>';
-				endforeach;
-			echo '</select>';
-			echo '<select tabindex="'.$index.'" name="zoomlevel" class="zoomlevel">';
-				echo '<option></option>';
-				for($x=3; $x<17; $x++):
-					if($x == $zoomlevel) $state="selected"; else $state='';
-					echo '<option value="'.$x.'" '.$state.'>'.($x-2).'</option>';
-				endfor;
-				echo '<option value="14">Max Zoom</option>';
-			echo '</select>';
-			echo '</div>';
-			echo '</div>';
-		elseif($field['type'] == 'encpath'):
-			//echo '<a href="?action=encodepath">'.$field['hint'].'</a><br/>';
-			$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'encpath', true) : $query->encpath;
-			echo '<input type="text" tabindex="'.$index.'" name="encpath" value="'.$value.'"/>';
+			$country = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country;
+			echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="city" value="'.$city.'"/>';
+			echo '<input type="text" class="righthalf" tabindex="'.$index.'" name="country" value="'.$country.'"/>';
 		elseif($field['type'] == 'smalltext'):
 			$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 			echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';
@@ -204,28 +175,25 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
             } else {
                 $post_content = $query->post_content;
             }
-			//hide extra formating so its easier to edit
-			//$stripped = str_replace(array('<br/>','</p>'), '\n', $post_content);
-			//$stripped = str_replace('<p>', '', $stripped);
-			echo '<span class="richbuttons">';
+			echo '<div class="richbuttons">';
 				echo '<a class="makebold" href="#">Bold</a>';
 				echo '<a class="makeitalic" href="#">Italic</a>';
 				echo '<a class="makeunderline" href="#">Underline</a>';
 				echo '<a class="makelink" href="#">Link</a>';
 				echo '<a class="htmlmode" href="#">HTML</a>';
 				echo '<a class="richmode" href="#">WYSIWYG</a>';
-			echo '</span>';
+			echo '</div>';
 			echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.trim ( $post_content ).'</div>';
 			echo '<textarea name="post_content" rows="12" class="htmlbox"></textarea>';
 		endif;
 		echo '</div>';
-
+	
         cowobo()->print_notices( $field['type'], 'error' );
 
 	endforeach;
 
     cowobo()->print_notices( 'confirmenglish', 'error' );
-
+		
 	echo '<div class="tab">';
 		$state = ($query->new) ? '' : 'checked="checked"';
 		echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
@@ -235,7 +203,7 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 		echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
         wp_nonce_field( 'save', 'save' );
         if ( $link_to ) echo "<input type='hidden' name='link_to' value='$link_to'>";
-		echo '<button id="formsubmit" type="submit" class="button">Save</button>';
+		echo '<button id="formsubmit" type="submit" class="button submitform">Save</button>';
 		echo '<span class="loadicon"></span>';
 	echo '</div>';
 endif;
