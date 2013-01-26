@@ -12,7 +12,6 @@ class CoWoBo_Feed
      */
     public function filter_feed(){
 
-
         //store variables from browse form
         $cats = cowobo()->query->cats;
         $sortby = cowobo()->query->sort;
@@ -23,26 +22,32 @@ class CoWoBo_Feed
         if( $cats && $cats[0] != 'all' ) $catstring = implode(',',$cats);
         elseif( is_category() ) $catstring = get_query_var('cat');
 
-
 		//todo: handle multiple sort values
-        $metaquery = array();
+        //$metaquery = array();
+        $query = array();
 		$sort = $sortby[0];
         $direction = '';
         if ( empty ( $sort ) ) $sort = 'modified';
         elseif( $sort == 'rating' ) {
-            $sort = 'meta_value';
-			$metaquery[] = array( 'metakey'=>'rating' );
+            $sort = 'meta_value_num';
+			//$metaquery[] = array( 'metakey'=>'cowobo_points' );
+            $query['meta_key'] = 'cowobo_points';
 		} elseif ( $sort == 'a-z' ) {
 			$sort = 'title';
 		} elseif ( $sort == 'z-a' ) {
 			$sort = 'title';
 			$direction = 'ASC';
 		} elseif ( $sort == 'location') {
-			//to do sort by location
+			//$query['meta_key'] = 'cowobo_points';
 		}
 
+        $query_default = array (
+            'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords
+        );
+        $query = array_merge ( $query, $query_default );
+
         //query filtered posts
-        query_posts( array( 'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords, 'meta_query' => $metaquery ) );
+        query_posts( $query );
 
     }
 
