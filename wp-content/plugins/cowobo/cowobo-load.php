@@ -327,27 +327,31 @@ if (!class_exists('CoWoBo')) :
             $currentcat = false;
 
             // If we are searching for multiple cats, trick the system
-            if ( cowobo()->query->cats && is_array ( cowobo()->query->cats ) ) {
-                $cat_names = array();
-                foreach ( cowobo()->query->cats as $cat ) {
-                    $the_cat = get_category( $cat );
-                    if ( ! empty ( $the_cat->name ) )
-                        $cat_names[] = $the_cat->name;
+            if ( ( $query_cats = cowobo()->query->cats ) && is_array ( $query_cats ) ) {
+                if ( count ( $query_cats ) == 1 ) {
+                    $catid = current ( $query_cats );
+                } else {
+                    $cat_names = array();
+                    foreach ( $query_cats as $cat ) {
+                        $the_cat = get_category( $cat );
+                        if ( ! empty ( $the_cat->name ) )
+                            $cat_names[] = $the_cat->name;
+                    }
+                    $cat_name_string = join(' and ', array_filter(array_merge(array(join(', ', array_slice($cat_names, 0, -1))), array_slice($cat_names, -1))));
+
+                    $cat_arr = array (
+                        'term_id' 	=> 0,
+                        'name'   	=> $cat_name_string,
+                        'slug'	=> 'search_results',
+                    );
+                    $currentcat = (object) $cat_arr;
+                    return array ('currentcat' => $currentcat, 'catid' => 0 );
                 }
-                $cat_name_string = join(' and ', array_filter(array_merge(array(join(', ', array_slice($cat_names, 0, -1))), array_slice($cat_names, -1))));
-
-                $cat_arr = array (
-                    'term_id' 	=> 0,
-                    'name'   	=> $cat_name_string,
-                    'slug'	=> 'search_results',
-                );
-                $currentcat = (object) $cat_arr;
-                return array ('currentcat' => $currentcat, 'catid' => 0 );
-
             }
 
             if ( ! is_a ( $post, 'WP_Post' ) ) return array();
-            if ($catid = get_query_var('cat')) {
+
+            if ( $catid || $catid = get_query_var('cat') ) {
                 $currentcat = get_category($catid);
             } else {
                 $cat = get_the_category();
