@@ -121,6 +121,19 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
+        public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {
+            if ( ! $post_id ) $post_id = get_the_ID();
+            if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
+
+            if ( ! is_array ( $data ) ) parse_str ( $data );
+
+            $data['postid'] = $post_id;
+            if ( $data_user_id ) $data['userid'] = $data_user_id;
+            $data_str = http_build_query($data);
+            
+            cp_points( $type, $recipient_id, $points, $data_str );
+        }
+
         public function _maybe_has_updated_avatar ( $meta_id, $object_id, $meta_key, $_meta_value ) {
             if ( $meta_key != 'simple_local_avatar' || empty ( $_meta_value ) ) return;
 
