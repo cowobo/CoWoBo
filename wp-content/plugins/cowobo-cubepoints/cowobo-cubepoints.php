@@ -125,15 +125,20 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         private function logged_in_templates() {
-            add_action ( 'current_user_box', array ( &$this, 'do_awesome_box' ) );
+            add_action ( 'current_user_box', array ( &$this, 'do_ranking_box' ) );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
             add_action ( 'cowobo_after_searchbar', array ( &$this, 'do_your_score_box') );
+            add_action ( 'cowobo_after_user_link', array ( &$this, 'do_userlink_score') );
         }
 
         public function do_your_score_box() {
             echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
+        }
+
+        public function do_userlink_score() {
+            echo " <em>{$this->current_user_rank['rank']}</em>";
         }
 
         public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {
@@ -271,15 +276,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 return cp_module_ranks_getRank( $uid );
             }
 
-        public function do_awesome_box() {
-            //echo "<div class='tab'>";
-            echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
+        public function do_ranking_box() {
+            echo "<div class='ranking-box'>";
+            //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
             if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
-                echo "<p>Next rank: <strong>" . $this->current_user_next_rank['rank'] . "</strong>";
+                echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
                 $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
             }
             echo "</p>";
-            //echo "</div>";
+            echo "</div>";
         }
 
         /**
@@ -532,7 +537,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 $this->setup_displayed_user();
 
-                echo ' <span class="field"><h3>Awesomeness:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+                echo ' <span class="field"><h3>Score:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
                 echo ' <span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
                 $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
             } else {
