@@ -691,10 +691,9 @@ class CoWoBo_Posts
                 '.entry',
                 '.post-body', // LifeHacker
                 '.DetailedSummary', // Al Jazeera
+                '#mw-content-text p', // Wikipedia
                 'h2 + div',
                 'h1 + div', // CNN
-                'p + div',
-                'p + div',
                 'p.introduction', // BBC
             );
 
