@@ -210,6 +210,7 @@ class CoWoBo_Posts
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
+            $post_content = preg_replace( '@(?<![.*">])\b(?:(?:https?|ftp|file)://|[a-z]\.)[-A-Z0-9+&#/%=~_|$?!:,.]*[A-Z0-9+&#/%=~_|$]@i', '<a href="\0" target="_blank">\0</a>', $post_content );
             wp_update_post( array('ID' => $postid,'post_status' => 'publish', 'post_title' => $post_title, 'post_content' => $post_content, 'post_category' => $tagarray ) );
 
             if ( ! isset ( $GLOBALS['newpostid'] ) || empty ( $GLOBALS['newpostid'] ) ) {
@@ -363,7 +364,7 @@ class CoWoBo_Posts
                 $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
 				$slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
                     $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
-					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';				
+					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
 					if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
                 $slides[$x] .= '</div>';
                 $captions .= '<div class="caption">'.$caption.'</div>';
