@@ -124,7 +124,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         /**
          * Bogfixing ftw!
-         * 
+         *
          * @param type $null
          * @param type $object_id
          * @param type $meta_key
@@ -134,7 +134,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function bogfix_user_to_profile( $null, $object_id, $meta_key, $meta_value ) {
             if ( $meta_key == 'cpoints' ) {
                 $profile_id = cowobo()->users->get_user_profile_id( $object_id );
-                update_post_meta ( $profile_id, 'cp_points', $meta_value );
+                update_post_meta ( $profile_id, 'cowobo_points', $meta_value );
             }
             return $null;
         }
@@ -465,11 +465,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             public function get_post_likes ( $post_id  ) {
-                return (int) get_post_meta( $post_id, 'cowobo_likes', true );
+                return (int) get_post_meta( $post_id, 'cowobo_points', true );
             }
 
             public function set_post_likes ( $post_id, $new_amount = 0 ) {
-                return update_post_meta( $post_id, 'cowobo_likes', $new_amount );
+                return update_post_meta( $post_id, 'cowobo_points', $new_amount );
             }
 
         public function get_post_points ( $post_id ) {
