@@ -30,8 +30,9 @@ class CoWoBo_Users
         add_action('personal_options_update',       array ( &$this, 'save_extra_profile_fields' ) );
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
-        add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
-        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form' ), 5 );
+        //add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
+        add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_cu' ), 5 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
         add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
 
@@ -40,20 +41,24 @@ class CoWoBo_Users
     }
 
     private function _maybe_save_avatar() {
-        if ( cowobo()->query->user_avatar_edit_submit ) {
+        if ( cowobo()->query->user_avatar_edit_submit || cowobo()->query->{'simple-local-avatar-erase'} ) {
            do_action('edit_user_profile_update', get_current_user_id() );
         }
     }
 
     public function current_user_box() {
         if ( ! has_action ( 'current_user_box') ) return;
-        echo "<div class='tab'>";
-        do_action ( 'current_user_box' );
+        echo "<div class='current-user'>";
+            do_action ( 'current_user_box' );
         echo "</div>";
     }
 
     public function do_user_link() {
-        echo "<h3><a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a></h3>";
+        echo "<h3>";
+        do_action ( 'cowobo_before_user_link' );
+        echo "<a href='" . get_permalink ( $this->current_user_profile_id ) . "'>" . $this->current_user_profile_name . "</a>";
+        do_action ( 'cowobo_after_user_link' );
+        echo "</h3>";
     }
 
     public function do_profile_avatar() {
@@ -65,7 +70,7 @@ class CoWoBo_Users
 
     public function do_avatar_with_upload_form() {
 
-        $default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
+        //$default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
 
         echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
         echo get_avatar( get_current_user_id() );
@@ -76,6 +81,11 @@ class CoWoBo_Users
         echo "</div>";
     }
 
+        public function do_avatar_with_upload_form_cu() {
+            $this->do_avatar_with_upload_form();
+            echo "</div><div class='current-user-after-avatar'>";
+        }
+
     private function avatar_upload_form() {
         do_action( 'simple_local_avatar_notices' );
         ?>
@@ -83,15 +93,15 @@ class CoWoBo_Users
             <?php wp_nonce_field( 'simple_local_avatar_nonce', '_simple_local_avatar_nonce', false ); ?>
             <input type="file" name="simple-local-avatar" id="simple-local-avatar" /><br />
 
-            <?php
-            if ( empty( get_userdata( get_current_user_id() )->simple_local_avatar ) )
-                echo '<span class="description">' . __('No local avatar is set. Use the upload field to add a local avatar.','simple-local-avatars') . '</span>';
-            else
-                echo '
-                    <input type="checkbox" name="simple-local-avatar-erase" value="1" /> ' . __('Delete local avatar','simple-local-avatars') . '
-                ';
-            ?>
-            <p><input type="submit" class='button' name="user_avatar_edit_submit" value="Upload avatar"/></p>
+            <p>
+                <input type="submit" class='button' name="user_avatar_edit_submit" value="Upload avatar"/>
+
+                <?php if ( ! empty( get_userdata( get_current_user_id() )->simple_local_avatar ) ) : ?>
+
+                    or <input type="submit" name="simple-local-avatar-erase" value="delete avatar">
+
+                <?php endif; ?>
+            </p>
             <script type="text/javascript">var form = document.getElementById('your-profile');form.encoding = 'multipart/form-data';form.setAttribute('enctype', 'multipart/form-data');</script>
         </form>
         <div class="clear"></div>

@@ -1,19 +1,19 @@
 //VARIABLES//
 var rooturl;
-var pan = false; 
-var drag = false; 
-var previousX; 
-var previousY; 
-		
+var pan = false;
+var drag = false;
+var previousX;
+var previousY;
+
 //setup mouselisterner on document load
 jQuery(document).ready(function() {
-	
+
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
 	
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
-        jQuery(".upload-avatar").slideToggle();
+        jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
     });
 
 	//center all images in header except maps
@@ -43,7 +43,7 @@ jQuery(document).ready(function() {
 	jQuery("body").mousemove(function(e) {
 		var viewer = jQuery(".imageviewer");
 		var viewheight = viewer.height();
-		
+
 		if (pan) {
 	        var slide = jQuery(".slide:last");
 			var slidepos = slide.position();
@@ -51,7 +51,7 @@ jQuery(document).ready(function() {
 			var ymax = viewheight - slide.height();
 			var newx = slidepos.left - (previousX - e.clientX);
 			var newy = slidepos.top - (previousY - e.clientY) ;
-			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');	
+			if (jQuery.browser.msie) jQuery('div').attr('unselectable', 'on');
 			if(ymax > 0) ymax =0;
 			if(newx > 0) newx = 0;
 			if(newx < xmax) newx = xmax;
@@ -61,7 +61,7 @@ jQuery(document).ready(function() {
 	        previousX = e.clientX;
 	        previousY = e.clientY;
 	    }
-		
+
 		if (drag) {
 			var mousemove = previousY - e.clientY;
 			var newy = viewheight - mousemove;
@@ -98,7 +98,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var ymax = viewheight - slide.height();
 	if(ymax > 0) ymax =0;
 	var amount; var newstyle;
-	
+
 	if(action == 'labels') {
 		//to do: change day/night maptype
 	} else if(action == 'panleft') {
@@ -124,7 +124,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		var newsrc = slide.children('.zoomsrc'+newlevel).val();	
 		newstyle = {width:newzoom +'%', height:newzoom +'%', top:new_y, left:new_x}
 		slide.children('.zoomlevel').val(newlevel);
-		
+
 		//load larger image if available
 		if(typeof(newsrc) != 'undefined' && newsrc.length > 0) {
 			var newimg = slideimg.clone();
@@ -142,12 +142,6 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	//animate slide
 	slide.animate(newstyle, 1500);
 });
-
-
-//expand map to max function
-function expand_map() {
-    return null;
-}
 
 //get vertical offset of slide from center
 function store_y_offset(slide) {
@@ -253,14 +247,14 @@ function startslideshow() {
 			if(newnum == jQuery('.slide').length) newnum = 0;
 			var newslide = jQuery('.slide').eq(newnum);
 			var newcaption = jQuery('.caption').eq(newnum);
-			
+
 			//fade in new slide
 			if(newslide.is(':visible')) newslide.nextAll('.slide').fadeOut(2000);
 			else newslide.fadeIn(2000);
-			
+
 			//update caption
 			newcaption.fadeIn(2000).siblings().fadeOut(2000);
-			
+
 		}, 4000);
 	}
 }

@@ -58,35 +58,48 @@ class CoWoBo_Feed
 
     /**
      * Construct feed title;
+     *
+     * @todo What's showall?
      */
     function feed_title(){
         global $currentcat, $post, $cowobo;
 
         $feedtitle = '';
-        if( cowobo()->query->new )
+        $feedlink = get_bloginfo ( 'url' );
+        if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
-        elseif( is_404() )
+            $feedlink = get_category_link( get_cat_ID ( cowobo()->query->new ) );
+        } elseif( is_404() ) {
             $feedtitle = 'Yikes we cannot find that content';
-        elseif( cowobo()->query->userpw )
+        } elseif( cowobo()->query->userpw ) {
             $feedtitle = 'Welcome to the club';
-        elseif( cowobo()->query->showall )
+        } elseif( cowobo()->query->showall ) {
             $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'. cowobo()->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
-        elseif( cowobo()->query->s )
+            $feedlink = '';
+        } elseif( cowobo()->query->s ) {
 			$feedtitle = 'Search Results';
-		elseif( cowobo()->query->action == 'login')
+        } elseif( cowobo()->query->action == 'login') {
             $feedtitle = 'Who are you?';
-        elseif( cowobo()->query->action == 'contact')
+        } elseif( cowobo()->query->action == 'contact') {
             $feedtitle = 'Contact';
-        elseif( cowobo()->query->action == 'translate')
+        } elseif( cowobo()->query->action == 'translate') {
             $feedtitle = 'Change Language';
-        elseif( cowobo()->query->action == 'editpost')
+        } elseif( cowobo()->query->action == 'editpost') {
             $feedtitle = 'Edit Post';
-		elseif( cowobo()->users->is_profile() )
+            $feedlink = remove_query_arg( 'action' );
+        } elseif( cowobo()->users->is_profile() ) {
 			$feedtitle = $post->post_title;
-        elseif( is_single() or is_category())
+            $feedlink = get_permalink();
+        } elseif( is_single() || is_category()) {
             $feedtitle = $currentcat->name;
-        elseif( is_home() )
+            if ( $currentcat->term_id )
+                $feedlink = get_category_link ( $currentcat );
+        } elseif( is_home() ) {
             $feedtitle = 'Welcome!';
+        }
+
+        if ( ! empty ( $feedlink ) )
+            $feedtitle = "<a href='$feedlink' alt='$feedtitle'>$feedtitle</a>";
 
         return $feedtitle;
     }

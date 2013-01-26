@@ -321,10 +321,37 @@ if (!class_exists('CoWoBo')) :
         public function get_current_category() {
             global $post, $currentcat;
 
+            if ( ! empty ( $currentcat ) ) return $currentcat;
+
             $catid = 0;
             $currentcat = false;
+
+            // If we are searching for multiple cats, trick the system
+            if ( ( $query_cats = cowobo()->query->cats ) && is_array ( $query_cats ) ) {
+                if ( count ( $query_cats ) == 1 ) {
+                    $catid = current ( $query_cats );
+                } else {
+                    $cat_names = array();
+                    foreach ( $query_cats as $cat ) {
+                        $the_cat = get_category( $cat );
+                        if ( ! empty ( $the_cat->name ) )
+                            $cat_names[] = $the_cat->name;
+                    }
+                    $cat_name_string = join(' and ', array_filter(array_merge(array(join(', ', array_slice($cat_names, 0, -1))), array_slice($cat_names, -1))));
+
+                    $cat_arr = array (
+                        'term_id' 	=> 0,
+                        'name'   	=> $cat_name_string,
+                        'slug'	=> 'search_results',
+                    );
+                    $currentcat = (object) $cat_arr;
+                    return array ('currentcat' => $currentcat, 'catid' => 0 );
+                }
+            }
+
             if ( ! is_a ( $post, 'WP_Post' ) ) return array();
-            if ($catid = get_query_var('cat')) {
+
+            if ( $catid || $catid = get_query_var('cat') ) {
                 $currentcat = get_category($catid);
             } else {
                 $cat = get_the_category();
@@ -401,6 +428,8 @@ if (!class_exists('CoWoBo')) :
         public function add_notice ( $message, $key = 'message' ) {
             $this->notices[] = array ( $key => $message );
             $this->notice_types[] = $key;
+
+            do_action ( "notice_added_$key", $message );
         }
 
         public function print_notices( $notice_types, $class = '' ) {
@@ -413,6 +442,8 @@ if (!class_exists('CoWoBo')) :
                     echo "<span class='close hide-if-no-js'>dismiss</span>";
                     the_notice_content();
                     echo "</div>";
+
+                    do_action ( "notice_printed_" .  get_the_notice_type(), get_the_notice_content() );
                 endwhile;
             }
         }

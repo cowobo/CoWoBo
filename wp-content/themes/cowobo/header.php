@@ -22,7 +22,7 @@ if(is_single())	wp_enqueue_script('comment-reply');
 
 //get currentcat
 $current_category = cowobo()->get_current_category();
-extract ($current_category);
+//extract ($current_category);
 
 //$feed_query = ($catid = get_query_var('cat')) ? "'c',$catid" : "'p',".$post->ID;
 $userid = wp_get_current_user()->ID;
