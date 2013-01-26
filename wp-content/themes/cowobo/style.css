@@ -63,9 +63,10 @@ form {margin:0 auto;}
 .markerlink:hover {opacity:1; color:#fff;}
 .marker {z-index:4;}
 .zoom0 {width:110%; height:110%; left: -5%; top:-5%}
-.zoom1 {width:200%; height:200%; left: -50%; top:-50%}
+.zoom1 {width:150%; height:150%; left: -25%; top:-25%}
+.zoom2 {width:200%; height:200%; left: -50%; top:-50%}
 .grabcursor {cursor:hand; cursor:grab!important; cursor:-moz-grab; cursor: url(https://mail.google.com/mail/images/2/openhand.cur), pointer!important; cursor:-webkit-grab;}
-.largeangel {top:30%; left:32%; z-index:7;}
+.largeangel {top:40%; left:38%; margin: -60px 0 0 -75px; z-index:7;}
 .largeangel:hover {opacity:0.5;}
 .titlebar {position:absolute; bottom:0; width:100%; z-index:50;}
 .titlepadding {position:relative; z-index:1; color:#fff; padding:0 5px 5px 20px; overflow:hidden;}

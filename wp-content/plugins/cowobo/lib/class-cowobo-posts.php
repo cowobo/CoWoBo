@@ -354,21 +354,22 @@ class CoWoBo_Posts
                 $slides[$x] .= '</object></div>';
                 $captions .= '<div class="caption" id=""></div>';
             } elseif ( $image_check ) {
-
                 $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
-                    $slides[$x] .= '<img src="'.$caption.'" width="100%" alt=""/>';
-                    //if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption"></div>';
+                    $slides[$x] .= '<img class="slideimg" src="'.$caption.'" width="100%" alt=""/>';
+					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
                 $slides[$x] .= '</div>';
                 $captions .= '<div class="caption" id=""></div>';
             } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
-                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
-                    $slides[$x] .= '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-                    if($caption) $slides[$x] .= '<div class="captionback"></div><div class="caption">'.$caption.'</div>';
+                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
+				$slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
+                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
+					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';				
+					if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
                 $slides[$x] .= '</div>';
                 $captions .= '<div class="caption">'.$caption.'</div>';
             }
 
-           unset($imgid);
+           unset($imgid); unset($zoom2src);
 
         endfor;
 
