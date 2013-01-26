@@ -401,6 +401,8 @@ if (!class_exists('CoWoBo')) :
         public function add_notice ( $message, $key = 'message' ) {
             $this->notices[] = array ( $key => $message );
             $this->notice_types[] = $key;
+
+            do_action ( "notice_added_$key", $message );
         }
 
         public function print_notices( $notice_types, $class = '' ) {
@@ -413,6 +415,8 @@ if (!class_exists('CoWoBo')) :
                     echo "<span class='close hide-if-no-js'>dismiss</span>";
                     the_notice_content();
                     echo "</div>";
+
+                    do_action ( "notice_printed_$notice_type", the_notice_content() );
                 endwhile;
             }
         }
