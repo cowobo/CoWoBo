@@ -15,17 +15,18 @@ class CoWoBo_Posts
      */
     public function delete_post() {
 
-
-        $deleteid = cowobo()->query->id;
+        $deleteid = cowobo()->query->post_ID;
         cowobo()->relations->delete_relations($deleteid);
         if ( wp_delete_post($deleteid) ) {
+            wp_redirect ( add_query_arg ( array ( 'message' => 'post_deleted' ), get_bloginfo ( 'url' ) ) );
+            exit;
+        } else {
             cowobo()->notifications[] = array (
                 "error" => "An error occurred deleting your post."
             );
-        } else {
-            cowobo()->notifications[] = array (
+            /*cowobo()->notifications[] = array (
                 "success" => "Post succesfully deleted."
-            );
+            );*/
         }
     }
 

@@ -132,10 +132,11 @@ if (!class_exists('CoWoBo')) :
         public $notices_loop;
         private $notice_types;
         public $default_notices = array (
-                "editrequest_sent"      =>  "Thank you, your request has been sent.",
-                "editrequest_accepted"  =>  "Thank you, you have accepted the request.",
-                "editrequest_denied"    =>  "Thank you, the edit request has been denied.",
-                "editrequest_cancelled" =>  "Thank you, your request has been cancelled.",
+                "editrequest_sent"      => "Thank you, your request has been sent.",
+                "editrequest_accepted"  => "Thank you, you have accepted the request.",
+                "editrequest_denied"    => "Thank you, the edit request has been denied.",
+                "editrequest_cancelled" => "Thank you, your request has been cancelled.",
+                "post_deleted"          => "Post successfully deleted."
             );
 
         public $debug = false;
@@ -236,6 +237,10 @@ if (!class_exists('CoWoBo')) :
             $this->layouts = new Cowobo_Layouts;
         }
 
+        /**
+         * @todo Everywhere it says 'notices', add notice :)
+         * @return type
+         */
         public function controller() {
             if ( is_404() ) return;
 
@@ -256,7 +261,7 @@ if (!class_exists('CoWoBo')) :
             elseif( $query->showall ) $notices = $feed->related_feed();
 
             // Post actions
-            elseif( $verify->delete ) $notices = $posts->delete_post();
+            elseif( $verify->delete ) $posts->delete_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
