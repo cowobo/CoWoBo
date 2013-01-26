@@ -91,19 +91,12 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $this->setup_context();
 
             if ( is_user_logged_in() ) {
+
                 $this->setup_current_user();
-                add_action ( 'current_user_box', array ( &$this, 'do_awesome_box' ) );
-
+                $this->logged_in_templates();
+                $this->record_actions();
+                
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
-
-                add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
-                add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
-
-                add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
-                add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
-
-                add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
-
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
@@ -121,6 +114,18 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
+        private function record_actions() {
+            add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
+            add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
+            add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
+        }
+
+        private function logged_in_templates() {
+            add_action ( 'current_user_box', array ( &$this, 'do_awesome_box' ) );
+            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
+            add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
+        }
+
         public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {
             if ( ! $post_id ) $post_id = get_the_ID();
             if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
@@ -130,7 +135,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $data['postid'] = $post_id;
             if ( $data_user_id ) $data['userid'] = $data_user_id;
             $data_str = http_build_query($data);
-            
+
             cp_points( $type, $recipient_id, $points, $data_str );
         }
 
