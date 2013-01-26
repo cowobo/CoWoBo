@@ -156,7 +156,7 @@ body.js.notice { padding-right: 60px; }
 .zoomlevel {width:70px; margin-left: 15px; float:left;}
 .button, .form-submit input {float:left; font-size:15px; color:#fff; height: 30px; line-height: 30px; background:#1a4780; border:none; width:auto; font-weight:bold; margin: 0 15px 0 0; padding:0 5px 0 5px; cursor:pointer; }
 .form-submit input {width:auto;}
-.field {display:inline-block; zoom: 1; _display: inline; margin-right:15px}
+.field {display:inline-block; zoom: 1; _display: inline; margin-right:15px; vertical-align: middle; }
 .field h3 {display:inline;}
 .field a {margin-left:5px}
 .smallfield {width:290px; margin:10px 10px 0 0;}
@@ -191,7 +191,7 @@ body.js.notice { padding-right: 60px; }
 div.profilemenu img.avatar { margin-right: 10px; }
 div.profilemenu div.upload-avatar form input { width: initial; }
 div.ranking-box p.next-rank { float: left; }
-div.ranking-box div.points-progression-container { margin: 6px 0 6px 20px; }
+div.ranking-box div.points-progression-container { margin-left: 20px; }
 
 /* User activity log */
 ul.log{list-style:none}

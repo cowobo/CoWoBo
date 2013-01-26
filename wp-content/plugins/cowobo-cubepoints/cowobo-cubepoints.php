@@ -299,7 +299,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $percentage = round ( ($current_points / $goal) * 100 );
             if ( $percentage < 10 ) $percentage = 100;
 
-            $image_url = COWOBO_CP_INC_URL . 'progress_bar.png';
+            $image_url = COWOBO_CP_INC_URL . 'progress_bar_angels.png';
 
             ?>
             <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
@@ -539,7 +539,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 echo ' <span class="field"><h3>Score:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
                 echo ' <span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
+                echo ' <span class="field">';
                 $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
+                echo '</span>';
             } else {
                 echo ' <span class="field"><h3>Points:</h3><span class="hint">' . $this->get_post_points( $post_id ) . '</span></span>';
             }
