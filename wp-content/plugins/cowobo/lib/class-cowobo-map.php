@@ -89,12 +89,14 @@ function cwb_geocode($address) {
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$response = json_decode(curl_exec($ch), true);
 	if ($response['status'] != 'OK') return null;
-	$geometry = $response['results'][0]['geometry'];
-	$lng = $geometry['location']['lng'];
-	$lat = $geometry['location']['lat'];
-	//cityname = $geometry['location']['lat'];
-	$latlng = array('lat' => $lat, 'lng' => $lng);
-	return $latlng;
+	$coordinates = $response['results'][0]['geometry']['location'];
+	$address = $response['results'][0]['address_components'];
+	foreach($address as $array) {
+		if(in_array('locality', $array["types"])) $city =  $array["long_name"];
+		if(in_array('country', $array["types"])) $country =  $array["long_name"];
+	}
+	$location = array( 'lat' => $coordinates['lat'], 'lng' => $coordinates['lng'], 'city' => $city, 'country' => $country);
+	return $location;
 }
 
 function latlng_to_percent($coordinates) {
