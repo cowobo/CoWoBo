@@ -92,7 +92,8 @@ class CoWoBo_Feed
             $feedlink = get_permalink();
         } elseif( is_single() || is_category()) {
             $feedtitle = $currentcat->name;
-            $feedlink = get_category_link ( $currentcat );
+            if ( $currentcat->term_id )
+                $feedlink = get_category_link ( $currentcat );
         } elseif( is_home() ) {
             $feedtitle = 'Welcome!';
         }
