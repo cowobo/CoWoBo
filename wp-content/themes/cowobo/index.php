@@ -30,7 +30,7 @@ if(is_home()) {
 
 //include hidden description for google index
 echo '<div class="description hide">'.get_bloginfo('description').'</div>';
-	
+
 //include image viewer
 echo '<div class="imageviewer grabcursor">';
 
@@ -72,7 +72,7 @@ echo '</div>';
 
 //include dragbar
 echo '<div class="dragbar"></div>';
-		
+
 //include page
 echo '<div class="page">';
 
@@ -116,8 +116,12 @@ echo '<div class="page">';
 					include(TEMPLATEPATH.'/templates/404.php');
 				elseif(is_single()):
 					include(TEMPLATEPATH.'/templates/posts.php');
-				elseif(is_category() or cowobo()->query->s):
-					include(TEMPLATEPATH.'/templates/categories.php');
+		elseif(is_category() || cowobo()->query->s):
+            if ( empty ( cowobo()->feed->sort ) ) :
+                include(TEMPLATEPATH.'/templates/categories.php');
+            else :
+                include(TEMPLATEPATH.'/templates/categories_sorted.php');
+            endif;
 				endif;
 		
 				//include plugin boxes
