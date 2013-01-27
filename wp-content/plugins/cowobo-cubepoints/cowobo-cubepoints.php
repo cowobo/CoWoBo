@@ -52,6 +52,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public $ranks = array();
         public $points_config = array();
+        private $config = array();
+        private $override_points = array();
 
         public $current_user_points     = 0;
         public $current_user_rank       = array( "rank" => "", "points" => "");
@@ -96,7 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_filter ( 'update_user_metadata', array ( &$this, 'bogfix_user_to_profile' ), 10, 4 );
 
             cowobo()->points = &$this;
-            $this->get_points_config();
+            $this->set_points_config();
 
             $this->setup_context();
 
@@ -124,8 +126,25 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
-        private function get_points_config() {
-            $this->points_config = parse_ini_file ( COWOBO_CP_DIR . 'points.ini', true );
+        private function set_points_config() {
+            $this->config = parse_ini_file ( COWOBO_CP_DIR . 'config.ini', true );
+            $points_config = $this->points_config = parse_ini_file ( COWOBO_CP_DIR . 'points.ini', true );
+
+            // Override CPs default points where necessary
+            foreach ( $points_config as $config ) {
+                if ( array_key_exists( 'override',  $config ) && $hook = $config['override'] ) {
+                    $this->override_points[$hook] = $config['points'];
+                    add_action ( $hook, array ( &$this, 'return_override_points' ) );
+                }
+            }
+        }
+
+        public function return_override_points( $points ) {
+            $hook = current_filter();
+            if ( array_key_exists( $hook, $this->override_points ) )
+                $points = $this->override_points[$hook];
+
+            return $points;
         }
 
         /**
@@ -620,7 +639,28 @@ if (!class_exists('CoWoBo_CubePoints')) :
             return ( $count != 0 );
         }
 
+        public function periodical_points() {
+            //if(!is_user_logged_in()) return;
+            $uid = get_current_user_id();
+            $time = $this->config->periodical_points_interval * 60 * 60;
+            $difference = time() - $time;
+            global $wpdb;
+            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
+            if($count!=0) return;
+            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), '');
+        }
+
+	//add_action('init', 'cp_module_dailypoints_checkTimer', 1);
+        public function points_for ( $action ) {
+            if (array_key_exists( $action, $this->points_config ) && array_key_exists( 'points', $this->points_config[$action] ) ) {
+                return $this->points_config[$action]['points'];
+            }
+            return 0;
+        }
+
     }
+
+
 
     add_action('init', array('CoWoBo_CubePoints', 'init'));
 endif;
