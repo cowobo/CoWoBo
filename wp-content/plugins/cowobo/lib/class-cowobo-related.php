@@ -119,6 +119,8 @@ class Cowobo_Related_Posts {
     //Link post to another related post
     public function link_post(){
         global $post;
-        $this->create_relations( $post->ID, $linkto );
+        $this->create_relations( $post->ID, cowobo()->query->linkto );
+        do_action ( 'cowobo_link_created', $post->ID, cowobo()->query->linkto );
+        cowobo()->add_notice( "You post is now linked!", 'link_created' );
     }
 }
