@@ -139,14 +139,14 @@ if (have_posts()) : while (have_posts()) : the_post();
 			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Locations');
 			echo '<form method="post" action="">';
 				echo '<select name="linkto">';
-					echo '<option>Select a post or scroll up and click on Add New</option>';			
-					$exclude = '-'.get_cat_ID('Uncategorized').', -'.get_cat_ID('Partners').', -'.get_cat_ID('Coders');		
+					echo '<option>Select a post or scroll up and click on Add New</option>';
+					$exclude = '-'.get_cat_ID('Uncategorized').', -'.get_cat_ID('Partners').', -'.get_cat_ID('Coders');
 					foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&cat='.$exclude.'&numberposts=-1') as $userpost):
 						if($userpost->ID == cowobo()->query->linkto) $state = 'selected'; else $state='';
 						echo '<option value="'.$userpost->ID.'">' . $userpost->post_title.'</option>';
 					endforeach;
 				echo '</select>';
-	               wp_nonce_field( 'linkposts' );
+                wp_nonce_field( 'linkposts', 'linkposts' );
 				echo '<button type="submit" class="button">Link Post</button>';
 			echo '</form>';
 		echo '</div>';
