@@ -197,6 +197,7 @@ div.ranking-box div.points-progression-container { margin-left: 20px; vertical-a
 
 /* User activity log */
 ul.log{list-style:none}
+div.point-descriptions { overflow: auto; }
 div.log-entry, div.point-desc {color:#888;line-height:220%}
 div.log-entry p, div.point-desc p {margin:5px 0; padding-left: 63px;}
 div.log-entry span.time-since{color:#aaa;font-weight:bold}
