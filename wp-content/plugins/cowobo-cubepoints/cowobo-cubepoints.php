@@ -334,6 +334,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
             echo "</p>";
             echo "</div>";
+            $this->do_point_descriptions();
         }
 
         /**
@@ -650,7 +651,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
             if($count != 0 ) return;
-            
+
             cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), "userid=$uid");
         }
 
@@ -659,6 +660,26 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 return $this->points_config[$action]['points'];
             }
             return 0;
+        }
+
+        public function do_point_descriptions() {
+            echo $this->get_point_descriptions();
+        }
+
+        public function get_point_descriptions() {
+            $out = array();
+            foreach ( $this->points_config as $config) {
+                $points = $config['points'];
+                if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
+
+                $out[$points][] = "<div class='point-desc'><span class='points-tag grey'>{$points}</span><p class='point-desc'>{$config['description']}</p></div>";
+            }
+            krsort ( $out );
+
+            foreach ( $out as &$output ) {
+                $output = implode ( "\n", $output );
+            }
+            return implode ( "\n", $out );
         }
 
     }
