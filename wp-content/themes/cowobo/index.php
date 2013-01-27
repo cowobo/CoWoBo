@@ -52,8 +52,8 @@ echo '<div class="imageviewer grabcursor">';
 	echo '<div class="imageholder">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
-		$captions = cowobo()->posts->loadgallery($postid);
 		cwb_loadmap();
+		$captions = cowobo()->posts->loadgallery($postid);
 	echo '</div>';
 
 	echo '<div class="titlebar">';
