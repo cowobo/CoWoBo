@@ -51,6 +51,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
     class CoWoBo_CubePoints    {
 
         public $ranks = array();
+        public $points_config = array();
+        private $config = array();
+        private $override_points = array();
 
         public $current_user_points     = 0;
         public $current_user_rank       = array( "rank" => "", "points" => "");
@@ -95,6 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_filter ( 'update_user_metadata', array ( &$this, 'bogfix_user_to_profile' ), 10, 4 );
 
             cowobo()->points = &$this;
+            $this->set_points_config();
 
             $this->setup_context();
 
@@ -122,6 +126,27 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $this->__construct();
             }
 
+        private function set_points_config() {
+            $this->config = (object) parse_ini_file ( COWOBO_CP_DIR . 'config.ini', true );
+            $points_config = $this->points_config = parse_ini_file ( COWOBO_CP_DIR . 'points.ini', true );
+
+            // Override CPs default points where necessary
+            foreach ( $points_config as $config ) {
+                if ( array_key_exists( 'override',  $config ) && $hook = $config['override'] ) {
+                    $this->override_points[$hook] = $config['points'];
+                    add_action ( $hook, array ( &$this, 'return_override_points' ) );
+                }
+            }
+        }
+
+        public function return_override_points( $points ) {
+            $hook = current_filter();
+            if ( array_key_exists( $hook, $this->override_points ) )
+                $points = $this->override_points[$hook];
+
+            return $points;
+        }
+
         /**
          * Bogfixing ftw!
          *
@@ -140,6 +165,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         private function record_actions() {
+            $this->periodical_points();
+
             add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
@@ -180,9 +207,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function _maybe_has_updated_avatar ( $meta_id, $object_id, $meta_key, $_meta_value ) {
             if ( $meta_key != 'simple_local_avatar' || empty ( $_meta_value ) ) return;
 
-            if ( $this->is_recently_updated( 'cowobo_updated_avatar' ) ) return;
+            if ( $this->is_recently_updated( 'cowobo_avatar_updated' ) ) return;
 
-            cp_points( 'cowobo_updated_avatar', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
         }
 
         public function no_points_for_profiles( $points ) {
@@ -300,12 +327,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public function do_ranking_box() {
             echo "<div class='ranking-box'>";
-            //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
-            if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
-                echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
-                $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
-            }
-            echo "</p>";
+                //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
+                if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
+                    echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
+                    $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+                }
+                echo "<p><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
+                echo "<div class='point-descriptions hide-if-js'>";
+                    $this->do_point_descriptions( 'mixed' );
+                echo "</div>";
             echo "</div>";
         }
 
@@ -479,6 +509,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
+            $points_config = $this->points_config;
+            $user_profile = $post = false;
+            $user_link = $post_link = '';
+
             if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
                 $type = substr ( $type, 7 );
 
@@ -489,67 +523,36 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
-                $user_profile = $post = false;
-                if ( isset ( $data_arr['userid'] ) )
+                if ( isset ( $data_arr['userid'] ) ) {
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-                if ( isset ( $data_arr['postid'] ) )
+                    $user_link = '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                } if ( isset ( $data_arr['postid'] ) ) {
                     $post = get_post( $data_arr['postid'] );
+                    $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                }
 
                 if ( ! $user_profile && ! $post ) return;
 
-                switch ( $type ) {
-                    case 'kudos_profile' :
-                        echo '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> gave props and respect';
-                        break;
-                    case 'kudos_post' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                        break;
-                    case 'post_updated' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        break;
-                    case 'profile_updated' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
-                        break;
-                    case 'post_kudos_given' :
-                        echo "Liked the post <a href='".get_permalink( $post )."'>{$post->post_title}</a>. Check it out!";
-                        break;
-                    case 'profile_kudos_given' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
-                        break;
-                    case 'updated_avatar' :
-                        //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-                        echo "Updated avatar!";
-                        break;
-                    case 'editrequest_has_been_accepted' :
-                        echo 'Added to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> by <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                        break;
-                    case 'editrequest_accepted' :
-                        echo 'Added <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        break;
-
-                }
             } else {
-                switch ( $type ) {
-                    case 'dailypoints' :
-                        echo "Thanks for checking in on CoWoBo today!";
-                        break;
-                    case 'post' :
-                        $post = get_post($data);
-                        echo 'Added a new post, <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        break;
+                // Fallback
+                if ( ! array_key_exists ( $type, $points_config ) )
+                    do_action('cp_logs_description', $type, $uid, $points, $data );
 
-                    default:
-                        do_action('cp_logs_description', $type, $uid, $points, $data );
-                        break;
+                if ( ! empty ( $data ) ) {
+                    $post = get_post($data);
+                    if ( is_a ( $post, 'WP_Post' ) )
+                        $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                 }
             }
 
-
-
+            if ( array_key_exists ( $type, $points_config ) ) {
+                $message = str_replace (
+                        array ( "%post%", "%user%"),
+                        array ( $post_link, $user_link ),
+                        $points_config[$type]['message']
+                    );
+                echo $message;
+            }
 
             return;
         }
@@ -625,7 +628,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             // Give points to the accepter
             $this->add_points( 'cowobo_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER, $rqpost, $rquser );
             // Give points to the accepted
-            $this->add_points( 'cowobo_editrequest_has_been_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
+            $this->add_points( 'cowobo_your_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
         }
 
         public function is_recently_updated ( $type, $uid = 0 ) {
@@ -641,7 +644,53 @@ if (!class_exists('CoWoBo_CubePoints')) :
             return ( $count != 0 );
         }
 
+        public function periodical_points() {
+            global $wpdb;
+
+            $uid = get_current_user_id();
+            $time = $this->config->intervals['periodical_points'] * 60 * 60;
+            $difference = time() - $time;
+
+            $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
+            if($count != 0 ) return;
+
+            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), "userid=$uid");
+        }
+
+        public function points_for ( $action ) {
+            if (array_key_exists( $action, $this->points_config ) && array_key_exists( 'points', $this->points_config[$action] ) ) {
+                return $this->points_config[$action]['points'];
+            }
+            return 0;
+        }
+
+        public function do_point_descriptions( $active = 'yes' ) {
+            echo $this->get_point_descriptions( $active );
+            if ( $active && $active != 'all') echo "<p class='hide-if-no-js'><a href='#' class='toggle-inactive-point-descs'>Show all ways to get points</a></p>";
+        }
+
+        public function get_point_descriptions( $active = 'yes' ) {
+            $out = array();
+            if ( $active == 'all' || $active == 'mixed' ) $active = false;
+            foreach ( $this->points_config as $key => $config) {
+                if ( $active && $config['active'] != $active ) continue;
+
+                $points = $config['points'];
+                if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
+
+                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'>+$points</span><p>{$config['description']}</p></div>";
+            }
+            krsort ( $out );
+
+            foreach ( $out as &$output ) {
+                $output = implode ( "\n", $output );
+            }
+            return implode ( "\n", $out );
+        }
+
     }
+
+
 
     add_action('init', array('CoWoBo_CubePoints', 'init'));
 endif;
