@@ -428,12 +428,12 @@ class CoWoBo_Posts
         if ( $catslug == 'coder' ) {
             $fallback = '';
             if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
-                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID, 'thumbnail' );
+                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID );
                 if ( is_array ( $attached_src ) )
                     $fallback = $attached_src[0];
             }
             if ( $user = cowobo()->users->get_users_by_profile_id( $postid, true ) ) {
-                echo get_avatar( $user->ID, '140', $fallback );
+                echo get_avatar( $user->ID, '149', $fallback );
                 return;
             }
         }
