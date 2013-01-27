@@ -127,7 +127,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
         private function set_points_config() {
-            $this->config = parse_ini_file ( COWOBO_CP_DIR . 'config.ini', true );
+            $this->config = (object) parse_ini_file ( COWOBO_CP_DIR . 'config.ini', true );
             $points_config = $this->points_config = parse_ini_file ( COWOBO_CP_DIR . 'points.ini', true );
 
             // Override CPs default points where necessary
