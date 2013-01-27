@@ -334,7 +334,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 }
                 echo "<p><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
                 echo "<div class='point-descriptions hide-if-js'>";
-                    $this->do_point_descriptions();
+                    $this->do_point_descriptions( 'mixed' );
                 echo "</div>";
             echo "</div>";
         }
@@ -664,19 +664,21 @@ if (!class_exists('CoWoBo_CubePoints')) :
             return 0;
         }
 
-        public function do_point_descriptions() {
-            echo $this->get_point_descriptions();
+        public function do_point_descriptions( $active = 'yes' ) {
+            echo $this->get_point_descriptions( $active );
+            if ( $active && $active != 'all') echo "<p class='hide-if-no-js'><a href='#' class='toggle-inactive-point-descs'>Show all ways to get points</a></p>";
         }
 
         public function get_point_descriptions( $active = 'yes' ) {
             $out = array();
+            if ( $active == 'all' || $active == 'mixed' ) $active = false;
             foreach ( $this->points_config as $key => $config) {
                 if ( $active && $config['active'] != $active ) continue;
 
                 $points = $config['points'];
                 if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
 
-                $out[$points][] = "<div class='point-desc $key'><span class='points-tag grey'>+$points</span><p class='point-desc'>{$config['description']}</p></div>";
+                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'>+$points</span><p>{$config['description']}</p></div>";
             }
             krsort ( $out );
 
