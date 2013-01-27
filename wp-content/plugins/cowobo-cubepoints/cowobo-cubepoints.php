@@ -98,7 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
-            add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_action ('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
             add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
 
         }
@@ -169,7 +169,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function record_link_created ( $post_id, $linked_post_id ) {
-            $this->add_points( 'cowobo_link_created', $post_id, 0, 0, array ( "secondary_post" => $linked_post_id ) );
+            $this->add_points( 'link_created', $post_id, 0, 0, array ( "secondary_postid" => $linked_post_id ) );
         }
 
         public function do_your_score_box() {
@@ -188,7 +188,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( ! $points ) {
                 if ( ! isset ( $this->points_config[ $type ] ) ) return false;
-                $points = $this->points_config[ $type]['points'];
+                $points = $this->points_config[$type]['points'];
             }
 
             $data['postid'] = $post_id;
@@ -497,7 +497,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function cp_logs_desc( $type, $uid, $points, $data ){
             $points_config = $this->points_config;
             $user_profile = $post = false;
-            $user_link = $post_link = '';
+            $user_link = $post_link = $secondary_post_link = '';
 
             if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
                 $type = substr ( $type, 7 );
@@ -515,6 +515,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 } if ( isset ( $data_arr['postid'] ) ) {
                     $post = get_post( $data_arr['postid'] );
                     $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                } if ( isset ( $data_arr['secondary_postid'] ) ) {
+                    $secondary_post = get_post( $data_arr['secondary_postid'] );
+                    $secondary_post_link = '<a href="'.get_permalink( $secondary_post ).'">' . $secondary_post->post_title . '</a>';
                 }
 
                 if ( ! $user_profile && ! $post ) return;
@@ -533,8 +536,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( array_key_exists ( $type, $points_config ) ) {
                 $message = str_replace (
-                        array ( "%post%", "%user%"),
-                        array ( $post_link, $user_link ),
+                        array ( "%post%", '%post2%', "%user%"),
+                        array ( $post_link, $secondary_post_link, $user_link ),
                         $points_config[$type]['message']
                     );
                 echo $message;
@@ -609,9 +612,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function record_editrequest_accepted ( $rquser_profile_id, $rqpost ) {
             $rquser = cowobo()->users->get_users_by_profile_id ( $rquser_profile_id, true )->ID;
             // Give points to the accepter
-            $this->add_points( 'cowobo_editrequest_accepted', $rqpost, $rquser );
+            $this->add_points( 'editrequest_accepted', $rqpost, $rquser );
             // Give points to the accepted
-            $this->add_points( 'cowobo_your_editrequest_accepted', $rqpost, 0, $rquser );
+            $this->add_points( 'your_editrequest_accepted', $rqpost, 0, $rquser );
         }
 
         public function is_recently_updated ( $type, $uid = 0 ) {
