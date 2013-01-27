@@ -15,6 +15,13 @@ jQuery(document).ready(function() {
         e.preventDefault();
         jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
     });
+
+    // Point descriptions
+    jQuery( "div.point-desc:not(.active-yes)").hide();
+    jQuery('.toggle-inactive-point-descs').click(function(e) {
+        e.preventDefault();
+        jQuery( "div.point-desc:not(.active-yes)").slideToggle();
+    })
     jQuery( ".show-points-descriptions" ).click( function(e) {
         e.preventDefault();
         jQuery(".point-descriptions").slideToggle();
