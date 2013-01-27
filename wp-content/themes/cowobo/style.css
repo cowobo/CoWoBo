@@ -206,3 +206,6 @@ div.log-entry span.time-since{color:#aaa;font-weight:bold}
 .points-tag:after{content:"";position:absolute;top:10px;left:0;float:left;width:4px;height:4px;-moz-border-radius:2px;-webkit-border-radius:2px;border-radius:2px;background:#fff;-moz-box-shadow:-1px -1px 2px #004977;-webkit-box-shadow:-1px -1px 2px #004977;box-shadow:-1px -1px 2px #004977}
 .points-tag.grey { background: #757575; }
 .points-tag.grey:before { border-color:transparent #757575 transparent transparent; }
+.active-no .points-tag { background: #cc7575; }
+.active-no .points-tag:before { border-color:transparent #cc7575 transparent transparent; }
+
