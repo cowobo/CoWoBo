@@ -171,6 +171,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
             add_action ( 'editrequest_accepted', array ( &$this, 'record_editrequest_accepted' ), 10, 4 );
+            add_action ( 'cowobo_link_created', array ( &$this, 'record_link_created' ), 10, 2 );
         }
 
         private function logged_in_templates() {
@@ -182,6 +183,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_action ( 'cowobo_after_user_link', array ( &$this, 'do_userlink_score') );
         }
 
+        public function record_link_created ( $post_id, $linked_post_id ) {
+            $this->add_points( 'cowobo_link_created', $post_id, 0, 0, array ( "secondary_post" => $linked_post_id ) );
+        }
+
         public function do_your_score_box() {
             echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
         }
@@ -190,11 +195,16 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo " <em>{$this->current_user_rank['rank']}</em>";
         }
 
-        public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {
+        public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
             if ( ! $post_id ) $post_id = get_the_ID();
             if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
 
             if ( ! is_array ( $data ) ) parse_str ( $data );
+
+            if ( ! $points ) {
+                if ( ! isset ( $this->points_config[$type] ) ) return false;
+                $points = $this->points_config[$type]['points'];
+            }
 
             $data['postid'] = $post_id;
             if ( $data_user_id ) $data['userid'] = $data_user_id;
