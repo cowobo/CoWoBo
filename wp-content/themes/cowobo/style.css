@@ -125,6 +125,7 @@ form {margin:0 auto;}
 /* Tab Styles */
 .tab {margin-bottom:20px; clear:both; overflow:hidden;}
 .tabthumb, .fourth {float:left; position:relative; margin:0 15px 10px 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
+.fourth.square { height: 149px; }
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
 .tabthumb .avatar {margin-top: -20px;}
 .tabtext {width: auto; min-width:250px; height:100px; overflow:hidden;}
