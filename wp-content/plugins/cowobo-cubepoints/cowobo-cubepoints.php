@@ -51,6 +51,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
     class CoWoBo_CubePoints    {
 
         public $ranks = array();
+        public $points_config = array();
 
         public $current_user_points     = 0;
         public $current_user_rank       = array( "rank" => "", "points" => "");
@@ -95,6 +96,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_filter ( 'update_user_metadata', array ( &$this, 'bogfix_user_to_profile' ), 10, 4 );
 
             cowobo()->points = &$this;
+            $this->get_points_config();
 
             $this->setup_context();
 
@@ -121,6 +123,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             public function CoWoBo_CubePoints() {
                 $this->__construct();
             }
+
+        private function get_points_config() {
+            $this->points_config = parse_ini_file ( COWOBO_CP_DIR . 'points.ini', true );
+        }
 
         /**
          * Bogfixing ftw!
@@ -479,6 +485,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function cp_logs_desc( $type, $uid, $points, $data ){
+            $points_config = $this->points_config;
+            $user_profile = $post = false;
+            $user_link = $post_link = '';
+
             if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
                 $type = substr ( $type, 7 );
 
@@ -489,72 +499,36 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     return;
                 }
 
-                $user_profile = $post = false;
-                if ( isset ( $data_arr['userid'] ) )
+                if ( isset ( $data_arr['userid'] ) ) {
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-                if ( isset ( $data_arr['postid'] ) )
+                    $user_link = '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                } if ( isset ( $data_arr['postid'] ) ) {
                     $post = get_post( $data_arr['postid'] );
+                    $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                }
 
                 if ( ! $user_profile && ! $post ) return;
 
-                switch ( $type ) {
-                    case 'kudos_post' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Kudos on %s from %s';
-                        printf ( '', '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>', '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>');
-                        break;
-                    case 'kudos_profile' :
-                        echo '%s gave props and respect';
-                        printf ( '', '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>');
-                        break;
-                    case 'post_updated' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        printf ( '', '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>' );
-                        break;
-                    case 'profile_updated' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
-                        printf ( '', '<a href="'.get_permalink( $post ).'">here</a>' );
-                        break;
-                    case 'avatar_updated' :
-                        //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-                        echo "Updated avatar!";
-                        printf ( "" );
-                        break;
-                    case 'post_kudos_given' :
-                        echo "Liked the post <a href='".get_permalink( $post )."'>{$post->post_title}</a>. Check it out!";
-                        break;
-                    case 'profile_kudos_given' :
-                        if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
-                        break;
-                    case 'your_editrequest_accepted' :
-                        echo 'Added to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> by <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
-                        break;
-                    case 'editrequest_accepted' :
-                        echo 'Added <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        break;
-
-                }
             } else {
-                switch ( $type ) {
-                    case 'dailypoints' :
-                        echo "Thanks for checking in on CoWoBo today!";
-                        break;
-                    case 'post' :
-                        $post = get_post($data);
-                        echo 'Added a new post, <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
-                        break;
+                // Fallback
+                if ( ! array_key_exists ( $type, $points_config ) )
+                    do_action('cp_logs_description', $type, $uid, $points, $data );
 
-                    default:
-                        do_action('cp_logs_description', $type, $uid, $points, $data );
-                        break;
+                if ( ! empty ( $data ) ) {
+                    $post = get_post($data);
+                    if ( is_a ( $post, 'WP_Post' ) )
+                        $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
                 }
             }
 
-
-
+            if ( array_key_exists ( $type, $points_config ) ) {
+                $message = str_replace (
+                        array ( "%post%", "%user%"),
+                        array ( $post_link, $user_link ),
+                        $points_config[$type]['message']
+                    );
+                echo $message;
+            }
 
             return;
         }
