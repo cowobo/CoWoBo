@@ -5,12 +5,12 @@ if (!defined('ABSPATH'))
 
 class CoWoBo_Feed
 {
-    public $sort = array();
+    public $sort = array(
+        'type'  => ''
+    );
 
     /**
      * Filter feed based on parameters set in browse
-     *
-     * @todo When is this method really called?
      */
     public function filter_feed(){
 
@@ -40,9 +40,11 @@ class CoWoBo_Feed
 			$sort = 'title';
 			$direction = 'ASC';
 		} elseif ( $sort == 'location') {
-            $sort = 'meta_value';
+            $sort = $this->sort['type'] = 'meta_value';
 			$query['meta_key'] = $this->sort['meta_key'] = 'country';
-		}
+		} elseif ( 'category' == $sort ) {
+            $sort = $this->sort['type'] = 'category';
+        }
 
         $query_default = array (
             'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords

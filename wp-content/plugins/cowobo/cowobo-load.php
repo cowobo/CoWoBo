@@ -326,7 +326,7 @@ if (!class_exists('CoWoBo')) :
         public function get_current_category() {
             global $post, $currentcat;
 
-            if ( ! empty ( $currentcat ) ) return $currentcat;
+            //if ( ! empty ( $currentcat ) ) return $currentcat;
 
             $catid = 0;
             $currentcat = false;
@@ -366,6 +366,16 @@ if (!class_exists('CoWoBo')) :
                 }
             }
             return array ('currentcat' => $currentcat, 'catid' => $catid );
+        }
+
+        public function get_post_category( $post ) {
+            $postid = ( is_a ( $post, 'WP_Post' ) ) ? $post->ID : $post;
+
+            $cat = get_the_category( $postid );
+            if ( is_array ( $cat ) && isset ( $cat[0] ) ) {
+                $currentcat = $cat[0];
+            }
+            return $currentcat;
         }
 
         /**
