@@ -165,6 +165,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         private function record_actions() {
+            $this->periodical_points();
+
             add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
             add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
@@ -640,17 +642,18 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function periodical_points() {
-            //if(!is_user_logged_in()) return;
-            $uid = get_current_user_id();
-            $time = $this->config->periodical_points_interval * 60 * 60;
-            $difference = time() - $time;
             global $wpdb;
+
+            $uid = get_current_user_id();
+            $time = $this->config->intervals['periodical_points'] * 60 * 60;
+            $difference = time() - $time;
+
             $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
-            if($count!=0) return;
-            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), '');
+            if($count != 0 ) return;
+            
+            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), "userid=$uid");
         }
 
-	//add_action('init', 'cp_module_dailypoints_checkTimer', 1);
         public function points_for ( $action ) {
             if (array_key_exists( $action, $this->points_config ) && array_key_exists( 'points', $this->points_config[$action] ) ) {
                 return $this->points_config[$action]['points'];
