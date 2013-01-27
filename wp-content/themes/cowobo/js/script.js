@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
 	        previousY = e.clientY;
 	    }
 
-		if (drag) {
+		if (drag) { // todo animate height of proportion div in percent instead
 			var mousemove = previousY - e.clientY;
 			var newy = viewheight - mousemove;
 			var ymax = jQuery('.imageholder').height();
@@ -226,15 +226,15 @@ jQuery('.smallthumbs a').live('click', function(event) {
 
 jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
-	var viewer = jQuery('.imageviewer');
-	var holderheight = jQuery('.imageholder').height();
-	var viewheight = viewer.height();
-	if(viewheight < holderheight) var amount = holderheight;
-	else var amount = holderheight / 2;
-	viewer.animate({height: amount}, 1000);
+	var proportion = jQuery('.proportion');
+	var propercent = parseFloat(proportion.attr('width').split('%')[0]);
+	if(propercent < 80) var amount = 100;
+	else var amount = 70;
+	var newheight = jQuery(window).width()*(amount/100) / 2;
+	proportion.animate({width: amount + '%'}, 1000).attr('width', amount + '%');
 	jQuery('html, body').animate({scrollTop: 0}, 1000);
 	jQuery('.slide').each(function(){
-		var newtop = (amount - jQuery(this).height()) / 2 ;
+		var newtop = (newheight - jQuery(this).height()) / 2 ;
 		jQuery(this).animate({top: newtop}, 1000);
 	});
 });

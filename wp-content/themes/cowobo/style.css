@@ -57,7 +57,7 @@ form {margin:0 auto;}
 .imageholder {position:absolute; top:0; left:0; width:100%; min-width:640px; background:#020514; overflow:hidden;}
 .marker, .markerlink, .markerlinks, .shadow, .slide, .largeangel {position:absolute;}
 .shadow  {top:0; left:0; width:100%; height:25px; z-index:5;}
-.slide { top:0; left:0; width:100%; overflow:hidden; z-index:1}
+.slide { top:0; left:0; width:100%; min-height:100%; overflow:hidden; z-index:1}
 .markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0; padding:10px; z-index:6;}
 .markerlink:hover {opacity:1; color:#fff;}
 .marker {z-index:4;}
