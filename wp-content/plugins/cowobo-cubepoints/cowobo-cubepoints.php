@@ -327,14 +327,16 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         public function do_ranking_box() {
             echo "<div class='ranking-box'>";
-            //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
-            if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
-                echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
-                $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
-            }
-            echo "</p>";
+                //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
+                if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
+                    echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
+                    $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
+                }
+                echo "<p><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
+                echo "<div class='point-descriptions hide-if-js'>";
+                    $this->do_point_descriptions();
+                echo "</div>";
             echo "</div>";
-            $this->do_point_descriptions();
         }
 
         /**
@@ -666,13 +668,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo $this->get_point_descriptions();
         }
 
-        public function get_point_descriptions() {
+        public function get_point_descriptions( $active = 'yes' ) {
             $out = array();
-            foreach ( $this->points_config as $config) {
+            foreach ( $this->points_config as $key => $config) {
+                if ( $active && $config['active'] != $active ) continue;
+
                 $points = $config['points'];
                 if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
 
-                $out[$points][] = "<div class='point-desc'><span class='points-tag grey'>{$points}</span><p class='point-desc'>{$config['description']}</p></div>";
+                $out[$points][] = "<div class='point-desc $key'><span class='points-tag grey'>+$points</span><p class='point-desc'>{$config['description']}</p></div>";
             }
             krsort ( $out );
 
