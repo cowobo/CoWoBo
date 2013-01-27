@@ -180,9 +180,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function _maybe_has_updated_avatar ( $meta_id, $object_id, $meta_key, $_meta_value ) {
             if ( $meta_key != 'simple_local_avatar' || empty ( $_meta_value ) ) return;
 
-            if ( $this->is_recently_updated( 'cowobo_updated_avatar' ) ) return;
+            if ( $this->is_recently_updated( 'cowobo_avatar_updated' ) ) return;
 
-            cp_points( 'cowobo_updated_avatar', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
         }
 
         public function no_points_for_profiles( $points ) {
@@ -498,20 +498,29 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 if ( ! $user_profile && ! $post ) return;
 
                 switch ( $type ) {
-                    case 'kudos_profile' :
-                        echo '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a> gave props and respect';
-                        break;
                     case 'kudos_post' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
-                        echo 'Kudos on <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> from <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
+                        echo 'Kudos on %s from %s';
+                        printf ( '', '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>', '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>');
+                        break;
+                    case 'kudos_profile' :
+                        echo '%s gave props and respect';
+                        printf ( '', '<a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>');
                         break;
                     case 'post_updated' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
                         echo 'Updated the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                        printf ( '', '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>' );
                         break;
                     case 'profile_updated' :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
                         echo 'Updated profile! See it <a href="'.get_permalink( $post ).'">here</a>';
+                        printf ( '', '<a href="'.get_permalink( $post ).'">here</a>' );
+                        break;
+                    case 'avatar_updated' :
+                        //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
+                        echo "Updated avatar!";
+                        printf ( "" );
                         break;
                     case 'post_kudos_given' :
                         echo "Liked the post <a href='".get_permalink( $post )."'>{$post->post_title}</a>. Check it out!";
@@ -520,11 +529,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         if ( ! isset ( $data_arr['postid'] ) ) return false;
                         echo "Admires and adores <a href='".get_permalink( $post )."'>{$post->post_title}</a>";
                         break;
-                    case 'updated_avatar' :
-                        //$user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
-                        echo "Updated avatar!";
-                        break;
-                    case 'editrequest_has_been_accepted' :
+                    case 'your_editrequest_accepted' :
                         echo 'Added to the post <a href="'.get_permalink( $post ).'">' . $post->post_title . '</a> by <a href="'.get_permalink( $user_profile ).'">' . $user_profile->post_title . '</a>';
                         break;
                     case 'editrequest_accepted' :
@@ -625,7 +630,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             // Give points to the accepter
             $this->add_points( 'cowobo_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER, $rqpost, $rquser );
             // Give points to the accepted
-            $this->add_points( 'cowobo_editrequest_has_been_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
+            $this->add_points( 'cowobo_your_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
         }
 
         public function is_recently_updated ( $type, $uid = 0 ) {
