@@ -27,20 +27,16 @@ if($tabtype == 'cat'):
 			echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 			if($catposts):
 				foreach($catposts as $catpost):
-					$title = '<li class="inline"><a class="light" href="'.get_permalink($catpost->ID).'">'. cowobo()->L10n->the_title($catpost->ID).'</a></li>';
-					$comments = '<li>'.get_comments_number($catpost->ID).' Comments</li>';
-					$views = '<li>'.cowobo()->posts->get_views($catpost->ID).' Views</li>';
-					//$coders = '<li>1&nbsp;&nbsp;Coder</li>';
-					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
-					$postcat_catpost = get_the_category($catpost->ID);
-					$catlink = '<li><a href="'.get_category_link($postcat_catpost[0]->term_id).'">'.$postcat_catpost[0]->name.'</a></li>';
-					if($tabcat->slug == 'wiki'):
-						echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
-					elseif($tabcat->slug == 'news'):
-						echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
-					else:
-						echo '<ul class="horlist nowrap">'.$title.$date.$comments.$views.'</ul>';
+					$postdata['title'] = '<a class="light" href="'.get_permalink($catpost->ID).'">'. cowobo()->L10n->the_title($catpost->ID).'</a>';
+					$postdata['date'] = cwb_time_passed(strtotime($catpost->post_modified));					
+					$postdata['comments'] = get_comments_number($catpost->ID).' Comments';
+					$postdata['views'] = cowobo()->posts->get_views($catpost->ID).' Views';
+					if($tabcat->slug == 'event'):
+						$postdata['date'] = get_post_meta($catpost->ID, 'startdate', true);
+					elseif($tabcat->slug == 'forum'):
+						$postdata['comments'] = get_comments_number($catpost->ID).' Replies';
 					endif;
+					echo '<div class="nowrap">'.implode('&nbsp;&nbsp;&nbsp;&nbsp;', $postdata).'</div>';
 				endforeach;
 			else:
 				echo '<span class="grey">No posts here yet, check back soon</span>';
@@ -57,7 +53,11 @@ else:
 	$coders = '<li>1&nbsp;&nbsp;Coder</li>';
 	$date = '<li>'.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tabcat = get_the_category($tabpost->ID);
-    if ( isset ( $tabcat[0] ) ) {
+    $city = get_post( get_post_meta($tabpost->ID, 'cityid', true));
+	$country = get_category( get_post_meta($tabpost->ID, 'countryid', true));
+	$firstline = explode('.', $tabpost->post_content);	
+	
+	if ( isset ( $tabcat[0] ) ) {
         $tabtype = cowobo()->feed->get_type($tabcat[0]->term_id);
         $catlink = '<li><a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a></li>';
     } else {
@@ -74,7 +74,8 @@ else:
 
 		echo '<div class="tabtext">';
 			if($tabtype->slug == 'wiki'):
-				echo $title.'<br/><ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';
+				$excerpt = get_the_excerpt();
+				echo $title.'<br/>'.$excerpt;
 			elseif($tabtype->slug == 'location'):
 				echo $title.', <a href="'.get_category_link($tabcat[0]->term_id).'">'.$tabcat[0]->name.'</a>';
 				echo '<ul class="horlist grey">'.$date.$comments.$views.$coders.'</ul>';

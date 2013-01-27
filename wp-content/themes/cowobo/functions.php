@@ -34,6 +34,17 @@ function cwb_time_passed($timestamp){
     }
 }
 
+//Register sidebars
+if (function_exists('dynamic_sidebar')) {
+	register_sidebar(array(
+		'before_widget'=>'<div class="widget">',
+		'after_widget'=>'</div>',
+		'id'=>'sidebar',
+		'name'=>'Main Sidebar',
+	));
+}
+
+
 //Remove admin bar
 add_filter('show_admin_bar', 'cowobo_show_admin_bar');
 function cowobo_show_admin_bar(){
