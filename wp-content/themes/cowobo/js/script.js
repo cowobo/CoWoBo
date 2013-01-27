@@ -9,11 +9,22 @@ var previousY;
 jQuery(document).ready(function() {
 
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
-	
+
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
         jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
+    });
+
+    // Point descriptions
+    jQuery( "div.point-desc:not(.active-yes)").hide();
+    jQuery('.toggle-inactive-point-descs').click(function(e) {
+        e.preventDefault();
+        jQuery( "div.point-desc:not(.active-yes)").slideToggle();
+    })
+    jQuery( ".show-points-descriptions" ).click( function(e) {
+        e.preventDefault();
+        jQuery(".point-descriptions").slideToggle();
     });
 
 	//center all images in header except maps
@@ -121,7 +132,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		var x_offset = (store_x_offset(slide) / slide.width()) * newzoom;
 		var new_y = (-newzoom / 2) + 50 + y_offset + '%';
 		var new_x = (-newzoom / 2) + 50 + x_offset + '%';
-		var newsrc = slide.children('.zoomsrc'+newlevel).val();	
+		var newsrc = slide.children('.zoomsrc'+newlevel).val();
 		newstyle = {width:newzoom +'%', height:newzoom +'%', top:new_y, left:new_x}
 		slide.children('.zoomlevel').val(newlevel);
 
@@ -130,7 +141,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 			var newimg = slideimg.clone();
 			newimg.appendTo(slide).attr('src', newsrc);
 			var oldimgs = slide.children('.slideimg').not(newimg);
-			if(newimg.complete) oldimgs.remove();					
+			if(newimg.complete) oldimgs.remove();
 			else newimg.load(function() {oldimgs.remove()});
 		}
 	} else if(action ==  'zoomout' && curzoom > 0) {
@@ -166,7 +177,7 @@ function get_offsets() {
 	jQuery('.slide').each(function(){
 		var offset = store_y_offset(jQuery(this));
 		jQuery(this).data('offset', offset);
-	});	
+	});
 }
 
 function center_slide(slide) {

@@ -30,7 +30,6 @@ class CoWoBo_Users
         add_action('personal_options_update',       array ( &$this, 'save_extra_profile_fields' ) );
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
-        //add_action('cowobo_after_content_loggedin', array ( &$this, 'current_user_box' ) );
         add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_cu' ), 5 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
@@ -63,8 +62,8 @@ class CoWoBo_Users
 
     public function do_profile_avatar() {
         if ( ! $this->is_profile() ) return;
-        echo "<div class='fourth'>";
-        echo get_avatar( get_current_user_id() );
+        echo "<div class='fourth square'>";
+        echo get_avatar( get_current_user_id(), 149 );
         echo "</div>";
     }
 
