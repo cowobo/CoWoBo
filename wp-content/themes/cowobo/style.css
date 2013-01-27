@@ -22,7 +22,7 @@ h2, h2 a, .h2 {font-size:19px; color:#555; margin-bottom:5px;}
 h2 a {font-weight:bold;}
 h3 {font-size:16px; font-weight:bold; margin:0 0 10px 0;}
 h4, h4 a {font-size:14px; color:#555}
-input, textarea, select, .box {width: 100%; margin-bottom:15px; color:#555; padding:3px; line-height:30px; border:none; background:#eee; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box;}
+input, textarea, select, .box {width: 100%; margin-bottom:15px; color:#555; padding:3px; line-height:30px; border:1px solid #ccc;; background:none; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box;}
 textarea {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; line-height:1.5em; border:none; font-size:15px; resize:vertical}
 input, select {height:30px; vertical-align: top; }
 form {margin:0 auto;}
@@ -58,8 +58,7 @@ form {margin:0 auto;}
 .marker, .markerlink, .markerlinks, .shadow, .slide, .largeangel {position:absolute;}
 .shadow  {top:0; left:0; width:100%; height:25px; z-index:5;}
 .slide { top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:1}
-.markerlinks {top:0; left:0; width:100%; height:100%; z-index:6;}
-.markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0; padding:10px;}
+.markerlink {color:#fff; text-align:center; font-weight:bold; font-size:13px; opacity:0; padding:10px; z-index:6;}
 .markerlink:hover {opacity:1; color:#fff;}
 .marker {z-index:4;}
 .zoom0 {width:110%; height:110%; left: -5%; top:-5%}
@@ -68,6 +67,19 @@ form {margin:0 auto;}
 .grabcursor {cursor:hand; cursor:grab!important; cursor:-moz-grab; cursor: url(https://mail.google.com/mail/images/2/openhand.cur), pointer!important; cursor:-webkit-grab;}
 .largeangel {top:40%; left:38%; margin: -60px 0 0 -75px; z-index:7;}
 .largeangel:hover {opacity:0.5;}
+/* Header Styles*/
+.sitetitle {position:absolute; top:15px; left:20px; font-size:17px; z-index: 20; color:#eee; font-weight:normal; font-size:22px;}
+.sitetitle a:hover {color:#fff;}
+.pan, .zoom {position:absolute; z-index:20; width:30px; height:30px; opacity:0.6;}
+.pan:hover, .zoom:hover {opacity:1}
+.panup {top:10px; right:50px; background:url(images/panup.png) no-repeat center center;}
+.pandown {top:90px; right:50px; background:url(images/pandown.png) no-repeat center center;}
+.panleft {top:50px; right:90px; background:url(images/panleft.png) no-repeat center center;}
+.panright {top:50px; right:10px; background:url(images/panright.png) no-repeat center center;}
+.zoomin {top:50px; right:50px; background:url(images/zoomin.png) no-repeat center center;}
+.zoomout {top:120px; right:50px; background:url(images/zoomout.png) no-repeat center center;}
+
+/* Titlebar Styles*/
 .titlebar {position:absolute; bottom:0; width:100%; z-index:50;}
 .titlepadding {position:relative; z-index:1; color:#fff; padding:0 5px 5px 20px; overflow:hidden;}
 .titlepadding a:hover {color:#ccc;}
@@ -80,38 +92,29 @@ form {margin:0 auto;}
 .smallthumbs a {position:relative; float:right; width:35px; height:35px; background:#fff; overflow:hidden; margin-right:10px;}
 .smallthumbs a:hover img {opacity:0.8}
 
-/* Header Styles*/
-.headerlinks {position:absolute; top:15px; left:20px; font-size:17px; z-index: 20;}
-.headerlinks a {margin-right:15px; color:#ddd; }
-.headerlinks a:hover {color:#fff;}
-.sitetitle {font-weight:normal; font-size:22px;}
-.pan, .zoom {position:absolute; z-index:20; width:30px; height:30px; opacity:0.6;}
-.pan:hover, .zoom:hover {opacity:1}
-.panup {top:10px; right:50px; background:url(images/panup.png) no-repeat center center;}
-.pandown {top:90px; right:50px; background:url(images/pandown.png) no-repeat center center;}
-.panleft {top:50px; right:90px; background:url(images/panleft.png) no-repeat center center;}
-.panright {top:50px; right:10px; background:url(images/panright.png) no-repeat center center;}
-.zoomin {top:50px; right:50px; background:url(images/zoomin.png) no-repeat center center;}
-.zoomout {top:120px; right:50px; background:url(images/zoomout.png) no-repeat center center;}
-
 /* Page Styles */
-.page  {position:relative; z-index:200; overflow:hidden;}
 .dragbar {position:relative; height:5px; cursor: n-resize; background:#fff; z-index:50;}
-.feed {position:relative; max-width:620px; min-width:290px; margin:0 auto; padding:20px 15px 20px 15px; background:#fff; overflow:hidden;  z-index:4; }
-.background {position:absolute; top:0; left:0; width:100%; height:100%; background:#fff; z-index:1;}
-.pagesource {position:relative; text-align:center; margin-top:30px; direction:ltr; color:#ddd; z-index:3}
+.page  {position:relative; z-index:200; overflow:hidden;}
+.page .shadow  {height:20px; opacity:0.6;}
+.container {max-width:960px; margin:10px auto; position:relative; z-index: 2;}
+.feed {float:left; margin:15px; width:610px;}
+.widget {float:right; margin:15px; width:260px;}
+.newbox {margin-bottom:30px;}
+.newbox, .widget {position:relative;  padding:12px 15px 15px 15px; background:#fff; overflow:hidden;}
+.newbox, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
+
+.background {position:absolute; top:0; left:0; width:100%; height:100%; background:#eee; z-index:1;}
+.pagesource {position:relative; text-align:center; margin-top:25px; direction:ltr; color:#ddd; z-index:3}
 .unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
 .pagesource pre {word-wrap: break-word; }
 .pagesource div.code { text-align: justify; font-family: monospace; }
 
 /* Search Form Styles */
-.searchform {margin-bottom:20px;}
 .searchfield {margin-bottom:15px;}
-.searchbar {position:relative; z-index:20; margin-bottom:20px;}
 .searchbar li {color:#666; font-size:17px; font-weight:bold;}
 .searchbar li:hover {color:#333;}
 .extracturl, .searchfield {width:100%; line-height:50px; padding-left:10px; height:50px; margin-bottom:15px; font-size:17px}
-.addnew {width:100px; margin-right:10px; font-weight:bold; border:none; background:#eee; font-size:16px;}
+.addnew {width:100px; margin:0 10px 0 0; font-weight:bold; border:none; background:#eee; font-size:16px;}
 .dropoptions {margin-bottom:10px; overflow:hidden;}
 .dropmenu {overflow:hidden; margin-bottom:30px;}
 .dropoptions span {float:left; width:25%; cursor:pointer; opacity:0.8}
@@ -139,20 +142,20 @@ body.js.notice { padding-right: 60px; }
 /* Edit Post Styles */
 .posttitle {font-size:26px; margin: 15px 0 15px 0;}
 .postbox a {font-weight:bold;}
-.container {list-style:none; overflow:hidden;}
 .new span {padding-right:15px}
 .box {padding: 3px 0 5px 8px; overflow:hidden;}
 .box input, .respond input {margin-right:10px; width: auto;}
 .browsecat {padding: 0 10px 0 10px;}
 .headerrow {height:20px; margin-bottom:10px; color:#888; font-size:14px;}
 .imgrow {height:30px; margin-bottom:10px;}
-.imgrow div, .headerrow div {float:left; height:100%; margin-right:10px; overflow:hidden;}
+.imgrow div, .headerrow div {float:left; height:100%; margin-right:10px;}
 .imgrow .thumbcol {background:#eee;}
 .thumbcol {width:40px;}
 .thumbcol img {width:100%; height:100%}
-.captioncol {width:300px;}
-.browsecol {width:200px;}
-.deletecol {width:40px;}
+.captioncol {width:250px;}
+.browsecol {width:240px;}
+.deletecol {width:20px; margin:0!important;}
+.deletecol b {float:right;}
 .deletecol input {vertical-align:top; width:auto;}
 .country {width:170px}
 .zoomlevel {width:70px; margin-left: 15px; float:left;}
@@ -163,12 +166,12 @@ body.js.notice { padding-right: 60px; }
 .field a {margin-left:5px}
 .smallfield {width:290px; margin:10px 10px 0 0;}
 .savebar span {padding-right:10px; font-size:18px; font-weight:bold; cursor:pointer; color:#5c63b3}
-.lefthalf, .righthalf {width:300px;}
+.lefthalf, .righthalf {width:280px;}
 .lefthalf {margin:0 20px 15px 0;}
 
 /* Rich Editor Styles */
-.richtext {min-height:200px; background:#eee; padding: 0 10px 0 10px; margin-bottom:15px;}
-.richbuttons {background:#eee; padding:5px 10px 5px 10px; margin-bottom:6px;}
+.richtext {min-height:200px; border:1px solid #ccc; padding: 0 10px 0 10px; margin-bottom:15px;}
+.richbuttons {border:1px solid #ccc; padding:5px 10px 5px 10px; margin-bottom:6px;}
 .richbuttons a {color:#888; margin-right:20px;}
 .richmode {display:none;}
 .makeitalic {font-weight:normal;}
@@ -177,7 +180,7 @@ body.js.notice { padding-right: 60px; }
 .htmlbox {display:none; height:300px; overflow-y:scroll;}
 
 /* Footer Styles */
-.footer {clear:both; padding:20px 0 0 0;}
+.footer {clear:both; padding:20px 0 0 0; text-align:center;}
 .footer a {font-size:17px; margin:0 20px 0 0;}
 .rsslinks {line-height:30px;}
 .rsslinks a {margin:0 15px 0 0; display: inline-block; font-weight:normal;}
@@ -186,8 +189,10 @@ body.js.notice { padding-right: 60px; }
 .emailtext {margin-bottom:10px;}
 
 /* Translate Styles */
-.transposh {margin-top:10px; color:#fff;}
+.transposh {margin-top:10px;}
 .transposh input, .transposh select {width:auto;}
+.transposh select {margin-left:10px}
+#wp-calendar {width:100%;}
 
 /* Current user box */
 div.profilemenu img.avatar { margin-right: 10px; }
@@ -209,3 +214,6 @@ div.log-entry span.time-since{color:#aaa;font-weight:bold}
 .active-no .points-tag { background: #cc7575; }
 .active-no .points-tag:before { border-color:transparent #cc7575 transparent transparent; }
 
+/* Responsive Styles */
+@media (max-width: 960px) { .container {max-width:640px;} }
+@media (max-width: 640px) { .container {max-width:320px;} .feed {width:260px;}  }

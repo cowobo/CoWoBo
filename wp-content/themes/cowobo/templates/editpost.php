@@ -67,9 +67,9 @@ if(cowobo()->layouts->layout[$postcat->term_id]):
 		elseif($field['type'] == 'gallery'): unset($thumbs);
 			echo '<div class="headerrow">';
 				echo '<div class="thumbcol">Thumb</div>';
-				echo '<div class="captioncol">Caption or Youtube URL</div>';
+				echo '<div class="captioncol">Image or Youtube URL (Optional)</div>';
 				echo '<div class="browsecol">New image</div>';
-				echo '<div class="deletecol">Delete</div>';
+				echo '<div class="deletecol"><b>Delete</b></div>';
 			echo '</div>';
 			for ($x=0; $x<4; $x++):
 				if($imgid = get_post_meta($postid, 'imgid'.$x, true)):

@@ -1,7 +1,7 @@
 <?php
 
 
-echo '<ul class="tab horlist searchbar">';
+echo '<ul class="horlist searchbar">';
 	echo '<li id="searchmenu">Search ▼</li>';
 	echo '<li id="catmenu">Categories ▼</li>';
 	echo '<li id="sortmenu">Sort ▼</li>';
