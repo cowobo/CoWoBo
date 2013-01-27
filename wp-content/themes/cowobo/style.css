@@ -192,8 +192,8 @@ body.js.notice { padding-right: 60px; }
 /* Current user box */
 div.profilemenu img.avatar { margin-right: 10px; }
 div.profilemenu div.upload-avatar form input { width: initial; }
-div.ranking-box p.next-rank { float: left; }
-div.ranking-box div.points-progression-container { margin-left: 20px; }
+div.ranking-box p.next-rank { display: inline; }
+div.ranking-box div.points-progression-container { margin-left: 20px; vertical-align: top; }
 
 /* User activity log */
 ul.log{list-style:none}
