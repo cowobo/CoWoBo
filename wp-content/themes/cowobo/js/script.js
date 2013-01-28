@@ -17,6 +17,14 @@ jQuery(document).ready(function() {
         jQuery(".current-user, .current-user-avatar-form").slideToggle();
     });
 
+    // Spread the word 'send email'
+    jQuery('.email-form-toggle').click( function(e) {
+        if ( ! jQuery('.email-form').is(':visible') ) {
+            e.preventDefault();
+            jQuery('.email-form').slideDown();
+        }
+    });
+
     // Point descriptions
     jQuery( "div.point-desc:not(.active-yes)").hide();
     jQuery('.toggle-inactive-point-descs').click(function(e) {
