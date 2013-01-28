@@ -80,21 +80,21 @@ echo '<div class="page">';
 
 	//center dynamic content with container
 	echo '<div class="container">';
-		
+
 		//include maincolumn
 		echo '<div class="feed">';
-		
+
 			//include search
 			include(TEMPLATEPATH.'/templates/search.php');
-						
+
 			//include any notifications to user
 			include( TEMPLATEPATH . '/templates/notify.php');
-			
+
 			//include the appropriate feed template
 			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
 				include(TEMPLATEPATH.'/templates/home.php');
 			endif;
-		
+
 			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
 				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
 					include(TEMPLATEPATH.'/templates/login.php');
@@ -118,15 +118,18 @@ echo '<div class="page">';
                		include(TEMPLATEPATH.'/templates/categories_sorted.php');
            		endif;
 			endif;
-		
+
 			//include plugin boxes
 			do_action ('cowobo_after_content' );
-		
+
 		echo '</div>';
-		
+
 		//include widgets
-		dynamic_sidebar('sidebar');
-			
+        if (is_user_logged_in() )
+            dynamic_sidebar('sidebar_logged_in');
+        else
+            dynamic_sidebar('sidebar');
+
 	echo '</div>';
 
 	//include background source code
