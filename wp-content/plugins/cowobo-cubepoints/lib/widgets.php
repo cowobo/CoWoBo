@@ -19,6 +19,7 @@ class CoWoBo_Recent_Activity_Widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         $title = (is_user_logged_in() ) ? "<a href='" . cowobo()->users->get_current_user_profile_link() . "'>Your Activity</a>" : "Latest Activity";
+        $title .= " &raquo;";
 
         echo $before_widget . "<div class='recent_activity'>";
         echo $before_title . $title . $after_title;
@@ -47,7 +48,7 @@ class CoWoBo_Recently_Active_Widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='recently_active'>";
-        echo $before_title . "Recently Active" . $after_title;
+        echo $before_title . "Recently Active &raquo;" . $after_title;
 
         $recently_active_ids = cowobo()->points->get_recently_active_profile_ids();
 
