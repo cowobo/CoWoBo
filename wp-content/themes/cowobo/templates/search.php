@@ -4,15 +4,18 @@ if(is_single()) $editlink = '?action=editpost';
 else  $editlink = '?action=editpage';
 
 echo '<div class="tab">';
+
+	echo '<div class="feedtitle">'.cowobo()->feed->feed_title().'</div>';
 			
 	echo '<ul class="horlist searchbar">';
 		echo '<li id="searchmenu">Search ▼</li>';
 		echo '<li id="catmenu">Categories ▼</li>';
 		echo '<li id="sortmenu">Sort ▼</li>';
 		echo '<li id="addmenu" class="blue">Add New ▼</li>';
-		echo '<li id="editmenu" class="blue">';
-			echo '<a class="black" href="'.$editlink.'">Edit Feed ▼</a>';
-		echo '</li>';	
+		echo '<li id="rssmenu">RSS ▼</li>';
+		echo '<li id="editmenu">';
+			echo '<a class="black" href="'.$editlink.'">Edit Page ▼</a>';
+		echo '</li>';
 	echo '</ul>';
 	
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
@@ -57,6 +60,10 @@ echo '<div class="tab">';
 	            endforeach;
 	        echo '</div>';
 	        echo '<input type="submit" class="button" value="Update"/>';
+	    echo '</div>';
+		
+		echo '<div class="hide dropmenu rssmenu horlist">';
+	      	cowobo()->posts->print_rss_links();
 	    echo '</div>';
 	
 	echo '</form>';
