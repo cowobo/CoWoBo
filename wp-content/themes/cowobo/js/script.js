@@ -13,7 +13,8 @@ jQuery(document).ready(function() {
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
-        jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
+        //jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
+        jQuery(".current-user, .current-user-avatar-form").slideToggle();
     });
 
     // Point descriptions
