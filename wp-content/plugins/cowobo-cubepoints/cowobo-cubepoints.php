@@ -682,6 +682,54 @@ if (!class_exists('CoWoBo_CubePoints')) :
             return implode ( "\n", $out );
         }
 
+        public function get_recently_active_user_ids( $limit = 5, $with_timestamp = true ) {
+            global $wpdb;
+
+            if ( $with_timestamp ) {
+                if ( ! $users = wp_cache_get( 'recently_active_users_with_timestamp', 'cowobo_cubepoints' ) ) {
+
+                    $query = $wpdb->prepare ( "SELECT uid, max(timestamp) as maxtimestamp FROM `" . CP_DB . "` GROUP BY uid ORDER BY maxtimestamp DESC LIMIT %d", $limit );
+                    $users = $wpdb->get_results( $query, ARRAY_A );
+
+                    wp_cache_set( 'recently_active_users_with_timestamp', $users, 'cowobo_cubepoints' );
+                }
+            } else {
+                if ( ! $users = wp_cache_get( 'recently_active_users', 'cowobo_cubepoints' ) ) {
+
+                    $query = $wpdb->prepare ( "SELECT DISTINCT `uid` FROM `" . CP_DB . "` ORDER BY `id` DESC LIMIT %d", $limit );
+                    $users = $wpdb->get_col( $query );
+
+                    wp_cache_set( 'recently_active_users', $users, 'cowobo_cubepoints' );
+                }
+            }
+
+            return $users;
+        }
+
+        public function get_recently_active_profile_ids ( $limit = 5, $with_timestamp = true ) {
+            $user_ids = $this->get_recently_active_user_ids( $limit, $with_timestamp );
+            if ( empty ( $user_ids ) ) return array();
+
+            // Try for cache
+            if ( $with_timestamp )
+                $cached_users = wp_cache_get( 'recently_active_profiles_with_timestamp', 'cowobo_cubepoints' );
+            else
+                $cached_users = wp_cache_get( 'recently_active_profiles', 'cowobo_cubepoints' );
+            if ( $cached_users ) return $cached_users;
+
+
+            $profile_ids = array();
+            foreach ( $user_ids as $user ) {
+                if ( $with_timestamp ) {
+                    $profile_ids[] = array_merge( $user, array ( 'profile_id' => cowobo()->users->get_user_profile_id( $user['uid'] ) ));
+                } else {
+                    $profile_ids[] = cowobo()->users->get_user_profile_id( $user );
+                }
+            }
+
+            return $profile_ids;
+        }
+
     }
 
 
