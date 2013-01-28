@@ -204,6 +204,9 @@ div.ranking-box p.next-rank { display: inline; }
 div.recently_active_user { clear: both; overflow: auto; margin-bottom: 10px; }
 div.recently_active_user img.avatar { float: left; }
 
+/* Recent activity widget */
+div.recent_activity ul.log li { margin-left: 0; }
+
 /* User activity log */
 ul.log{list-style:none}
 div.point-descriptions { overflow: auto; }
