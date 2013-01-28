@@ -160,6 +160,7 @@ body.js.notice { padding-right: 60px; }
 .country {width:170px}
 .zoomlevel {width:70px; margin-left: 15px; float:left;}
 .button, .form-submit input {float:left; font-size:15px; color:#fff; height: 30px; line-height: 30px; background:#1a4780; border:none; width:auto; font-weight:bold; margin: 0 15px 0 0; padding:0 5px 0 5px; cursor:pointer; }
+.button-secondary { background: #d5d5d5; color: #757575; }
 .form-submit input {width:auto;}
 .field {display:inline-block; zoom: 1; _display: inline; margin-right:15px; vertical-align: middle; }
 .field h3 {display:inline;}
