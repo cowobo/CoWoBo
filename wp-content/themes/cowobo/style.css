@@ -82,12 +82,12 @@ form {margin:0 auto;}
 
 /* Titlebar Styles*/
 .titlebar {position:absolute; bottom:0; width:100%; z-index:50;}
-.seventy-percent {position:relative; float:left; width:70%; z-index:1; color:#fff;}
-.thirty-percent {position:relative; float:right; width:30%; overflow:hidden; }
-.captions {font-size:17px; line-height: 25px; margin: 7px 0 5px 35px}
+.seventy-percent {position:relative; float:left; width:70%; z-index:1; }
+.thirty-percent {position:relative; float:right; width:30%; z-index:1; }
+.captions {font-size:17px; line-height: 25px; margin: 7px 0 5px 35px; color:#eee;}
 .capform {position:relative;}
-.capform .button {position:absolute; right:0; top:0; margin:0;}
-.capform .caption {font-size:18px; line-height: 25px; color:#fff; border:none; margin:0;}
+.capform .button {position:absolute; right:0; top:0; margin:0; background:none;}
+.capform .caption {font-size:17px; line-height: 25px; color:#eee; border:none; margin:0;}
 .resizeicon {position:absolute; left:10px; top:8px; cursor:pointer;}
 .resizeicon:hover {opacity:0.8}
 .smallthumbs {min-height:40px; margin-right:10px;}

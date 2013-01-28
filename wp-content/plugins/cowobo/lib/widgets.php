@@ -21,7 +21,7 @@ class CoWoBo_Profile_Widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='profilemenu'>";
-        //echo $before_title . "Your Profile" . $after_title;
+        echo $before_title . "Update Your Profile &raquo;" . $after_title;
         do_action ( 'cowobo_profile_widget' );
         echo "</div>" . $after_widget;
     }
