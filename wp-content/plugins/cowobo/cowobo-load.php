@@ -453,7 +453,7 @@ if (!class_exists('CoWoBo')) :
                 while ( have_notices() ) : the_notice();
                     if ( ! in_array ( get_the_notice_type(), $notice_types ) ) continue;
 
-                    echo "<div class='newbox notice " . strtolower ( get_the_notice_type() ) . " $class'>";
+                    echo "<div class='tab notice " . strtolower ( get_the_notice_type() ) . " $class'>";
                     echo "<span class='close hide-if-no-js'>X</span>";
                     the_notice_content();
                     echo "</div>";
