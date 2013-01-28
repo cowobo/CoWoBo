@@ -17,10 +17,10 @@ class CoWoBo_Profile_Widget extends WP_Widget {
     public function widget($args, $instance) {
         extract($args, EXTR_SKIP);
 
-        echo $before_widget;
+        echo $before_widget . "<div class='profilemenu'>";
         //echo $before_title . "Your Profile" . $after_title;
         do_action ( 'cowobo_profile_widget' );
-        echo $after_widget;
+        echo "</div>" . $after_widget;
     }
 
 
