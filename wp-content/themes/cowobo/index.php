@@ -57,12 +57,13 @@ echo '<div class="imageviewer grabcursor">';
 
 	echo '<div class="titlebar">';
 		echo '<div class="shade"></div>';
-		echo '<div class="titlepadding">';
-			echo '<span class="feedtitle">'.cowobo()->feed->feed_title().'</span>';
-			echo '<span class="captions">Site will be ready on February 4th, <a href="?action=contact">contact us for more info</a></span>';
-			echo '<div class="right smallthumbs">';
+		echo '<div class="seventy-percent">';
+			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Toggle viewer height" alt=""/>';
+			echo '<div class="captions">'.$captions.'</div>';
+		echo '</div>';
+		echo '<div class="thirty-percent">';
+			echo '<div class="smallthumbs">';
 				echo cowobo()->posts->load_thumbs($postid);
-				echo '<img class="resizeicon right" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Toggle viewer height" alt=""/>';
 			echo '</div>';
 		echo '</div>';
 	echo '</div>';
@@ -126,9 +127,9 @@ echo '<div class="page">';
 		
 		//include widgets
 		dynamic_sidebar('sidebar');
-			
+		
 	echo '</div>';
-
+		
 	//include background source code
 	echo '<div class="background">';
 		echo '<div class="pagesource unselectable" unselectable="on">';

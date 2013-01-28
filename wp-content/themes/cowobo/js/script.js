@@ -35,7 +35,7 @@ jQuery(document).ready(function() {
 	});
 
 	//Enable Map Resizing and Panning
-	jQuery(".imageviewer").mousedown(function(e) {
+	jQuery(".imageholder").mousedown(function(e) {
 		e.preventDefault();
 		jQuery('body').addClass('unselectable');
 	    previousX = e.clientX;
@@ -228,9 +228,12 @@ jQuery(".tab span.close").live('click', function(){
 
 //show specific slide in gallery
 jQuery('.smallthumbs a').live('click', function(event) {
-	var num = jQuery(this).index();
+	var num = jQuery(this).attr('class');
 	var slide = jQuery('#slide-'+num);
+	var caption = jQuery('#caption-'+num);
 	event.preventDefault();
+	caption.show();
+	jQuery('.caption').not(caption).hide();
 	slide.hide().appendTo(jQuery('.imageholder')).fadeIn(1000);
 });
 

@@ -159,7 +159,7 @@ function cwb_loadmap() {
 	endif;
 
 	//construct new maplayer
-	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-0" '.$position.'>';
+	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-map" '.$position.'>';
 	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';

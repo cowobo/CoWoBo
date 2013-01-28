@@ -44,9 +44,8 @@ class CoWoBo_Posts
         $post_title  = ( cowobo()->query->post_title ) ? trim(strip_tags( cowobo()->query->post_title ) ) : null;
         $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
-        $oldcity = get_post_meta( $postid, 'city', true );
-        $oldcityid = get_post_meta( $postid, 'cityid', true );
-        //$oldslug = $post->post_name;
+        $oldcityid = get_post_meta($postid, 'cwb_city', true);
+		//$oldslug = $post->post_name; todo add option to change slug
         $involvement = cowobo()->query->involvement;
         $newslug = sanitize_title($post_title);
 
@@ -108,9 +107,8 @@ class CoWoBo_Posts
                         $postmsg['title'] = 'The location you are trying to add already exists';
                     } else {
 						//use title and country returned from geocode to avoid spelling duplicates
-                        $post_title = $location['city'];
-						update_post_meta($postid, 'country', $location['country']);
-						update_post_meta($postid, 'city', $location['city']);
+                        $post_title = $location['cwb_city'];
+						update_post_meta($postid, 'cwb_country', $location['country']);
 						add_post_meta($postid, 'coordinates', $coordinates);
 						if($countryid = get_cat_ID( $location['country'] ))
 							$tagarray[] = $countryid;
@@ -130,37 +128,38 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $city = cowobo()->query->city ) {
-            if( $city != $oldcity ) {
-                if( $country = $_POST['country'] ) {
-					if( $location = cwb_geocode($city.', '.$country) ):
-                        //check if location has already been added
-						$coordinates = $location['lat'].','.$location['lng'];
-                        $citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
-                        if( $citypost ):
-                            $cityid = $citypost[0]->ID;
-                        else:
-							if( $countryid = get_cat_ID( $location['country'] ) )
-								$countrycat = $countryid;
-							else {
-								$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
-								$countrycat = $tagid['term_id'];
-							}
-							$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countrycat), 'post_status'=>'Publish'));
-						endif;
-						update_post_meta( $postid, 'country', $location['country'] );
-						update_post_meta( $postid, 'city', $location['city'] );
-						update_post_meta( $postid, 'cityid', $cityid );
-						update_post_meta( $postid, 'coordinates', $coordinates);
-                        cowobo()->relations->delete_relations($postid, $oldcityid);
-                        cowobo()->relations->create_relations($postid, array($cityid));
-                    else:
-                        $postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
-                    endif;
-                } else {
-                    $postmsg['location'] = 'Please enter a country';
-                }
-            }
+        if( $newlocation = cowobo()->query->location) {
+			if( $location = cwb_geocode( $newlocation ) ):
+				//check if location has already been added
+				$coordinates = $location['lat'].','.$location['lng'];
+				$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
+                if( $citypost ):
+                	$cityid = $citypost[0]->ID;
+					$countrycat = get_the_category($cityid);
+					$countryid  = $countrycat[0]->term_id;
+                else:
+					if( $countrycat = get_cat_ID( $location['country'] ) )
+						$countryid = $countrycat;
+					else {
+						$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
+						$countryid = $tagid['term_id'];
+					}
+					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'Publish'));
+					update_post_meta( $cityid, 'coordinates', $coordinates);
+				endif;
+				update_post_meta( $postid, 'cwb_country', $countryid );
+				update_post_meta( $postid, 'cwb_city', $cityid );
+				update_post_meta( $postid, 'coordinates', $coordinates);
+                cowobo()->relations->delete_relations($postid, $oldcityid);
+                cowobo()->relations->create_relations($postid, array($cityid));
+             else:
+             	$postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
+             endif;
+		} else {
+			delete_post_meta( $postid, 'cwb_country');
+			delete_post_meta( $postid, 'cwb_city' );
+			delete_post_meta( $postid, 'coordinates', $coordinates);
+			cowobo()->relations->delete_relations($postid, $oldcityid);
         }
 
         //get ids for each tag and create them if they dont already exist
@@ -185,14 +184,14 @@ class CoWoBo_Posts
             $imgid = "imgid$x";
             $imgid = cowobo()->query->imgid;
             $file = ( isset ( $_FILES['file'.$x] ) ) ? $_FILES['file'.$x]['name'] : '';
-            $caption_id = "caption$x";
-            $caption = cowobo()->query->$caption_id;
-            $videocheck = explode("?v=", $caption );
-            $imagecheck = $this->is_image_url ( $caption );
+            $url_id = "cwb_url$x";
+            $imgurl = cowobo()->query->$url_id;
+            $videocheck = explode("?v=", $imgurl );
+            $imagecheck = $this->is_image_url ( $imgurl );
+			
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
-            if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) ):
-            //if($_POST['delete'.$x] or !empty($file) or !empty($videocheck[1])):
+            if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) || !empty($imagecheck) ):
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
             endif;
@@ -336,51 +335,63 @@ class CoWoBo_Posts
 
         $slides = array();
 
-        for ($x=0; $x<3; $x++):
+        for ($x=0; $x<4; $x++):
 
             //store slide info
-            $caption = get_post_meta($postid, 'caption'.$x, true);
+            $url = get_post_meta($postid, 'cwb_url'.$x, true);
             $imgid = get_post_meta($postid, 'imgid'.$x, true);
-            $videocheck = explode("?v=", $caption);
-
-            $image_check = $this->is_image_url( $caption );
-            $captions = '';
+            $videocheck = explode( "?v=", $url );
+            $image_check = $this->is_image_url( $url );
+			
+			if($x == 0) $captionstate = 'show'; else $captionstate = 'hide';
+			$caption = get_post_meta($postid, 'caption'.$x, true);
+			if( empty($caption) )	$caption = 'Use the navigation buttons to zoom and pan the image';
+			
 			//check if the slide is video or image;
             if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
-                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'"><object>';
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
                     $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
                     $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
                     $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
                     $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
                 $slides[$x] .= '</object></div>';
-                $captions .= '<div class="caption" id=""></div>';
             } elseif ( $image_check ) {
-                $slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
-                    $slides[$x] .= '<img class="slideimg" src="'.$caption.'" width="100%" alt=""/>';
+                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
 					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
                 $slides[$x] .= '</div>';
-                $captions .= '<div class="caption" id=""></div>';
             } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
                 $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
-				$slides[$x] = '<div class="slide" id="slide-'.($x+1).'">';
+				$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
                     $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
 					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
 					if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
                 $slides[$x] .= '</div>';
-                $captions .= '<div class="caption">'.$caption.'</div>';
             }
+			
+			//include captions
+			if(!$this->is_user_post_author()) {
+				$captions .= '<input type="text" class="caption '.$captionstate.'" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
+
+			} else {
+				$captions .= '<span class="caption '.$captionstate.'" id="caption-'.$x.'">'.$caption.'</span>';
+			}
 
            unset($imgid); unset($zoom2src);
 
         endfor;
-
+		
+		//include form if user is author of post
+		if(!$this->is_user_post_author()) {
+			$captions = '<form method="post" action="" class="capform">'.$captions.'<input type="submit" class="button" value="Save All" /></form>';
+		}
+			
         //construct gallery
         $gallery = '';
         if( ! empty ( $slides ) ) {
             $slides = array_reverse($slides); //so they appear in the correct order
-            $gallery = implode('', $slides);
+            echo implode('', $slides);
         }
-		echo $gallery;
 
         return $captions;
     }
@@ -392,27 +403,35 @@ class CoWoBo_Posts
      */
     function load_thumbs($postid, $catslug = false){
 
-		//include map thumb
-		$thumbs[] = '<a href="?img=map"><img src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg" height="100%" /></a>';
-
 		//create thumbs for other images
-        for ($x=0; $x<3; $x++) {
-            //store slide info
-            $caption = get_post_meta($postid, 'caption'.$x, true);
-            $imgid = get_post_meta($postid, 'imgid'.$x, true);
-            $videocheck = explode("?v=", $caption);
-            $imagecheck = $this->is_image_url( $caption );
+        for ($x=0; $x<4; $x++) {
+            
+			//store slide info
+            $url = get_post_meta($postid, 'cwb_url'.$x, true);           
+			$imgid = get_post_meta($postid, 'imgid'.$x, true);
+            $videocheck = explode("?v=", $url);
+            $imagecheck = $this->is_image_url( $url );
+
 		    //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1] ) {
-               	$thumbs[] = '<a href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$url.'/1.jpg" height="100%" alt=""/></a>';
-            } elseif ( $imagecheck ) {
-                $thumbs[] = '<a href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
-            } elseif( $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail') ) {
-                $thumbs[] = '<a href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
-            }
+            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1] ) {
+               	$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
+			} elseif ( $imagecheck ) {
+                $thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
+			} elseif( $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail') ) {
+                $thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
+			}
         }
 
-		return implode('',$thumbs);
+		//include map thumb
+		if( get_post_meta($postid, 'includemap', true) or empty ( $thumbs ) ) {
+			$thumbs[] = '<a class="map" href="?img=map"><img src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg" height="100%" /></a>';
+		}
+		
+		if( ! empty ( $thumbs ) ) {
+            $thumbs = array_reverse($thumbs); //so they appear in the correct order
+            return implode('', $thumbs);
+        }
+
     }
 
     /**
@@ -631,12 +650,15 @@ class CoWoBo_Posts
     }
 
     public function is_user_post_author ( $postid = 0, $profile_id = 0 ) {
-        if ( ! is_user_logged_in() ) return false;
+        	
+		if ( ! is_user_logged_in() ) return false;
 
         if ( ! $profile_id ) $profile_id = $GLOBALS['profile_id'];
         $authors = $this->get_post_authors( $postid );
-
-        return in_array( $profile_id, $authors );
+		
+		if(current_user_can('edit_others_posts') || in_array( $profile_id, $authors ))
+		
+        return true;
     }
 
     public function post_by_url ( $url = '' ) {
