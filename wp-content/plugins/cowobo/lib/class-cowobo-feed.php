@@ -97,15 +97,14 @@ class CoWoBo_Feed
         } elseif( cowobo()->query->action == 'editpost') {
             $feedtitle = 'Edit Post';
             $feedlink = remove_query_arg( 'action' );
-        } elseif( cowobo()->users->is_profile() ) {
+        } elseif( is_single() ) {
 			$feedtitle = $post->post_title;
             $feedlink = get_permalink();
-        } elseif( is_single() || is_category()) {
+        } elseif(is_category()) {
             $feedtitle = $currentcat->name;
-            if ( $currentcat->term_id )
-                $feedlink = get_category_link ( $currentcat );
+            $feedlink = get_category_link ( $currentcat );
         } elseif( is_home() ) {
-            $feedtitle = 'Welcome!';
+            $feedtitle = 'Live News Feed';
         }
 
         if ( ! empty ( $feedlink ) )

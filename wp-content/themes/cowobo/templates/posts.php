@@ -8,10 +8,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postcat = cowobo()->posts->get_category($postid);
 		
 	echo '<div class="tab">';
-
-		if($postcat->slug != 'coder' && $postcat->slug != 'location') {
-			echo '<div class="posttitle">'.cowobo()->L10n->the_title($post->ID).'</div>';
-		}
 	
 	    if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
 	
@@ -104,7 +100,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	
 		//include main text if post has content
 		if(get_the_content()):
-			echo '<div class="">';
+			echo '<div style="margin-top:10px">';
 	            do_action ( 'cowobo_before_postcontent' );
 				the_content();
 			echo '</div>';
