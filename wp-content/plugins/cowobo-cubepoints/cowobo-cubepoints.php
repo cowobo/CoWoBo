@@ -19,21 +19,6 @@ if (!defined('ABSPATH'))
  */
 define('COWOBO_CP_VERSION', '0.1');
 
-
-define ( 'COWOBO_POST_KUDOS', 10 );
-define ( 'COWOBO_PROFILE_KUDOS', 40 );
-define ( 'COWOBO_POST_UPDATED_POINTS', 10 );
-define ( 'COWOBO_PROFILE_UPDATED_POINTS', 5 );
-define ( 'COWOBO_UPDATE_POINTS_MIN_INTERVAL', 1 * 60 * 60 ); // 1hr
-
-define ( 'COWOBO_CP_POST_KUDOS_GIVES_POINTS', 1 ); // The love we give the giver
-define ( 'COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS', 2 );
-
-define ( 'COWOBO_AVATAR_UPDATED_POINTS', 5 );
-
-define ( 'COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER', 10 );
-define ( 'COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER', 5 );
-
 /**
  * PATHs and URLs
  *
@@ -104,6 +89,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( is_user_logged_in() ) {
 
+                add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
                 $this->setup_current_user();
                 $this->logged_in_templates();
                 $this->record_actions();
@@ -112,7 +98,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             }
 
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
-            add_action('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
+            add_action ('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
             add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
 
         }
@@ -168,9 +154,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $this->periodical_points();
 
             add_filter ( 'cowobo_post_updated', array ( &$this, 'record_post_edited' ), 10, 3 );
-            add_action ( 'wp', array ( &$this, '_maybe_give_kudos' ) );
             add_action ( 'updated_user_meta', array ( &$this, '_maybe_has_updated_avatar' ), 10, 4 );
             add_action ( 'editrequest_accepted', array ( &$this, 'record_editrequest_accepted' ), 10, 4 );
+            add_action ( 'cowobo_link_created', array ( &$this, 'record_link_created' ), 10, 2 );
         }
 
         private function logged_in_templates() {
@@ -182,6 +168,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             add_action ( 'cowobo_after_user_link', array ( &$this, 'do_userlink_score') );
         }
 
+        public function record_link_created ( $post_id, $linked_post_id ) {
+            $this->add_points( 'link_created', $post_id, 0, 0, array ( "secondary_postid" => $linked_post_id ) );
+        }
+
         public function do_your_score_box() {
             echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
         }
@@ -190,18 +180,23 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo " <em>{$this->current_user_rank['rank']}</em>";
         }
 
-        public function add_points( $type, $points = 1, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '' ) {
+        public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
             if ( ! $post_id ) $post_id = get_the_ID();
             if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
 
             if ( ! is_array ( $data ) ) parse_str ( $data );
+
+            if ( ! $points ) {
+                if ( ! isset ( $this->points_config[ $type ] ) ) return false;
+                $points = $this->points_config[$type]['points'];
+            }
 
             $data['postid'] = $post_id;
             if ( $data_user_id ) $data['userid'] = $data_user_id;
             elseif ( $recipient_id != get_current_user_id() ) $data['userid'] = get_current_user_id();
             $data_str = http_build_query($data);
 
-            cp_points( $type, $recipient_id, $points, $data_str );
+            cp_points( "cowobo_" . $type, $recipient_id, $points, $data_str );
         }
 
         public function _maybe_has_updated_avatar ( $meta_id, $object_id, $meta_key, $_meta_value ) {
@@ -422,7 +417,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 switch ( $object ) {
                     case 'post' :
-                        if ( ! $amount ) $amount = COWOBO_POST_KUDOS;
+                        if ( ! $amount ) $amount = $this->points_config['kudos_post']['points'];
 
                         if ( $this->kudos_already_given() ) {
                             cowobo()->add_notice("Sorry, you have already shown your appreciation for this post before!");
@@ -430,11 +425,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                         }
 
                         $this->add_post_likes ( $object_id );
-                        cp_points("cowobo_post_kudos_given",
-                                get_current_user_id(),
-                                COWOBO_CP_POST_KUDOS_GIVES_POINTS,
-                                "postid=" . get_the_ID()
-                        );
+                        $this->add_points( 'post_kudos_given' );
 
                         $authors = cowobo()->posts->get_post_authors( $object_id );
                         foreach ( $authors as $author_profile_id ) {
@@ -447,13 +438,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
                                 cowobo()->add_notice("You must really like this angel! Sorry, but you can't give props to the same person twice.");
                                 return;
                             }
-                            cp_points("cowobo_profile_kudos_given",
-                                    get_current_user_id(),
-                                    COWOBO_CP_PROFILE_KUDOS_GIVES_POINTS,
-                                    "postid=" . get_the_ID()
-                            );
+                            $this->add_points( 'profile_kudos_given' );
                         }
-                        if ( ! $amount ) $amount = COWOBO_PROFILE_KUDOS;
+                        if ( ! $amount ) $amount = $this->points_config['kudos_profile']['points'];
                         $users = cowobo()->users->get_users_by_profile_id( $object_id );
                         foreach ( $users as $user ) {
                             $this->give_kudos ( 'user', $user->ID, $amount, $origin );
@@ -462,8 +449,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     case 'user' :
                         if ( ! $amount ) $amount = 1; // Unidentified kudos. Let's just give one anyway.
 
-                        $data = "userid=" . get_current_user_id() . "&postid=" . get_the_ID();
-                        cp_points("cowobo_kudos_$origin", $object_id, $amount, $data );
+                        $this->add_points( "kudos_$origin", 0, 0, $object_id );
                         break;
 
                 }
@@ -511,7 +497,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function cp_logs_desc( $type, $uid, $points, $data ){
             $points_config = $this->points_config;
             $user_profile = $post = false;
-            $user_link = $post_link = '';
+            $user_link = $post_link = $secondary_post_link = '';
 
             if ( substr ( $type, 0, 7 ) == 'cowobo_' ) {
                 $type = substr ( $type, 7 );
@@ -529,6 +515,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 } if ( isset ( $data_arr['postid'] ) ) {
                     $post = get_post( $data_arr['postid'] );
                     $post_link = '<a href="'.get_permalink( $post ).'">' . $post->post_title . '</a>';
+                } if ( isset ( $data_arr['secondary_postid'] ) ) {
+                    $secondary_post = get_post( $data_arr['secondary_postid'] );
+                    $secondary_post_link = '<a href="'.get_permalink( $secondary_post ).'">' . $secondary_post->post_title . '</a>';
                 }
 
                 if ( ! $user_profile && ! $post ) return;
@@ -547,8 +536,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( array_key_exists ( $type, $points_config ) ) {
                 $message = str_replace (
-                        array ( "%post%", "%user%"),
-                        array ( $post_link, $user_link ),
+                        array ( "%post%", '%post2%', "%user%"),
+                        array ( $post_link, $secondary_post_link, $user_link ),
                         $points_config[$type]['message']
                     );
                 echo $message;
@@ -617,18 +606,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 return;
             }
 
-            if ( cowobo()->users->is_profile( $post_id ) )
-                cp_points( $type, get_current_user_id(), COWOBO_PROFILE_UPDATED_POINTS, "postid=$post_id" );
-            else
-                cp_points( $type, get_current_user_id(), COWOBO_POST_UPDATED_POINTS, "postid=$post_id" );
+            $this->add_points ( $type, $post_id );
         }
 
         public function record_editrequest_accepted ( $rquser_profile_id, $rqpost ) {
             $rquser = cowobo()->users->get_users_by_profile_id ( $rquser_profile_id, true )->ID;
             // Give points to the accepter
-            $this->add_points( 'cowobo_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_SENDER, $rqpost, $rquser );
+            $this->add_points( 'editrequest_accepted', $rqpost, $rquser );
             // Give points to the accepted
-            $this->add_points( 'cowobo_your_editrequest_accepted', COWOBO_EDITREQUEST_ACCEPTED_POINTS_RECEIVER, $rqpost, 0, $rquser );
+            $this->add_points( 'your_editrequest_accepted', $rqpost, 0, $rquser );
         }
 
         public function is_recently_updated ( $type, $uid = 0 ) {
@@ -637,7 +623,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             if ( ! $uid ) $uid = get_current_user_id ();
             if ( ! $uid ) return;
 
-            $time = COWOBO_UPDATE_POINTS_MIN_INTERVAL;
+            $time = $this->config->intervals['updates'] * 60 * 60;
             $difference = time() - $time;
 
             $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='$type'");
