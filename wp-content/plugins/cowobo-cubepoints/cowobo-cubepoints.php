@@ -177,7 +177,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_userlink_score() {
-            echo " <em>{$this->current_user_rank['rank']}</em>";
+            echo "<br><em>{$this->current_user_rank['rank']} ({$this->current_user_points})</em>";
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
@@ -324,10 +324,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo "<div class='ranking-box'>";
                 //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
                 if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
-                    echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
+                    //echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
                     $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
                 }
-                echo "<p><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
+                echo "<p class='clear'><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
                 echo "<div class='point-descriptions hide-if-js'>";
                     $this->do_point_descriptions( 'mixed' );
                 echo "</div>";
