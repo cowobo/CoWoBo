@@ -218,8 +218,10 @@ class CoWoBo_Posts
 
             if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
             if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
-            cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
-            $GLOBALS['newpostid'] = null;
+
+            wp_redirect ( add_query_arg ( array ( "action" => "editpost", "message" => "post_saved" ), get_permalink ( $postid ) ) );
+            //cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
+            //$GLOBALS['newpostid'] = null;
         } else {
             cowobo()->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
             foreach ( $postmsg as $key => $msg ) {

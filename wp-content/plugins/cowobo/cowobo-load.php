@@ -137,7 +137,8 @@ if (!class_exists('CoWoBo')) :
                 "editrequest_accepted"  => "Thank you, you have accepted the request.",
                 "editrequest_denied"    => "Thank you, the edit request has been denied.",
                 "editrequest_cancelled" => "Thank you, your request has been cancelled.",
-                "post_deleted"          => "Post successfully deleted."
+                "post_deleted"          => "Post successfully deleted.",
+                "post_saved"            => "Your post has been saved."
             );
 
         public $debug = false;

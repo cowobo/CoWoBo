@@ -12,7 +12,8 @@ $allowed_notice_types = array(
     "editrequest_cancelled",
     'editrequest',
     'email_sent',
-    'post_deleted'
+    'post_deleted',
+    'post_saved'
 );
 cowobo()->print_notices( $allowed_notice_types );
 
