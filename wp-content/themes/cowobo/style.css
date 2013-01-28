@@ -195,9 +195,14 @@ body.js.notice { padding-right: 60px; }
 #wp-calendar {width:100%;}
 
 /* Current user box */
-div.profilemenu img.avatar { margin-right: 10px; }
+div.profilemenu img.avatar,
+div.recently_active_user img.avatar { margin-right: 10px; }
 div.profilemenu div.upload-avatar form input { width: initial; }
 div.ranking-box p.next-rank { display: inline; }
+
+/* Recently active users widget */
+div.recently_active_user { clear: both; overflow: auto; margin-bottom: 10px; }
+div.recently_active_user img.avatar { float: left; }
 
 /* User activity log */
 ul.log{list-style:none}
