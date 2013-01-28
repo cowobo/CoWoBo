@@ -48,12 +48,20 @@ class CoWoBo_Recently_Active_Widget extends WP_Widget {
 
         $recently_active_ids = cowobo()->points->get_recently_active_profile_ids();
 
+        $previous_time = '';
         foreach ( $recently_active_ids as $user ) {
+            $user_rank = cowobo()->points->get_user_rank( $user['uid'] );
+            $time_since = cp_relativeTime( $user['maxtimestamp'] );
+            if ( $previous_time != $time_since ) {
+                echo "<span class='time-since'>" . $time_since . "</span>";
+                $previous_time = $time_since;
+            }
+
             echo "<a href='" . get_permalink( $user['profile_id'] ) . "'>";
             echo "<div class='recently_active_user'>";
-            echo get_avatar( $user['uid'] );
-            echo "<h3>" . get_the_title( $user['profile_id'] ) . "</h3>";
-            echo "<span class='time-since'>" . cp_relativeTime( $user['maxtimestamp'] ) . "</span>";
+            echo get_avatar( $user['uid'], 40 );
+            echo "<h3>" . get_the_title( $user['profile_id'] ) . "<br>";
+            echo "<small>$user_rank</small></h3>";
             echo "</div>";
             echo "</a>";
         }
