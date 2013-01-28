@@ -48,7 +48,6 @@ echo '<div class="imageviewer grabcursor">';
 	echo '<a class="zoom zoomin" href="?zoom=in"></a>';
 	echo '<a class="zoom zoomout" href="?zoom=out"></a>';
 
-
 	echo '<div class="imageholder">';
 		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
 		echo '<img src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
@@ -86,57 +85,48 @@ echo '<div class="page">';
 		echo '<div class="feed">';
 		
 			//include search
-			echo '<div class="newbox">';
-				include(TEMPLATEPATH.'/templates/search.php');
-			echo '</div>';
+			include(TEMPLATEPATH.'/templates/search.php');
 						
 			//include any notifications to user
 			include( TEMPLATEPATH . '/templates/notify.php');
 			
-			//include feed
-			echo '<div class="newbox">';
-				//include the appropriate feed template
-				if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
-					include(TEMPLATEPATH.'/templates/home.php');
-				endif;
+			//include the appropriate feed template
+			if(is_home() && ! cowobo()->query->s && ! cowobo()->query->new && ! cowobo()->query->action ):
+				include(TEMPLATEPATH.'/templates/home.php');
+			endif;
 		
-				if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
-					if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
-						include(TEMPLATEPATH.'/templates/login.php');
-					else:
-						include(TEMPLATEPATH.'/templates/'.$action.'.php');
-					endif;
-				elseif( cowobo()->query->new ): $author = true;
-					if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
-						include(TEMPLATEPATH.'/templates/login.php');
-					else:
-						include(TEMPLATEPATH.'/templates/editpost.php');
-					endif;
-				elseif(is_404()):
-					include(TEMPLATEPATH.'/templates/404.php');
-				elseif(is_single()):
-					include(TEMPLATEPATH.'/templates/posts.php');
-		elseif(is_category() || cowobo()->query->s):
-            if ( empty ( cowobo()->feed->sort ) ) :
-                include(TEMPLATEPATH.'/templates/categories.php');
-            else :
-                include(TEMPLATEPATH.'/templates/categories_sorted.php');
-            endif;
+			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
+				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
+					include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/'.$action.'.php');
 				endif;
+			elseif( cowobo()->query->new ): $author = true;
+				if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
+					include(TEMPLATEPATH.'/templates/login.php');
+				else:
+					include(TEMPLATEPATH.'/templates/editpost.php');
+				endif;
+			elseif(is_404()):
+				include(TEMPLATEPATH.'/templates/404.php');
+			elseif(is_single()):
+				include(TEMPLATEPATH.'/templates/posts.php');
+			elseif(is_category() || cowobo()->query->s):
+          		if ( empty ( cowobo()->feed->sort ) ) :
+               		include(TEMPLATEPATH.'/templates/categories.php');
+          		else :
+               		include(TEMPLATEPATH.'/templates/categories_sorted.php');
+           		endif;
+			endif;
 		
-				//include plugin boxes
-			    do_action ( 'cowobo_after_content' );
-				
-			echo '</div>';
+			//include plugin boxes
+			do_action ('cowobo_after_content' );
 		
 		echo '</div>';
 		
 		//include widgets
 		dynamic_sidebar('sidebar');
-	
-		//include footer links
-		include(TEMPLATEPATH.'/templates/footlinks.php');
-	
+			
 	echo '</div>';
 
 	//include background source code

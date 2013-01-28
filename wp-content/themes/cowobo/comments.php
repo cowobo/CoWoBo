@@ -17,7 +17,7 @@ else:
 		comment_form(array(
 		  'title_reply' => '',
 		  'logged_in_as'=> '',
-		  'comment_field' => '<textarea name="comment" id="comment" class="richtext" rows="4" tabindex="4"></textarea>',
+		  'comment_field' => '<textarea name="comment" id="comment" rows="4" tabindex="4"></textarea>',
 		  'label_submit' => 'Submit Comment',
 		  'comment_notes_after' => '',
 		 ));
@@ -31,7 +31,7 @@ if (!function_exists('cowobo_comments')) {
 		$GLOBALS['comment'] = $comment;
 		$commentmeta = get_comment_meta($comment->comment_ID, 'privatemsg', true);
 		$userprofile = get_post($profile_id);?>
-		<li class="tab" id="comment-<?php comment_ID();?>">
+		<li id="comment-<?php comment_ID();?>">
 			<div id="div-comment-<?php comment_ID() ?>" class="comment-body"><?php
 			echo '<a href="'.get_permalink($userprofile->ID).'">'.$userprofile->post_title.'</a>';?>
 			<div class="commenttext">
@@ -53,10 +53,12 @@ if (!function_exists('cowobo_comments')) {
 
 // Display Comments Section
 if ( have_comments() ) :
-	echo '<ol class="commentlist">'; wp_list_comments('callback=cowobo_comments'); echo '</ol>';
-	echo '<div class="navigation">';
-		echo '<div class="alignleft">'; previous_comments_link(); echo '</div>';
-		echo '<div class="alignright">'; next_comments_link(); echo '</div>';
+	echo '<div class="tab">';
+		echo '<ol class="commentlist">'; wp_list_comments('callback=cowobo_comments'); echo '</ol>';
+		echo '<div class="navigation">';
+			echo '<div class="alignleft">'; previous_comments_link(); echo '</div>';
+			echo '<div class="alignright">'; next_comments_link(); echo '</div>';
+		echo '</div>';
 	echo '</div>';
 endif;
 

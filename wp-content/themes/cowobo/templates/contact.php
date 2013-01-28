@@ -1,7 +1,7 @@
 <?php
 
-
 echo '<div class="tab">';
+
 	if( cowobo()->query->user_email ) echo 'Your message has been sent.';
 	echo '<form method="post" action="">';
 		echo '<div class="richbuttons">';
@@ -15,11 +15,12 @@ echo '<div class="tab">';
 		echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.trim ( $post_content ).'</div>';
 		echo '<textarea name="emailtext" rows="12" class="htmlbox"></textarea>';		
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
-		echo '<input type="input" class="lefthalf" name="user_firstname" value="Your Name" onfocus="this.value=\'\'"/>';
-		echo '<input type="input" class="righthalf" name="user_email" value="Your Email" onfocus="this.value=\'\'"/>';
+		echo '<input type="input" class="lefthalf" name="user_firstname" placeholder="Name" />';
+		echo '<input type="input" class="righthalf" name="user_email" placeholder="Email" />';
 		echo '<div class="clear" style="margin-top:5px">';
         wp_nonce_field( 'sendemail', 'sendemail' );
 		echo '<button type="submit" class="button submitform">Send Email</button>';
 		echo '</div>';
 	echo '</form>';
+	
 echo '</div>';

@@ -1,8 +1,8 @@
 <?php
-    // Do some search logic
-    $sort = cowobo()->feed->sort;
 
-    $out_arr = array();
+// Do some search logic
+$sort = cowobo()->feed->sort;
+$out_arr = array();
 
 	if (have_posts()):
         ob_start();
@@ -39,6 +39,7 @@
 	endif;
 
 	//include navigation links
-	echo '<div class="center">'; cowobo()->feed->pagination(); echo '</div>';
+	echo '<div class="tab center">'; cowobo()->feed->pagination(); echo '</div>';
+	
 
 ?>
