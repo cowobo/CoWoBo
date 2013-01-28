@@ -30,8 +30,10 @@ class CoWoBo_Users
         add_action('personal_options_update',       array ( &$this, 'save_extra_profile_fields' ) );
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
-        add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
-        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_cu' ), 5 );
+        //add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
+        add_action('cowobo_profile_widget',         array ( &$this, 'current_user_box' ) );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_current_user' ), 5 );
+        add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_current_user' ), 99 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
         add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
 
@@ -67,6 +69,12 @@ class CoWoBo_Users
         echo "</div>";
     }
 
+    public function do_avatar_current_user() {
+        echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
+        echo get_avatar( get_current_user_id() );
+        echo "</a></p>";
+    }
+
     public function do_avatar_with_upload_form() {
 
         //$default = ( defined ( 'COWOBO_DEFAULT_AVATAR_URL' ) ) ? COWOBO_DEFAULT_AVATAR_URL : '';
@@ -80,10 +88,11 @@ class CoWoBo_Users
         echo "</div>";
     }
 
-        public function do_avatar_with_upload_form_cu() {
-            $this->do_avatar_with_upload_form();
-            echo "</div><div class='current-user-after-avatar'>";
-        }
+    public function do_avatar_with_upload_form_current_user() {
+        echo "</div><div class='current-user-avatar-form hide-if-js'>";
+        $this->avatar_upload_form();
+        echo "<a href='#' class='upload-avatar-link right'>Cancel</a>";
+    }
 
     private function avatar_upload_form() {
         do_action( 'simple_local_avatar_notices' );
@@ -97,7 +106,7 @@ class CoWoBo_Users
 
                 <?php if ( ! empty( get_userdata( get_current_user_id() )->simple_local_avatar ) ) : ?>
 
-                    or <input type="submit" name="simple-local-avatar-erase" value="delete avatar">
+                    or <input type="submit" name="simple-local-avatar-erase" value="delete avatar" class="button button-secondary right">
 
                 <?php endif; ?>
             </p>

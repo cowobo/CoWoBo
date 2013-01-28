@@ -40,7 +40,13 @@ if (function_exists('dynamic_sidebar')) {
 		'before_widget'=>'<div class="widget">',
 		'after_widget'=>'</div>',
 		'id'=>'sidebar',
-		'name'=>'Main Sidebar',
+		'name'=>'Main Sidebar (logged out)',
+	));
+	register_sidebar(array(
+		'before_widget'=>'<div class="widget">',
+		'after_widget'=>'</div>',
+		'id'=>'sidebar_logged_in',
+		'name'=>'Logged In Sidebar',
 	));
 }
 

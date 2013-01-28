@@ -13,7 +13,16 @@ jQuery(document).ready(function() {
     // Avatar uploads
     jQuery( ".upload-avatar-link").click( function(e) {
         e.preventDefault();
-        jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
+        //jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
+        jQuery(".current-user, .current-user-avatar-form").slideToggle();
+    });
+
+    // Spread the word 'send email'
+    jQuery('.email-form-toggle').click( function(e) {
+        if ( ! jQuery('.email-form').is(':visible') ) {
+            e.preventDefault();
+            jQuery('.email-form').slideDown();
+        }
     });
 
     // Point descriptions

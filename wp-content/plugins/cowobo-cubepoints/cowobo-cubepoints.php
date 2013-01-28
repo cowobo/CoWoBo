@@ -28,6 +28,8 @@ define('COWOBO_CP_DIR', plugin_dir_path(__FILE__));
 define('COWOBO_CP_URL', plugin_dir_url(__FILE__));
 define('COWOBO_CP_INC_URL', COWOBO_CP_URL . '_inc/');
 
+require_once ( COWOBO_CP_DIR . 'lib/widgets.php' );
+
 if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
@@ -161,7 +163,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         private function logged_in_templates() {
             add_action ( 'current_user_box', array ( &$this, 'do_ranking_box' ) );
-            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
+            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box_after_post'), 20, 3 );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
             add_action ( 'cowobo_after_searchbar', array ( &$this, 'do_your_score_box') );
@@ -177,7 +179,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_userlink_score() {
-            echo " <em>{$this->current_user_rank['rank']}</em>";
+            echo "<br><em>{$this->current_user_rank['rank']} ({$this->current_user_points})</em>";
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
@@ -204,7 +206,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( $this->is_recently_updated( 'cowobo_avatar_updated' ) ) return;
 
-            cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            //cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            $this->add_points ( 'avatar_updated' );
+
         }
 
         public function no_points_for_profiles( $points ) {
@@ -324,10 +328,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
             echo "<div class='ranking-box'>";
                 //echo "<p>You are a <strong>" . $this->get_current_user_rank() . "</strong> with " . $this->get_current_user_points() . " awesomeness.</p>";
                 if ( $this->get_current_user_rank() != $this->current_user_next_rank['rank'] ) {
-                    echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
+                    //echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
                     $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
                 }
-                echo "<p><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
+                echo "<p class='clear'><a href='#' class='show-points-descriptions'>Find out what you can do to get more points.</a></p>";
                 echo "<div class='point-descriptions hide-if-js'>";
                     $this->do_point_descriptions( 'mixed' );
                 echo "</div>";
@@ -562,26 +566,32 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         }
 
-        public function do_points_log_box( $postid, $postcat, $author ) {
+        public function do_points_log_box_after_post ( $postid, $postcat, $author ) {
             if ( ! cowobo()->users->is_profile() ) return;
 
-            $GLOBALS['wpdb']->show_errors();
-            $log = $this->get_log ( cowobo()->users->displayed_user->ID, 15 );
+            echo '<div class="tab">';
+            echo '<h3>Activities</h3>';
+            $this->do_points_log_box( cowobo()->users->displayed_user->ID, 15 );
+            echo '</div>';
+        }
 
+        public function do_points_log_box( $uid = 0, $num_posts = 5 ) {
+            if ( ! $uid )  $uid = get_current_user_id();
+
+            $log = $this->get_log ( $uid, $num_posts );
             require ( COWOBO_CP_DIR . 'templates/log.php' );
 
         }
 
-            private function get_log( $type = 'all', $limit = 10 ) {
+            private function get_log( $uid = 'all', $limit = 10 ) {
                 global $wpdb;
 
                 $q      = '';
                 $limitq = '';
 
-                $uid = (int) cowobo()->users->displayed_user->ID;
-
-                if ( 'all' != $type )
+                if ( $uid && 'all' != $uid ) {
                     $q = $wpdb->prepare ( " WHERE `uid` = %d", $uid );
+                }
 
                 if( $limit > 0 )
                     $limitq = 'LIMIT '.(int) $limit;
@@ -640,7 +650,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
             if($count != 0 ) return;
 
-            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), "userid=$uid");
+            $this->add_points ( 'periodical' );
         }
 
         public function points_for ( $action ) {
@@ -672,6 +682,54 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $output = implode ( "\n", $output );
             }
             return implode ( "\n", $out );
+        }
+
+        public function get_recently_active_user_ids( $limit = 5, $with_timestamp = true ) {
+            global $wpdb;
+
+            if ( $with_timestamp ) {
+                if ( ! $users = wp_cache_get( 'recently_active_users_with_timestamp', 'cowobo_cubepoints' ) ) {
+
+                    $query = $wpdb->prepare ( "SELECT uid, max(timestamp) as maxtimestamp FROM `" . CP_DB . "` GROUP BY uid ORDER BY maxtimestamp DESC LIMIT %d", $limit );
+                    $users = $wpdb->get_results( $query, ARRAY_A );
+
+                    wp_cache_set( 'recently_active_users_with_timestamp', $users, 'cowobo_cubepoints' );
+                }
+            } else {
+                if ( ! $users = wp_cache_get( 'recently_active_users', 'cowobo_cubepoints' ) ) {
+
+                    $query = $wpdb->prepare ( "SELECT DISTINCT `uid` FROM `" . CP_DB . "` ORDER BY `id` DESC LIMIT %d", $limit );
+                    $users = $wpdb->get_col( $query );
+
+                    wp_cache_set( 'recently_active_users', $users, 'cowobo_cubepoints' );
+                }
+            }
+
+            return $users;
+        }
+
+        public function get_recently_active_profile_ids ( $limit = 5, $with_timestamp = true ) {
+            $user_ids = $this->get_recently_active_user_ids( $limit, $with_timestamp );
+            if ( empty ( $user_ids ) ) return array();
+
+            // Try for cache
+            if ( $with_timestamp )
+                $cached_users = wp_cache_get( 'recently_active_profiles_with_timestamp', 'cowobo_cubepoints' );
+            else
+                $cached_users = wp_cache_get( 'recently_active_profiles', 'cowobo_cubepoints' );
+            if ( $cached_users ) return $cached_users;
+
+
+            $profile_ids = array();
+            foreach ( $user_ids as $user ) {
+                if ( $with_timestamp ) {
+                    $profile_ids[] = array_merge( $user, array ( 'profile_id' => cowobo()->users->get_user_profile_id( $user['uid'] ) ));
+                } else {
+                    $profile_ids[] = cowobo()->users->get_user_profile_id( $user );
+                }
+            }
+
+            return $profile_ids;
         }
 
     }

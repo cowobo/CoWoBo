@@ -29,8 +29,9 @@ $out_arr = array();
 
         //$previous_sort_value = '';
         foreach ( $out_arr as $sort_value => $out_tabs ) {
-            /*if ( $sort_value != $previous_sort_value )  {
-            }*/
+            if ( is_numeric( $sort_value ) )
+                $sort_value = get_cat_name ( $sort_value );
+            
             echo "<h3>$sort_value</h3>";
             foreach ( $out_tabs as $out_tab )
                 echo $out_tab;
@@ -40,6 +41,6 @@ $out_arr = array();
 
 	//include navigation links
 	echo '<div class="tab center">'; cowobo()->feed->pagination(); echo '</div>';
-	
+
 
 ?>
