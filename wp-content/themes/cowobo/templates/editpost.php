@@ -69,7 +69,7 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				echo '<div class="headerrow">';
 					echo '<div class="thumbcol">Thumb</div>';
 					echo '<div class="browsecol">Browse for new image</div>';
-					echo '<div class="captioncol">Or enter URL of image or youtube video</div>';
+					echo '<div class="urlcol">or URL of image/youtube video</div>';
 					echo '<div class="deletecol"><b>Delete</b></div>';
 				echo '</div>';
 				for ($x=0; $x<4; $x++):
@@ -78,18 +78,18 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 					else:
 						$imgid = 0; $thumb = '';
 					endif;
-	                $caption_id = "caption$x";
+	                $url_id = "cwb_url$x";
 	                if ( $unsaved_data ) {
-	                    $caption =  $query->$caption_id;
-	                    if ( cowobo()->posts->is_image_url ( $caption ) )
-	                        $thumb = "<div style='background: url(\"$caption\") no-repeat 50% 50%;background-size: cover;width:40px; height:30px;'></div>";
+	                    $imgurl =  $query->$url_id;
+	                    if ( cowobo()->posts->is_image_url ( $imgurl ) )
+	                        $thumb = "<div style='background: url(\"$imgurl\") no-repeat 50% 50%;background-size: cover;width:40px; height:30px;'></div>";
 	                }
 	                else
-	                    $caption =  get_post_meta( $postid, $caption_id, true );
+	                    $imgurl =  get_post_meta( $postid, $url_id, true );
 					echo '<div class="imgrow">';
 						echo '<div class="thumbcol">'.$thumb.'</div>';
 						echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';					
-						echo '<div class="captioncol"><input type="text" name="caption'.$x.'" class="full" value="'. $caption .'"/></div>';
+						echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
 						echo '<div class="deletecol"><input type="checkbox" class="full" name="delete'.$x.'" value="1"><input type="hidden" name="imgid'.$x.'" value="'.$imgid.'"/></div>';
 					echo '</div>';
 				endfor;
@@ -120,8 +120,8 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			elseif($field['type'] == 'dates'):
 				$startdate = ( ! $unsaved_data ) ? get_post_meta($postid, 'startdate', true) : $query->startdate;
 				$enddate = ( ! $unsaved_data ) ? get_post_meta($postid, 'enddate', true) : $query->enddate;
-				echo '<input tabindex="'.$index.'" type="text" name="startdate" class="half left" value="'.$startdate.'"/>';
-				echo '<input tabindex="'.$index.'" type="text" name="enddate" class="half right" value="'.$enddate.'"/>';
+				echo '<input tabindex="'.$index.'" type="text" name="startdate" class="lefthalf" value="'.$startdate.'" placeholder="Starting Date"/>';
+				echo '<input tabindex="'.$index.'" type="text" name="enddate" class="righthalf" value="'.$enddate.'" placeholder="Ending Date"/>';
 			elseif($field['type'] == 'website'):
 				$websiteurl = ( ! $unsaved_data ) ? get_post_meta($postid, 'website', true) : $query->website;
 				echo '<input tabindex="'.$index.'" type="text" name="website" class="blue bold" value="'.$websiteurl.'"/>';
@@ -135,10 +135,13 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				echo '<input type="text" class="" tabindex="'.$index.'" name="country" value="'.$cat->name.'"/>';
 				echo '<br/>';
 			elseif($field['type'] == 'location'):
-				$city = ( ! $unsaved_data ) ? get_post_meta($postid, 'city', true) : $query->city;
-				$country = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country;
-				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="city" value="'.$city.'"/>';
-				echo '<input type="text" class="righthalf" tabindex="'.$index.'" name="country" value="'.$country.'"/>';
+				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'location', true) : $query->location;
+				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="location" value="'.$location.'"/>';
+				echo '<select name="maptype" class="righthalf">';
+					echo '<option>Do not add map to gallery</option>';
+					echo '<option value="mapquest">Add MapQuest Map</option>';
+					echo '<option value="streetview">Add Google Street View</option>';
+				echo '</select>';
 			elseif($field['type'] == 'smalltext'):
 				$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 				echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';
