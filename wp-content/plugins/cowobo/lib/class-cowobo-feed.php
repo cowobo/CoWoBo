@@ -41,7 +41,7 @@ class CoWoBo_Feed
 			$direction = 'ASC';
 		} elseif ( $sort == 'location') {
             $sort = $this->sort['type'] = 'meta_value';
-			$query['meta_key'] = $this->sort['meta_key'] = 'country';
+			$query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
 		} elseif ( 'category' == $sort ) {
             $sort = $this->sort['type'] = 'category';
         }
