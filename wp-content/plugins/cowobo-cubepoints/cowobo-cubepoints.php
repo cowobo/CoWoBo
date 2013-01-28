@@ -206,7 +206,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             if ( $this->is_recently_updated( 'cowobo_avatar_updated' ) ) return;
 
-            cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            //cp_points( 'cowobo_avatar_updated', get_current_user_id(), COWOBO_AVATAR_UPDATED_POINTS, "userid=" . get_current_user_id() );
+            $this->add_points ( 'avatar_updated' );
+
         }
 
         public function no_points_for_profiles( $points ) {
@@ -648,7 +650,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM ".CP_DB." WHERE `uid`=$uid AND `timestamp`>$difference AND `type`='cowobo_periodical'");
             if($count != 0 ) return;
 
-            cp_points('cowobo_periodical', $uid, $this->points_for('periodical'), "userid=$uid");
+            $this->add_points ( 'periodical' );
         }
 
         public function points_for ( $action ) {
