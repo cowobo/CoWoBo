@@ -19,7 +19,6 @@ class CoWoBo_Recent_Activity_Widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='recent_activity'>";
-        //echo $before_title . "Your Profile" . $after_title;
 
         cowobo()->points->do_points_log_box (get_current_user_id(), 3 );
 
@@ -45,7 +44,21 @@ class CoWoBo_Recently_Active_Widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='recently_active'>";
-        //echo $before_title . "Your Profile" . $after_title;
+        echo $before_title . "Recently Active" . $after_title;
+
+        $recently_active_ids = cowobo()->points->get_recently_active_profile_ids();
+
+        foreach ( $recently_active_ids as $user ) {
+            echo "<a href='" . get_permalink( $user['profile_id'] ) . "'>";
+            echo "<div class='recently_active_user'>";
+            echo get_avatar( $user['uid'] );
+            echo "<h3>" . get_the_title( $user['profile_id'] ) . "</h3>";
+            echo "<span class='time-since'>" . cp_relativeTime( $user['maxtimestamp'] ) . "</span>";
+            echo "</div>";
+            echo "</a>";
+        }
+
+
         do_action ( 'cowobo_recently_active_widget' );
         echo "</div>" . $after_widget;
     }
