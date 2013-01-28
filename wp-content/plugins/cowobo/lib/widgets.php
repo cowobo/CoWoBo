@@ -3,6 +3,8 @@ add_action('widgets_init', 'cowobo_register_widgets' );
 function cowobo_register_widgets() {
     register_widget('cowobo_profile_widget');
     register_widget('cowobo_share_widget');
+    register_widget('cowobo_actionlinks_widget');
+    register_widget('cowobo_tour_widget');
 }
 
 class CoWoBo_Profile_Widget extends WP_Widget {
@@ -34,16 +36,58 @@ class CoWoBo_Share_widget extends WP_Widget {
         parent::WP_Widget('cowobo_share_widget', 'CoWoBo Share Widget', array('description' => 'Display the CoWoBo Share Widget' ) );
     }
 
-        public function cowobo_sharewidget() {
+        public function cowobo_share_widget() {
             $this->__construct();
         }
 
     public function widget( $args, $instance ) {
         extract($args, EXTR_SKIP);
 
-        echo $before_widget . "<div class='sharewidget'>";
+        echo $before_widget . "<div class='share-widget'>";
 
-        require ( TEMPLATEPATH . '/templates/share.php' );
+        include ( TEMPLATEPATH . '/templates/widgets/share.php' );
+
+        echo "</div>" . $after_widget;
+    }
+}
+
+class CoWoBo_Actionlinks_widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_actionlinks_widget', 'CoWoBo Action Links Widget', array('description' => 'Logout etc.' ) );
+    }
+
+        public function cowobo_actionlinks_widget() {
+            $this->__construct();
+        }
+
+    public function widget( $args, $instance ) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='actionlinks-widget'>";
+
+        include TEMPLATEPATH . '/templates/widgets/actionlinks.php';
+
+        echo "</div>" . $after_widget;
+    }
+}
+
+class CoWoBo_Tour_widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_tour_widget', 'CoWoBo Tour Widget', array('description' => 'Take the tour!' ) );
+    }
+
+        public function cowobo_tour_widget() {
+            $this->__construct();
+        }
+
+    public function widget( $args, $instance ) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='tour-widget'>";
+
+        include TEMPLATEPATH . '/templates/widgets/tour.php';
 
         echo "</div>" . $after_widget;
     }
