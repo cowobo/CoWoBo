@@ -20,6 +20,9 @@ class CoWoBo_Recent_Activity_Widget extends WP_Widget {
 
         echo $before_widget . "<div class='recent_activity'>";
         //echo $before_title . "Your Profile" . $after_title;
+
+        cowobo()->points->do_points_log_box (get_current_user_id(), 3 );
+
         do_action ( 'cowobo_recent_activity_widget' );
         echo "</div>" . $after_widget;
     }

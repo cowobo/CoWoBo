@@ -163,7 +163,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         private function logged_in_templates() {
             add_action ( 'current_user_box', array ( &$this, 'do_ranking_box' ) );
-            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box'), 20, 3 );
+            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box_after_post'), 20, 3 );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
             add_action ( 'cowobo_after_searchbar', array ( &$this, 'do_your_score_box') );
@@ -564,25 +564,32 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         }
 
-        public function do_points_log_box( $postid, $postcat, $author ) {
+        public function do_points_log_box_after_post ( $postid, $postcat, $author ) {
             if ( ! cowobo()->users->is_profile() ) return;
 
-            $log = $this->get_log ( cowobo()->users->displayed_user->ID, 15 );
+            echo '<div class="tab">';
+            echo '<h3>Activities</h3>';
+            $this->do_points_log_box( cowobo()->users->displayed_user->ID, 15 );
+            echo '</div>';
+        }
 
+        public function do_points_log_box( $uid = 0, $num_posts = 5 ) {
+            if ( ! $uid )  $uid = get_current_user_id();
+
+            $log = $this->get_log ( $uid, $num_posts );
             require ( COWOBO_CP_DIR . 'templates/log.php' );
 
         }
 
-            private function get_log( $type = 'all', $limit = 10 ) {
+            private function get_log( $uid = 'all', $limit = 10 ) {
                 global $wpdb;
 
                 $q      = '';
                 $limitq = '';
 
-                $uid = (int) cowobo()->users->displayed_user->ID;
-
-                if ( 'all' != $type )
+                if ( $uid && 'all' != $uid ) {
                     $q = $wpdb->prepare ( " WHERE `uid` = %d", $uid );
+                }
 
                 if( $limit > 0 )
                     $limitq = 'LIMIT '.(int) $limit;
