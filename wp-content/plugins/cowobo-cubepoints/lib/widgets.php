@@ -18,10 +18,12 @@ class CoWoBo_Recent_Activity_Widget extends WP_Widget {
     public function widget($args, $instance) {
         extract($args, EXTR_SKIP);
 
-        echo $before_widget . "<div class='recent_activity'>";
-        echo $before_title . "<a href='" . cowobo()->users->get_current_user_profile_link() . "'>Your Activity</a>" . $after_title;
+        $title = (is_user_logged_in() ) ? "<a href='" . cowobo()->users->get_current_user_profile_link() . "'>Your Activity</a>" : "Latest Activity";
 
-        cowobo()->points->do_points_log_box (get_current_user_id(), 3 );
+        echo $before_widget . "<div class='recent_activity'>";
+        echo $before_title . $title . $after_title;
+
+        cowobo()->points->do_points_log_box ( get_current_user_id(), 3 );
 
         do_action ( 'cowobo_recent_activity_widget' );
         echo "</div>" . $after_widget;
