@@ -28,6 +28,8 @@ define('COWOBO_CP_DIR', plugin_dir_path(__FILE__));
 define('COWOBO_CP_URL', plugin_dir_url(__FILE__));
 define('COWOBO_CP_INC_URL', COWOBO_CP_URL . '_inc/');
 
+require_once ( COWOBO_CP_DIR . 'lib/widgets.php' );
+
 if (!class_exists('CoWoBo_CubePoints')) :
 
     /**
@@ -565,7 +567,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function do_points_log_box( $postid, $postcat, $author ) {
             if ( ! cowobo()->users->is_profile() ) return;
 
-            $GLOBALS['wpdb']->show_errors();
             $log = $this->get_log ( cowobo()->users->displayed_user->ID, 15 );
 
             require ( COWOBO_CP_DIR . 'templates/log.php' );
