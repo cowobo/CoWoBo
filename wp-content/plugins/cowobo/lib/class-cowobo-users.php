@@ -30,7 +30,8 @@ class CoWoBo_Users
         add_action('personal_options_update',       array ( &$this, 'save_extra_profile_fields' ) );
         add_action('edit_user_profile_update',      array ( &$this, 'save_extra_profile_fields' ) );
 
-        add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
+        //add_action('cowobo_profile_dropdown', array ( &$this, 'current_user_box' ) );
+        add_action('cowobo_profile_widget',         array ( &$this, 'current_user_box' ) );
         add_action('current_user_box',              array ( &$this, 'do_avatar_with_upload_form_cu' ), 5 );
         add_action('current_user_box',              array ( &$this, 'do_user_link' ), 10 );
         add_action('cowobo_before_postcontent',     array ( &$this, 'do_profile_avatar' ), 10 );
