@@ -84,17 +84,23 @@ function adjustLatByPx($lat, $amount, $zoom) {
 function cwb_streetview($postid) {
 	$coordinates = get_post_meta($postid, 'coordinates', true);
 	if($coordinates ){
-		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&ll='.$coordinates);
+		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&pitch=-30&ll='.$coordinates);
 		$xml = simplexml_load_string($xmlstring);
-		$pano_id = $xml->data_properties['pano_id'];
-		$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
-		$tiles = '';
-		for ($x=0; $x<=1; $x++) {
-			$tiles .= '<img src="'.$baseurl.'&x='.$x.'&y=0" alt="" width="50%">';
+		if($pano_id = $xml->data_properties['pano_id']) {;
+			$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
+			$tiles = '';
+			for ($x=0; $x<=1; $x++) {
+				$tiles .= '<img class="slideimg" src="'.$baseurl.'&x='.$x.'&y=0" alt="" width="50%">';
+			}
+			$slide = '<div class="slide hide" id="slide-street" style="width:150%;">';
+			$slide .= '<img class="proportion" src="'.get_bloginfo('template_url').'/images/ratio-streetview.png" width="100%" alt=""/>';
+			$slide .= '<div style="position:absolute; width:100%; top:0%;"/>'.$tiles.'</div>';
+			$slide .= '</div>';
+			
+			return $slide;
+		} else {
+			return false;
 		}
-		$slide = '<div class="slide zoom-1" id="slide-street">'.$tiles.'</div>';
-		
-		return $slide;
 	}
 }
 
@@ -177,7 +183,7 @@ function cwb_loadmap() {
 	endif;
 
 	//construct new maplayer
-	$map = '<div class="slide zoom-'.$zoomlevel.'" id="slide-map" '.$position.'>';
+	$map = '<div class="slide hide zoom-'.$zoomlevel.'" id="slide-map" '.$position.'>';
 	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100% height="100%">';
 	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
 
