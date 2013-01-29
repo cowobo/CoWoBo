@@ -136,12 +136,13 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				echo '<br/>';
 			elseif($field['type'] == 'location'):
 				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'location', true) : $query->location;
+				$map = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includemap', true) : $query->cwb_includemap;
+				$street = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includestreet', true) : $query->cwb_includestreet;
+				if($street==1) $streetstate = 'checked'; else $streetstate = '';
+				if($map==1) $mapstate = 'checked'; else $mapstate = '';
 				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="location" value="'.$location.'"/>';
-				echo '<select name="maptype" class="righthalf">';
-					echo '<option>Do not add map to gallery</option>';
-					echo '<option value="mapquest">Add MapQuest Map</option>';
-					echo '<option value="streetview">Add Google Street View</option>';
-				echo '</select>';
+				echo '<input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Show Map';
+				echo '<input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Show Streetview';
 			elseif($field['type'] == 'smalltext'):
 				$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 				echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';
