@@ -81,19 +81,21 @@ function adjustLatByPx($lat, $amount, $zoom) {
 
 
 //return streetview tiles
-function cwb_streetview($coordinates) {
-		
+function cwb_streetview($postid) {
+	$coordinates = get_post_meta($postid, 'coordinates', true);
+	if($coordinates ){
 		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&ll='.$coordinates);
 		$xml = simplexml_load_string($xmlstring);
 		$pano_id = $xml->data_properties['pano_id'];
 		$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
 		$tiles = '';
-		
 		for ($x=0; $x<=1; $x++) {
 			$tiles .= '<img src="'.$baseurl.'&x='.$x.'&y=0" alt="" width="50%">';
 		}
+		$slide = '<div class="slide zoom-1" id="slide-street">'.$tiles.'</div>';
 		
-		return $tiles;
+		return $slide;
+	}
 }
 
 //check if location entered exists
@@ -175,9 +177,8 @@ function cwb_loadmap() {
 	endif;
 
 	//construct new maplayer
-	$map = '<div class="slide zoom'.$zoomlevel.'" id="slide-map" '.$position.'>';
+	$map = '<div class="slide zoom-'.$zoomlevel.'" id="slide-map" '.$position.'>';
 	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100% height="100%">';
-	$newlayer .= '<input type="hidden" class="zoomlevel" value="'.$zoomlevel.'"/>';
 	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
 
 	//include large angel on homepage
