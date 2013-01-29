@@ -56,19 +56,18 @@ jQuery(document).ready(function() {
         jQuery(".point-descriptions").slideToggle();
     });
 
-	//center all images in header except maps
-	jQuery('.slideimg').not('.map').each(function(){
-		var slide = jQuery(this).parent('.slide');
-		jQuery(this).load(function() {center_slide(slide)});
-		center_slide(slide); //for slides that are already loaded
-	});
-	
-	//set zoom levels for each slide
+	//center slides and store zoom levels 
 	jQuery('.slide').each(function(){
-		var zoom = jQuery(this).attr('class').split(' ')[1];
+		var slide = jQuery(this);
+		var img = slide.find('.slideimg');
+		var zoom = slide.attr('class').split(' ')[1];
+		if(!img.hasClass('map')) {
+			img.load(function() {center_slide(slide)});
+			center_slide(slide); 
+		}
 		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
-		else level = 0;
-		jQuery(this).data('zoom', level);
+		else var level = 0;
+		slide.data('zoom', level);
 	});	
 
 	//Enable Map Resizing and Panning
@@ -93,7 +92,7 @@ jQuery(document).ready(function() {
 		var viewheight = viewer.height();
 
 		if (pan) {
-	        var slide = jQuery(".slide:last");
+	        var slide = jQuery(".slide:first");
 			var slidepos = slide.position();
 			var xmax = jQuery(window).width() - slide.width();
 			var ymax = viewheight - slide.height();
@@ -136,7 +135,7 @@ jQuery(document).ready(function() {
 jQuery('.zoom, .pan, .labels').live('click', function(event){
 	event.preventDefault();
 	var action = jQuery(this).attr('class').split(' ')[1];
-	var slide = jQuery('.slide:last');
+	var slide = jQuery('.slide:first');
 	var slidepos = slide.position();
 	var slideimg = slide.children('.slideimg');
 	var viewheight = jQuery('.imageviewer').height();
@@ -170,7 +169,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		var new_y = (-newzoom / 2) + 50 + y_offset + '%';
 		var new_x = (-newzoom / 2) + 50 + x_offset + '%';
 		var newsrc = slide.children('.zoomsrc'+newlevel).val();
-		newstyle = {width:newzoom +'%', height:newzoom +'%', top:new_y, left:new_x}
+		newstyle = {width:newzoom +'%', top:new_y, left:new_x}
 		slide.data('zoom', newlevel);
 
 		//load larger image if available
@@ -184,7 +183,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	} else if(action ==  'zoomout' && curzoom > 0) {
 		var newlevel = 0;
 		slide.data('zoom', newlevel);
-		newstyle = {width:"110%", height:"110%", top:"-5%", left:"-5%"};
+		newstyle = {width:"110%", top:"-5%", left:"-5%"};
 	}
 
 	//animate slide
@@ -268,9 +267,14 @@ jQuery('.smallthumbs a').live('click', function(event) {
 	var slide = jQuery('#slide-'+num);
 	var caption = jQuery('#caption-'+num);
 	event.preventDefault();
-	caption.show();
-	jQuery('.caption').not(caption).hide();
-	slide.hide().appendTo(jQuery('.imageholder')).fadeIn(1000);
+	if(slide.index() > 0){
+		caption.show();
+		jQuery('.caption').not(caption).hide();
+		jQuery('.slide:first').fadeOut(1000);
+		slide.prependTo(jQuery('.imageholder')).show();	
+	}
+	
+
 });
 
 

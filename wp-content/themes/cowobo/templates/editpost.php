@@ -72,7 +72,7 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 					echo '<div class="urlcol">or URL of image/youtube video</div>';
 					echo '<div class="deletecol"><b>Delete</b></div>';
 				echo '</div>';
-				for ($x=0; $x<4; $x++):
+				for ($x=0; $x<3; $x++):
 					if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
 						$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail');
 					else:

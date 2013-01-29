@@ -356,7 +356,7 @@ class CoWoBo_Posts
 
 		if($postid) {
 	        
-			for ($x=0; $x<4; $x++):
+			for ($x=0; $x<3; $x++):
 	            
 				//store slide info
 	            $url = get_post_meta($postid, 'cwb_url'.$x, true);
@@ -367,7 +367,7 @@ class CoWoBo_Posts
 			
 				//check if the slide is video or image;
 	            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
-	                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
+	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'"><object>';
 	                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
 	                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
 	                    $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
@@ -375,14 +375,14 @@ class CoWoBo_Posts
 	                $slides[$x] .= '</object></div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
 	            } elseif ( $image_check ) {
-	                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
 	                $slides[$x] .= '</div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
 	            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
 	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
 					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
-					$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+					$slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
 						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
 	                $slides[$x] .= '</div>';
@@ -402,21 +402,7 @@ class CoWoBo_Posts
 	        endfor;
 	
 		}
-	
-		//include map if available
-		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
-			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
-			$slides[] = cwb_loadmap();
-			$caption = get_post_meta($postid, 'caption-map', true);
-			if($this->is_user_post_author() && $postid) {
-				$default = 'Click here to add a caption';
-				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.$caption.'" placeholder="'.$default.'"/>';
-			} else {
-				$default = 'Use the navigation controls to zoom into the map';
-				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
-			}
-		}
-		
+
 		//include streetview if available
 		if( get_post_meta($postid, 'cwb_includestreet', true)) {
 			$coordinates = get_post_meta($postid, 'coordinates', true);
@@ -431,20 +417,32 @@ class CoWoBo_Posts
 				$captions[] = '<span class="caption hide" id="caption-street">'.$default.'</span>';
 			}
 		}
-		
-        //order slides specified in editpost (float:right)
-        if( ! is_home() ) $slides = array_reverse($slides); 
-        
+			
+		//include map if available
+		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
+			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
+			$slides[] = cwb_loadmap();
+			$caption = get_post_meta($postid, 'caption-map', true);
+			if($this->is_user_post_author() && $postid) {
+				$default = 'Click here to add a caption';
+				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.$caption.'" placeholder="'.$default.'"/>';
+			} else {
+				$default = 'Use the navigation controls to zoom into the map';
+				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
+			}
+		}
+		       
 		//show map first on homepage
 		if( ! is_home() ) {
 			$thumbs = array_reverse( $thumbs ); 
 		} else {
+			$slides = array_reverse($slides); 
 			$captions = array_reverse( $captions ); 
 		}
 		
 		//show first caption and slide
 		$captions[0] = str_replace('caption hide' , 'caption' , $captions[0]);
-		//$slides[0] = str_replace('slide hide' , 'slide' , $captions[0]);
+		$slides[0] = str_replace('slide hide' , 'slide' , $slides[0]);
 		
 		//include caption form if user is author of post
 		if($this->is_user_post_author() && $postid) {
@@ -459,8 +457,8 @@ class CoWoBo_Posts
 					
 		//echo html
 		echo '<div class="imageholder">';
-			echo '<img src="'.$imgfolder.'/proportion.png" width="100%" alt=""/>';
 			echo implode('', $slides);
+			echo '<img src="'.$imgfolder.'/ratio-map.png" width="100%" alt=""/>';
 		echo '</div>';
 
 		echo '<div class="titlebar">';
