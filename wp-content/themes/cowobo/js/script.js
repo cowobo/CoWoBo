@@ -202,8 +202,7 @@ function center_slide(slide) {
 
 //SEARCH
 
-jQuery('.searchbar li').live('click', function(e){
-	e.preventDefault();
+jQuery('.searchbar li').live('click', function(){
 	var menu = jQuery('.' + jQuery(this).attr('id'))
 	menu.slideToggle();
 	jQuery('.dropmenu').not(menu).slideUp();
