@@ -132,9 +132,9 @@ class CoWoBo_Posts
 			if( $location = cwb_geocode( $newlocation ) ):
 				//check if location has already been added
 				$coordinates = $location['lat'].','.$location['lng'];
-				$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
+				$citypost = get_page_by_title( $location['city'], 'post' );
                 if( $citypost ):
-                	$cityid = $citypost[0]->ID;
+                	$cityid = $citypost->ID;
 					$countrycat = get_the_category($cityid);
 					$countryid  = $countrycat[0]->term_id;
                 else:
@@ -372,7 +372,7 @@ class CoWoBo_Posts
             }
 			
 			//include captions
-			if(!$this->is_user_post_author()) {
+			if($this->is_user_post_author()) {
 				$captions .= '<input type="text" class="caption '.$captionstate.'" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
 
 			} else {
@@ -384,7 +384,7 @@ class CoWoBo_Posts
         endfor;
 		
 		//include form if user is author of post
-		if(!$this->is_user_post_author()) {
+		if($this->is_user_post_author()) {
 			$captions = '<form method="post" action="" class="capform">'.$captions.'<input type="submit" class="button" value="Save All" /></form>';
 		}
 			
