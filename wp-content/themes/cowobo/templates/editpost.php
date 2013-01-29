@@ -204,12 +204,9 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
 			echo '<br/>';
 			echo '<a class="button" href="'.get_permalink($postid).'">Cancel</a>';
-			//echo '<a class="button" href="'.get_bloginfo('url').'?delete=' . wp_create_nonce( 'delete' ). '&id='.$postid.'">Delete</a>';
 			echo '<input type="hidden" name="post_ID" value="'.$postid.'"/>';
-			//echo '<input type="submit" class="button" value="' .wp_create_nonce( 'delete' ). '" name="delete">Delete</a>';
-			if ( $postcat->slug != 'coder' )
+			if ( $postcat->slug != 'coder' || $postcat->slug != 'location')
 	            echo '<button type="submit" class="button" value="' .wp_create_nonce( 'delete' ). '" name="delete">Delete</button>';
-	        //<button name="name" value="value" type="submit">Sök</button>
 	        wp_nonce_field( 'save', 'save' );
 	        if ( $link_to ) echo "<input type='hidden' name='link_to' value='$link_to'>";
 			echo '<button id="formsubmit" type="submit" class="button submitform">Save</button>';
