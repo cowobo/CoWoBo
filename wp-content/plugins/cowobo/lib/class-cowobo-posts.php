@@ -35,6 +35,7 @@ class CoWoBo_Posts
      * @todo This is one beast of a method - can we make some subroutines?
      */
     public function save_post(){
+	
         global $post, $cowobo, $profile_id;
         $linkedid = 0; $tagarray = array();
 
@@ -132,7 +133,7 @@ class CoWoBo_Posts
 			if( $location = cwb_geocode( $newlocation ) ):
 				//check if location has already been added
 				$coordinates = $location['lat'].','.$location['lng'];
-				$citypost = get_page_by_title( $location['city'], 'post' );
+				$citypost = get_page_by_title( $location['city'], 'OBJECT', 'post' );
                 if( $citypost ):
                 	$cityid = $citypost->ID;
 					$countrycat = get_the_category($cityid);
@@ -232,6 +233,20 @@ class CoWoBo_Posts
         //return $postmsg;
     }
 
+	/**
+     * Save captions with new data
+     */
+	 
+    public function save_captions(){
+		$postid = cowobo()->query->post_ID;
+		$fields = array('0','1','2','3','map','street');
+		foreach ($fields as $field) {
+			$fieldname = 'caption-'.$field;
+	        update_post_meta($postid, $fieldname, cowobo()->query->$fieldname);
+		}
+	}
+	
+	
     /**
      * Get primal category of post
      */
@@ -331,110 +346,134 @@ class CoWoBo_Posts
     }
 
     /**
-     * Return gallery with captions
+     * Return gallery with captions and thumbs
      */
-    public function loadgallery( $postid ) {
+    public function loadgallery( $postid = false ) {
 
         $slides = array();
+		$thumbs = array();
+		$imgfolder = get_bloginfo('template_url').'/images';
 
-        for ($x=0; $x<4; $x++):
-
-            //store slide info
-            $url = get_post_meta($postid, 'cwb_url'.$x, true);
-            $imgid = get_post_meta($postid, 'imgid'.$x, true);
-            $videocheck = explode( "?v=", $url );
-            $image_check = $this->is_image_url( $url );
+		if($postid) {
+	        
+			for ($x=0; $x<4; $x++):
+	            
+				//store slide info
+	            $url = get_post_meta($postid, 'cwb_url'.$x, true);
+	            $imgid = get_post_meta($postid, 'imgid'.$x, true);
+	            $videocheck = explode( "?v=", $url );
+	            $image_check = $this->is_image_url( $url );
+				$caption = get_post_meta($postid, 'caption-'.$x, true);
 			
-			if($x == 0) $captionstate = 'show'; else $captionstate = 'hide';
-			$caption = get_post_meta($postid, 'caption'.$x, true);
-			if( empty($caption) )	$caption = 'Use the navigation buttons to zoom and pan the image';
-			
-			//check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $url = $videocheck[1]) {
-                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
-                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
-                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
-                    $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
-                    $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$url.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
-                $slides[$x] .= '</object></div>';
-            } elseif ( $image_check ) {
-                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
-                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
-					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
-                $slides[$x] .= '</div>';
-            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
-                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
-				$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
-                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
-					$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
-					if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
-                $slides[$x] .= '</div>';
-            }
-			
-			//include captions
-			if($this->is_user_post_author()) {
-				$captions .= '<input type="text" class="caption '.$captionstate.'" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
-
+				//check if the slide is video or image;
+	            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
+	                $slides[$x] = '<div class="slide" id="slide-'.$x.'"><object>';
+	                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
+	                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
+	                    $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
+	                    $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$videourl.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
+	                $slides[$x] .= '</object></div>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
+	            } elseif ( $image_check ) {
+	                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
+						$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
+	                $slides[$x] .= '</div>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
+	            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
+	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
+					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
+					$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
+	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
+						$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
+						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
+	                $slides[$x] .= '</div>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
+	            }
+				
+				//store captions
+				if(!$this->is_user_post_author()) {
+					if( empty($caption) ) $caption = '<a class="resize" href="#">Click here to resize the media viewer</a>';
+					$captions[] = '<span class="caption hide" id="caption-'.$x.'">'.$caption.'</span>';
+				} else {
+					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
+				}
+	
+	           unset($imgid); unset($zoom2src);
+	
+	        endfor;
+	
+		}
+	
+		//include map if available
+		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
+			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
+			$slides[] = cwb_loadmap();
+			$caption = get_post_meta($postid, 'caption-map', true);
+			if($this->is_user_post_author() && $postid) {
+				$default = 'Click here to add a caption';
+				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.$caption.'" placeholder="'.$default.'"/>';
 			} else {
-				$captions .= '<span class="caption '.$captionstate.'" id="caption-'.$x.'">'.$caption.'</span>';
+				$default = 'Use the navigation controls to zoom into the map';
+				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
 			}
-
-           unset($imgid); unset($zoom2src);
-
-        endfor;
-		
-		//include form if user is author of post
-		if($this->is_user_post_author()) {
-			$captions = '<form method="post" action="" class="capform">'.$captions.'<input type="submit" class="button" value="Save All" /></form>';
-		}
-			
-        //construct gallery
-        $gallery = '';
-        if( ! empty ( $slides ) ) {
-            $slides = array_reverse($slides); //so they appear in the correct order
-            echo implode('', $slides);
-        }
-
-        return $captions;
-    }
-
-	/**
-     * Return list of thumbs for post
-     *
-     * @todo We are doubling up on a lot of work here. Can't we store the whole gallery in one object?
-     */
-    function load_thumbs($postid, $catslug = false){
-
-		//create thumbs for other images
-        for ($x=0; $x<4; $x++) {
-            
-			//store slide info
-            $url = get_post_meta($postid, 'cwb_url'.$x, true);           
-			$imgid = get_post_meta($postid, 'imgid'.$x, true);
-            $videocheck = explode("?v=", $url);
-            $imagecheck = $this->is_image_url( $url );
-
-		    //check if the slide is video or image;
-            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1] ) {
-               	$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
-			} elseif ( $imagecheck ) {
-                $thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
-			} elseif( $thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail') ) {
-                $thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
-			}
-        }
-
-		//include map thumb
-		if( get_post_meta($postid, 'includemap', true) or empty ( $thumbs ) ) {
-			$thumbs[] = '<a class="map" href="?img=map"><img src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg" height="100%" /></a>';
 		}
 		
-		if( ! empty ( $thumbs ) ) {
-            $thumbs = array_reverse($thumbs); //so they appear in the correct order
-            return implode('', $thumbs);
-        }
+		//include streetview if available
+		if( get_post_meta($postid, 'cwb_includestreet', true)) {
+			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=35x35&location='.$location.'&sensor=false" height="100%" /></a>';
+			$slides[] = cwb_streetview();
+			$caption = get_post_meta($postid, 'caption-map', true);
+			if($this->is_user_post_author() && $postid) {
+				$default = 'Click here to add a caption';
+				$captions[] = '<input type="text" class="caption hide" id="caption-street" name="caption-street" value="'.$caption.'" placeholder="'.$default.'"/>';
+			} else {
+				$default = 'Use the navigation controls to zoom into the map';
+				$captions[] = '<span class="caption hide" id="caption-street">'.$default.'</span>';
+			}
+		}
+		
+        //order slides specified in editpost (float:right)
+        if( ! is_home() ) $slides = array_reverse($slides); 
+        
+		//show map first on homepage
+		if( ! is_home() ) {
+			$thumbs = array_reverse( $thumbs ); 
+		} else {
+			$captions = array_reverse( $captions ); 
+		}
+		
+		//show first caption and slide
+		$captions[0] = str_replace('caption hide' , 'caption' , $captions[0]);
+		//$slides[0] = str_replace('slide hide' , 'slide' , $captions[0]);
+		
+		//include caption form if user is author of post
+		if($this->is_user_post_author() && $postid) {
+			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
+			$captionsdiv .= '<input type="hidden" name="post_ID" value="'.$postid.'" />';
+			$captionsdiv .= '<input type="submit" class="button" value="Save Captions" />';
+			$captionsdiv .= wp_nonce_field( 'captions', 'captions' );
+			$captionsdiv .= '</form>';
+		} else {
+			$captionsdiv = implode('', $captions);
+		}
+					
+		//echo html
+		echo '<div class="imageholder">';
+			echo '<img class="shadow" src="'.$imgfolder.'/shadow.png" alt=""/>';
+			echo '<img src="'.$imgfolder.'/proportion.png" width="100%" alt=""/>';
+			echo implode('', $slides);
+		echo '</div>';
 
+		echo '<div class="titlebar">';
+			echo '<div class="shade"></div>';
+			echo '<img class="resizeicon" src="'.$imgfolder.'/resizeicon.png" title="Toggle viewer height" alt=""/>';
+			echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
+			$margin = count($thumbs)*45+20;
+			echo '<div class="captions" style="margin-right:'.$margin.'px">'.$captionsdiv.'</div>';
+		echo '</div>';
     }
+
 
     /**
      * Echo thumbnail of post

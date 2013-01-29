@@ -265,6 +265,7 @@ if (!class_exists('CoWoBo')) :
             // Post actions
             elseif( $verify->delete ) $posts->delete_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
+			elseif( $verify->captions ) $GLOBALS['postmsg'] = $posts->save_captions();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
 //            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);

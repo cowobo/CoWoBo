@@ -6,14 +6,14 @@ get_header();
 //VARIABLES
 if ( ! isset ( $postid ) ) $postid = 0;
 $action = cowobo()->query->action;
-$feedtitle = $langnames[$lang][2];
+$imgfolder = get_bloginfo('template_url').'/images';
 $viewerheight = '70%';
 
 if(is_home()) {
 	$feedtitle = $langnames[$lang][1];
 	$subtitle = $langnames[$lang][2];
-	$intropost = get_page_by_title( 'Take the tour' );
-       if ( $intropost ) $postid = $intropost->ID;
+	$intropost = get_page_by_title( 'All About Us', 'OBJECT', 'post' );
+	if ( $intropost ) $postid = $intropost->ID;
 } elseif(is_single()) {
 	$userid = $profile_id;
 	$location = get_post_meta($post->ID, 'location', true);
@@ -35,7 +35,7 @@ echo '<div class="description hide">'.get_bloginfo('description').'</div>';
 echo '<div class="imageviewer grabcursor">';
 
 	//set the height on load of the image viewer
-	echo '<img class="proportion" src="'.get_bloginfo('template_url').'/images/proportion.png" width="'.$viewerheight.'" alt=""/>';
+	echo '<img class="proportion" src="'.$imgfolder.'/proportion.png" width="'.$viewerheight.'" alt=""/>';
 
 	//include site title
 	echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
@@ -48,25 +48,8 @@ echo '<div class="imageviewer grabcursor">';
 	echo '<a class="zoom zoomin" href="?zoom=in"></a>';
 	echo '<a class="zoom zoomout" href="?zoom=out"></a>';
 
-	echo '<div class="imageholder">';
-		echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
-		echo '<img src="'.get_bloginfo('template_url').'/images/proportion.png" width="100%" alt=""/>';
-		cwb_loadmap();
-		$captions = cowobo()->posts->loadgallery($postid);
-	echo '</div>';
-
-	echo '<div class="titlebar">';
-		echo '<div class="shade"></div>';
-		echo '<div class="seventy-percent">';
-			echo '<img class="resizeicon" src="'.get_bloginfo('template_url').'/images/resizeicon.png" title="Toggle viewer height" alt=""/>';
-			echo '<div class="captions">'.$captions.'</div>';
-		echo '</div>';
-		echo '<div class="thirty-percent">';
-			echo '<div class="smallthumbs">';
-				echo cowobo()->posts->load_thumbs($postid);
-			echo '</div>';
-		echo '</div>';
-	echo '</div>';
+	cowobo()->posts->loadgallery($postid);
+	
 echo '</div>';
 
 
@@ -77,12 +60,12 @@ echo '<div class="dragbar"></div>';
 echo '<div class="page">';
 
 	//include page shadow
-	echo '<img class="shadow" src="'.get_bloginfo('template_url').'/images/shadow.png" alt=""/>';
+	echo '<img class="shadow" src="'.$imgfolder.'/shadow.png" alt=""/>';
 
 	//center dynamic content with container
 	echo '<div class="container">';
 
-		//include maincolumn
+		//include feed reader
 		echo '<div class="feed">';
 
 			//include search
@@ -120,16 +103,11 @@ echo '<div class="page">';
            		endif;
 			endif;
 
-			//include plugin boxes
-			do_action ('cowobo_after_content' );
-
 		echo '</div>';
 
-		//include widgets
-        if (is_user_logged_in() )
-            dynamic_sidebar('sidebar_logged_in');
-        else
-            dynamic_sidebar('sidebar');
+		//include action sidebar
+        if (is_user_logged_in() ) dynamic_sidebar('sidebar_logged_in');
+        else dynamic_sidebar('sidebar');
 		
 	echo '</div>';
 		
