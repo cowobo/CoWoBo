@@ -62,6 +62,14 @@ jQuery(document).ready(function() {
 		jQuery(this).load(function() {center_slide(slide)});
 		center_slide(slide); //for slides that are already loaded
 	});
+	
+	//set zoom levels for each slide
+	jQuery('.slide').each(function(){
+		var zoom = jQuery(this).attr('class').split(' ')[1];
+		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
+		else level = 0;
+		jQuery(this).data('zoom', level);
+	});	
 
 	//Enable Map Resizing and Panning
 	jQuery(".imageholder").mousedown(function(e) {
@@ -133,12 +141,12 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var slideimg = slide.children('.slideimg');
 	var viewheight = jQuery('.imageviewer').height();
 	var viewholder = jQuery('.imageholder').height();
-	var curzoom = parseFloat(slide.children('.zoomlevel').val());
+	var curzoom = parseFloat(slide.data('zoom'));
 	var xmax = jQuery(window).width() - slide.width();
 	var ymax = viewheight - slide.height();
 	if(ymax > 0) ymax =0;
 	var amount; var newstyle;
-
+	
 	if(action == 'labels') {
 		//to do: change day/night maptype
 	} else if(action == 'panleft') {
@@ -163,7 +171,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		var new_x = (-newzoom / 2) + 50 + x_offset + '%';
 		var newsrc = slide.children('.zoomsrc'+newlevel).val();
 		newstyle = {width:newzoom +'%', height:newzoom +'%', top:new_y, left:new_x}
-		slide.children('.zoomlevel').val(newlevel);
+		slide.data('zoom', newlevel);
 
 		//load larger image if available
 		if(typeof(newsrc) != 'undefined' && newsrc.length > 0) {
@@ -175,7 +183,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 		}
 	} else if(action ==  'zoomout' && curzoom > 0) {
 		var newlevel = 0;
-		slide.children('.zoomlevel').val(newlevel);
+		slide.data('zoom', newlevel);
 		newstyle = {width:"110%", height:"110%", top:"-5%", left:"-5%"};
 	}
 

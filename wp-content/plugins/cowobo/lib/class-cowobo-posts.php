@@ -377,7 +377,6 @@ class CoWoBo_Posts
 	            } elseif ( $image_check ) {
 	                $slides[$x] = '<div class="slide" id="slide-'.$x.'">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
-						$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
 	                $slides[$x] .= '</div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
 	            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
@@ -385,18 +384,17 @@ class CoWoBo_Posts
 					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
 					$slides[$x] = '<div class="slide" id="slide-'.$x.'">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
-						$slides[$x] .= '<input type="hidden" class="zoomlevel" value="0"/>';
 						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
 	                $slides[$x] .= '</div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
 	            }
 				
 				//store captions
-				if(!$this->is_user_post_author()) {
+				if($this->is_user_post_author() && $postid) {
+					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
+				} else {
 					if( empty($caption) ) $caption = '<a class="resize" href="#">Click here to resize the media viewer</a>';
 					$captions[] = '<span class="caption hide" id="caption-'.$x.'">'.$caption.'</span>';
-				} else {
-					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
 				}
 	
 	           unset($imgid); unset($zoom2src);
@@ -421,9 +419,10 @@ class CoWoBo_Posts
 		
 		//include streetview if available
 		if( get_post_meta($postid, 'cwb_includestreet', true)) {
-			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=35x35&location='.$location.'&sensor=false" height="100%" /></a>';
-			$slides[] = cwb_streetview();
-			$caption = get_post_meta($postid, 'caption-map', true);
+			$coordinates = get_post_meta($postid, 'coordinates', true);
+			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=50x50&location='.$coordinates.'&sensor=false" /></a>';
+			$slides[] = cwb_streetview($postid);
+			$caption = get_post_meta($postid, 'caption-street', true);
 			if($this->is_user_post_author() && $postid) {
 				$default = 'Click here to add a caption';
 				$captions[] = '<input type="text" class="caption hide" id="caption-street" name="caption-street" value="'.$caption.'" placeholder="'.$default.'"/>';
@@ -460,7 +459,6 @@ class CoWoBo_Posts
 					
 		//echo html
 		echo '<div class="imageholder">';
-			echo '<img class="shadow" src="'.$imgfolder.'/shadow.png" alt=""/>';
 			echo '<img src="'.$imgfolder.'/proportion.png" width="100%" alt=""/>';
 			echo implode('', $slides);
 		echo '</div>';
