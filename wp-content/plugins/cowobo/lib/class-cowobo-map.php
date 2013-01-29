@@ -80,6 +80,22 @@ function adjustLatByPx($lat, $amount, $zoom) {
 }
 
 
+//return streetview tiles
+function cwb_streetview($coordinates) {
+		
+		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&ll='.$coordinates);
+		$xml = simplexml_load_string($xmlstring);
+		$pano_id = $xml->data_properties['pano_id'];
+		$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
+		$tiles = '';
+		
+		for ($x=0; $x<=1; $x++) {
+			$tiles .= '<img src="'.$baseurl.'&x='.$x.'&y=0" alt="" width="50%">';
+		}
+		
+		return $tiles;
+}
+
 //check if location entered exists
 function cwb_geocode($address) {
 	$string = str_replace (" ", "+", urlencode($address));
@@ -225,5 +241,5 @@ function cwb_loadmap() {
 	$map .= $newlayer;
 	$map .= '</div>';
 
-	echo $map;
+	return $map;
 }
