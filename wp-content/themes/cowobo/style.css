@@ -46,7 +46,7 @@ form {margin:0 auto;}
 .horlist li, .horlist span, .horlist a{margin:0 15px 0 0; display:inline-block; cursor:pointer;}
 .inline {display: inline!important;}
 .nowrap {white-space:nowrap; height:25px; overflow:hidden; color:#999; text-overflow: ellipsis;}
-.shade {position:absolute; left:0; top:0; width:100%; height:100%; background:#000; opacity:0.5;}
+.shade {position:absolute; left:0; top:0; width:100%; height:100%; background:#000; opacity:0.3;}
 .unselectable {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 .hint {font-weight:bold; color:#999; margin-left:5px;}
 .half {width:305px; float:left; clear:none!important;}
@@ -82,17 +82,16 @@ form {margin:0 auto;}
 
 /* Titlebar Styles*/
 .titlebar {position:absolute; bottom:0; width:100%; z-index:50;}
-.seventy-percent {position:relative; float:left; width:70%; z-index:1; }
-.thirty-percent {position:relative; float:right; width:30%; z-index:1; }
-.captions {font-size:17px; line-height: 25px; margin: 7px 0 5px 35px; color:#eee;}
-.capform {position:relative;}
+.captions {position:relative; font-size:17px; line-height: 25px; margin: 8px 200px 5px 35px; color:#eee; z-index:1;}
+.smallthumbs {position:relative; float:right; min-height:40px; margin-right:10px; z-index:1;}
+.smallthumbs a {position:relative; float:right; width:35px; height:35px; background:#fff; overflow:hidden; margin:5px 10px 0 0;}
+.smallthumbs a:hover img {opacity:0.8}
+.capform {position:relative; padding-right:120px;}
 .capform .button {position:absolute; right:0; top:0; margin:0; background:none;}
 .capform .caption {font-size:17px; line-height: 25px; color:#eee; border:none; margin:0;}
 .resizeicon {position:absolute; left:10px; top:8px; cursor:pointer;}
 .resizeicon:hover {opacity:0.8}
-.smallthumbs {min-height:40px; margin-right:10px;}
-.smallthumbs a {position:relative; float:right; width:35px; height:35px; background:#fff; overflow:hidden; margin:5px 10px 0 0;}
-.smallthumbs a:hover img {opacity:0.8}
+
 
 /* Page Styles */
 .dragbar {position:relative; height:5px; cursor: n-resize; background:#fff; z-index:50;}
@@ -124,17 +123,18 @@ form {margin:0 auto;}
 /* Tab Styles */
 .widget {float:right; margin:10px; width:280px; clear:right;}
 .tab {margin-bottom:20px;}
-.tab, .widget {position:relative;  padding:12px 15px 15px 15px; background:#fff; overflow:hidden;}
+.tab, .widget {position:relative; border:solid #fff; border-width:12px 15px 15px 15px; background:#fff; overflow:hidden;}
 .tab, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
 .tabthumb, .fourth {float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
 .fourth.square { height: 149px; }
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
 .tabthumb .avatar {margin-top: -20px;}
 .tabtext {width: auto; min-width:250px; height:100px; overflow:hidden;}
-.notice {background: #eee; padding: 10px 15px 10px; font-weight: bold; }
+.notice {background: #eee; border:#EEE solid 12px; font-weight: bold; }
 .notice.error { background: rgba(255,210,210,0.7); }
 body.js.notice { padding-right: 60px; }
-.tab .close {float:right; margin-left: 20px; cursor: pointer; font-weight: normal; }
+{float:right; margin-left: 20px; cursor: pointer; font-weight: normal; }
+.minimize, .close {position:absolute; top:0px; right:0px; line-height: 10px; font-weight:bold; color:#ccc; font-size:22px; cursor:pointer;}
 
 /* Comment Styles */
 #respond p {margin:0;}
@@ -227,5 +227,16 @@ span.time-since{color:#aaa;font-weight:bold}
 .active-no .points-tag:before { border-color:transparent #cc7575 transparent transparent; }
 
 /* Responsive Styles */
-@media (max-width: 990px) { .container {max-width:660px;} .widget {clear:inherit} }
-@media (max-width: 660px) { .container {max-width:330px;} .feed {width:310px;} }
+@media (max-width: 990px) { 
+.container {max-width:660px;} 
+.widget {clear:inherit} 
+}
+
+@media (max-width: 660px) { 
+.container {max-width:330px;} 
+.feed {width:310px;} 
+.captions {margin-right:110px!important;}
+.capform {padding:0;}
+.capform .button {position:relative;}
+.smallthumbs {width:90px;} 
+}

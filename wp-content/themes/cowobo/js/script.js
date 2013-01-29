@@ -25,6 +25,26 @@ jQuery(document).ready(function() {
         }
     });
 
+	
+	//Add minimize buttons to all tabs
+	jQuery('.tab, .widget').each(function () {
+		jQuery(this).append('<div class="minimize">-</div>');
+	});
+	
+	jQuery('.minimize').live('click', function () {
+		var tab = jQuery(this).parent();
+		if(tab.height() != 22) var newheight = 22;
+		else var newheight = tab.get(0).scrollHeight; 
+		tab.animate({height: newheight});
+	});
+	
+	
+	//center images when window is resized	
+	jQuery(window).resize(function () {
+		jQuery('.slide').each(function(){ center_slide(jQuery(this)) });
+	});
+
+
     // Point descriptions
     jQuery( "div.point-desc:not(.active-yes)").hide();
     jQuery('.toggle-inactive-point-descs').click(function(e) {
