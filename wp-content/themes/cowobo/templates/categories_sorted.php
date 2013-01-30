@@ -39,7 +39,7 @@ $out_arr = array();
 	endif;
 
 	//include navigation links
-	echo '<div class="tab center">'; cowobo()->feed->pagination(); echo '</div>';
+	cowobo()->feed->pagination();
 
 
 ?>
