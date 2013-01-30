@@ -203,12 +203,15 @@ class CoWoBo_Posts
                 delete_post_meta($postid, 'imgid'.$x);
             endif;
 
+
             //add new image
-            if(!empty($file)):
+            if(!empty($file)) {
                 $imgid = $this->insert_attachment('file'.$x, $postid);
                 update_post_meta($postid, 'imgid'.$x, $imgid);
 				delete_post_meta($postid, 'cwb_url'.$x);
-            endif;
+            } elseif ( $imagecheck ) {
+                update_post_meta($postid, 'cwb_url'.$x, $imgid);
+            }
         endfor;
 
         //update draft post
