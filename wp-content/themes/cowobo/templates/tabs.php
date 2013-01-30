@@ -39,7 +39,7 @@ if($tabtype == 'cat'):
 					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';				
 					$status = '<li>'.get_post_meta($catpost->ID, 'status', true).'</li>';					
 				
-					echo '<ul class="horlist nowrap">';
+					echo '<ul class="horlist nowrap grey">';
 						if($tabcat->slug == 'event'):
 							$date = get_post_meta($catpost->ID, 'startdate', true);
 							echo $title.$views.$score.$comments.$date;
@@ -66,23 +66,34 @@ if($tabtype == 'cat'):
 else:
 	
 	$tabpost = $post;
-	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).'</a>';
+	$tabcat = cowobo()->posts->get_category($tabpost->ID);
+	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).' &raquo;</a>';
 	$comments = '<li>Replies: '.get_comments_number($tabpost->ID).'</li>';
 	$views = '<li>Views: '.cowobo()->posts->get_views($tabpost->ID).' </li>';
 	$score = '<li>Score: '.$cubepoints->get_post_points($tabpost->ID).'</li>';
 	$date = '<li>Updated: '.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
-	$city = get_post( get_post_meta($tabpost->ID, 'cityid', true));
-	$citylink = '<a href="'.get_permalink($city->ID).'">'.$city->post_title.'</a>';
-	$country = get_category( get_post_meta($tabpost->ID, 'countryid', true));
-	$countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
-	$location = '<li>Location: '.$citylink.', '.$countrylink.'</li>';;
 	$tags = get_the_category($tabpost->ID);
-	$tabcat = cowobo()->posts->get_category($tabpost->ID);
-	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);
+	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);	
+
+	if(count($tags)>1) {
+		$taglist = '<br/>Posted under: ';
+		foreach($tags as $tag) {
+			$taglinks[] = '<a href="'.get_category_link($tag->term_id).'">'.$tag->name.'</a>';
+		}
+		$taglist .= implode(', ', $taglinks);
+	}
 	
 	if(empty($oneliner)) {
-		$firstline = explode('.', $tabpost->post_content);
-		$oneliner = $firstline[0];
+		$firstline = explode('.', strip_tags($tabpost->post_content));
+		$oneliner = substr($firstline[0], 0 , 140).'..';
+	}
+		
+	if($cityid = get_post_meta($tabpost->ID, 'cityid', true)){
+		$citypost = get_post($cityid);
+		$citylink = '<a href="'.get_permalink($citypost->ID).'">'.$citypost->post_title.'</a>';
+		$countrycat = get_the_category($cityid);
+		$countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
+		$location = '<li>Location: '.$citylink.', '.$countrylink.'</li>';
 	}
 
 	echo '<div class="tab">';
@@ -95,36 +106,44 @@ else:
 			echo '<h2>'.$title.'</h2>';
 			if($tabcat->slug == 'project'):
 				$status = get_post_meta($tabpost->ID, 'status', true);
-				if( empty($status) ) $status = 'Not Specified';
-				$status = '<li>Status: '.$status.'</li>';				
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.$location.$status.'</ul>';
+				if( !empty($status) ) $status = '<li>Status: '.$status.'</li>';				
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo $oneliner;
+				echo '<ul class="horlist nowrap">'.$location.$status.'</ul>';
 			elseif($tabcat->slug == 'coder'):
-				$experience = get_post_meta($tabpost->ID, 'experience', true);
-				if( empty($experience) ) $experience = 'Not Specified';
-				$experience = '<li>Experience: '.$experience.'</li>';				
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.$location.$experience.'</ul>';
+				$specialty = get_post_meta($tabpost->ID, 'specialty', true);
+				if( !empty($specialty) ) $specialty = '<li>Specialty: '.$specialty.'</li>';
+				else $specialty = $views.$replies;
+				$date = 'Last Active: '; //to do last active code		
+				echo '<ul class="horlist nowrap grey">'.$score.$specialty.$date.'</ul>';
+				echo $oneliner;	
+				echo '<ul class="horlist nowrap">'.$location.'</ul>';
 			elseif($tabcat->slug == 'job'):
 				$skills = get_post_meta($tabpost->ID, 'skills', true);
-				if( empty($skills) ) $skills = 'Not Specified';
-				$skills = '<li>Skills required: '.$skills.'</li>';
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.$skills.$location.'</ul>';
+				if( !empty($skills) ) $skills = '<li>Skills required: '.$skills.'</li>';
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo $oneliner;
+				echo '<ul class="horlist nowrap">'.$skills.$location.'</ul>';
 			elseif($tabcat->slug == 'news'):
 				$source = get_post_meta($tabpost->ID, 'source', true);
-				if( empty($source) ) $source = 'Not Specified';
-				$source = '<li>Skills required: '.$source.'</li>';				
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.$source.'</ul>';
+				if( !empty($source) ) $source = '<li>Skills required: '.$source.'</li>';
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo $oneliner;
+				echo '<ul class="horlist nowrap">'.$source.'</ul>';
 			elseif($tabcat->slug == 'event'):
-				$date = get_post_meta($tabpost->ID, 'source', true);
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.$location.'</ul>';
+				$startdate = get_post_meta($tabpost->ID, 'startdate', true);
+				$enddate = get_post_meta($tabpost->ID, 'enddate', true);
+				if($startdate != $enddate) $date = 'Date: '.date("j F", strtotime($startdate)).' - '.date("j F", strtotime($enddate));
+				else $date = 'Date: '.date("j F", strtotime($startdate)); 
+				echo '<ul class="horlist nowrap grey">'.$date.$location.'</ul>';
+				echo $oneliner;
+				echo $taglist;
 			elseif($tabcat->slug == 'forum'):
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo $oneliner;
 			elseif($tabcat->slug == 'wiki'):
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo $oneliner;
 			elseif($tabcat->slug == 'location'):
 				$sections = array();
 				foreach(get_categories() as $cat){
@@ -134,7 +153,6 @@ else:
 				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
 				echo '<ul class="horlist">'.implode('', $sections).'</ul>';
 			endif;
-			echo $oneliner;
 		echo '</div>';
 
 	echo '</div>';

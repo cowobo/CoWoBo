@@ -40,12 +40,12 @@ form {margin:0 auto;}
 .blue {color: #4f5db8!important;}
 .green {color:#2b832c;}
 .red {color: red!important;}
-.grey {color:#ccc;}
+.grey {color:#888;}
 .center {text-align:center}
 .horlist {list-style:none;}
 .horlist li, .horlist span, .horlinks a {margin:0 15px 0 0; float:left; cursor:pointer;}
 .inline {display: inline!important;}
-.nowrap {height:25px; overflow:hidden; color:#888;}
+.nowrap {height:25px; overflow:hidden; display:block;}
 .shade {position:absolute; left:0; top:0; width:100%; height:100%; background:#000; opacity:0.3;}
 .unselectable {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 .hint {font-weight:bold; color:#999; margin-left:5px;}
@@ -125,7 +125,7 @@ form {margin:0 auto;}
 .tab {margin-bottom:20px;}
 .tab, .widget {position:relative; border:13px solid #fff; background:#fff; overflow:hidden;}
 .tab, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
-.tabthumb, .square {float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
+.tabthumb, .square {display:block; float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
 .square {height: 149px; }
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
 .tabthumb .avatar {margin-top: -20px;}
@@ -234,7 +234,7 @@ span.time-since{color:#aaa;font-weight:bold}
 
 @media (max-width: 660px) { 
 .container {max-width:330px;} 
-.tabthumb {max-width:280px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; } 
+.tabthumb {max-width:285px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; } 
 .feed {width:310px;} 
 .captions {margin-right:110px!important;}
 .capform {padding:0;}
