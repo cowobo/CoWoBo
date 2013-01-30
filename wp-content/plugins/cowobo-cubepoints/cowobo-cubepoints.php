@@ -508,10 +508,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 $data_arr = array();
                 parse_str ( $data, $data_arr );
-                if ( empty ( $data_arr ) ) {
+                /*if ( empty ( $data_arr ) ) {
                     echo "Corrupted data";
                     return;
-                }
+                }*/
 
                 if ( isset ( $data_arr['userid'] ) ) {
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
@@ -524,7 +524,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     $secondary_post_link = '<a href="'.get_permalink( $secondary_post ).'">' . $secondary_post->post_title . '</a>';
                 }
 
-                if ( ! $user_profile && ! $post ) return;
+                //if ( ! $user_profile && ! $post ) return;
 
             } else {
                 // Fallback
