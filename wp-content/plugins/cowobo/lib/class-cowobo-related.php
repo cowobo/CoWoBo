@@ -77,6 +77,25 @@ class Cowobo_Related_Posts {
 		endif;
 	}
 
+	/**
+     * Sort related posts by type
+     *
+     * @param array of linked ids
+     * @return array of posts by type
+     */
+	 
+	public function get_related_types($linkedids, $exclude= array()) {
+		if(is_array($linkedids)) {
+			foreach($linkedids as $linkedid) {
+				$typecat = cowobo()->posts->get_category($linkedid);
+				if(is_array($exclude) && !in_array($typecat->term_id, $exclude))
+					$types[$typecat->term_id][] = $linkedid;
+			}
+			return $types;
+		}
+	}
+
+
     /**
      * Create relations for a post.
      *

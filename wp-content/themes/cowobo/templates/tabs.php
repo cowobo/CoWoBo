@@ -145,13 +145,18 @@ else:
 				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
 				echo $oneliner;
 			elseif($tabcat->slug == 'location'):
-				$sections = array();
-				foreach(get_categories() as $cat){
-					$count = '';
-					$sections[] = '';
-				}
-				echo '<ul class="horlist nowrap">'.$views.$score.$comments.$date.'</ul>';
-				echo '<ul class="horlist">'.implode('', $sections).'</ul>';
+				$linkedids = cowobo()->relations->get_related_ids( $tabpost->ID );
+				$linkedlinks = array();
+				if( $types = cowobo()->relations->get_related_types( $linkedids ) ):
+					foreach($types as $typeid => $typeposts):
+						$linkedcat = get_category($typeid);
+						$linkedlinks[] = '<li><a href="'.get_permalink($tabpost->ID).'?showall='.$linkedcat->name.'">'.$linkedcat->name.' ('.count($typeposts).')</a></li>';
+					endforeach;
+				endif;
+				$linkedlist = implode( '', $linkedlinks );
+				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
+				echo '<ul class="horlist">'.$linkedlist.'</ul>';
+				unset($linkedlist);
 			endif;
 		echo '</div>';
 
