@@ -69,7 +69,7 @@ form {margin:0 auto;}
 .largeangel:hover {opacity:0.5;}
 
 /* Header Styles*/
-.sitetitle {position:absolute; top:15px; left:20px; font-size:17px; z-index: 20; color:#fff; font-weight:normal; font-size:22px; text-shadow: 1px 1px 26px #000000;}
+.sitetitle {position:absolute; top:15px; left:20px; z-index: 20; color:#fff; font-weight:normal; font-size:22px;}
 .sitetitle:hover {color:#ddd;}
 .pan, .zoom {position:absolute; z-index:20; width:30px; height:30px; opacity:0.6;}
 .pan:hover, .zoom:hover {opacity:1}
