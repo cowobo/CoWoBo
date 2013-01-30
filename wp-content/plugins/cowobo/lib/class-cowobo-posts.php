@@ -35,7 +35,7 @@ class CoWoBo_Posts
      * @todo This is one beast of a method - can we make some subroutines?
      */
     public function save_post(){
-	
+
         global $post, $cowobo, $profile_id;
         $linkedid = 0; $tagarray = array();
 
@@ -78,15 +78,15 @@ class CoWoBo_Posts
 
         //check if the user entered all text in english
         if(!cowobo()->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
-	 
-	 
+
+
 		//delete old post data in case they were cleared in the form
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
 		    if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
-		    delete_post_meta($postid, $key);  
+		    delete_post_meta($postid, $key);
 		}
-		
+
 		//now store the new data
         foreach ($_POST as $key => $value) {
             if( empty ( $value ) ) continue;
@@ -195,14 +195,14 @@ class CoWoBo_Posts
             $imgurl = cowobo()->query->$url_id;
             $videocheck = explode("?v=", $imgurl );
             $imagecheck = $this->is_image_url ( $imgurl );
-			
+
             //delete image if selected or being replaced by something else
             $deletex = "delete$x";
             if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) || !empty($imagecheck) ):
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
             endif;
-			
+
             //add new image
             if(!empty($file)):
                 $imgid = $this->insert_attachment('file'.$x, $postid);
@@ -244,7 +244,7 @@ class CoWoBo_Posts
 	/**
      * Save captions with new data
      */
-	 
+
     public function save_captions(){
 		$postid = cowobo()->query->post_ID;
 		$fields = array('0','1','2','3','map','street');
@@ -253,8 +253,8 @@ class CoWoBo_Posts
 	        update_post_meta($postid, $fieldname, cowobo()->query->$fieldname);
 		}
 	}
-	
-	
+
+
     /**
      * Get primal category of post
      */
@@ -363,16 +363,16 @@ class CoWoBo_Posts
 		$imgfolder = get_bloginfo('template_url').'/images';
 
 		if($postid) {
-	        
+
 			for ($x=0; $x<3; $x++):
-	            
+
 				//store slide info
 	            $url = get_post_meta($postid, 'cwb_url'.$x, true);
 	            $imgid = get_post_meta($postid, 'imgid'.$x, true);
 	            $videocheck = explode( "?v=", $url );
 	            $image_check = $this->is_image_url( $url );
 				$caption = get_post_meta($postid, 'caption-'.$x, true);
-			
+
 				//check if the slide is uploaded image, youtuve video, or image url;
 	            if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
 	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
@@ -397,7 +397,7 @@ class CoWoBo_Posts
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
 
 	            }
-				
+
 				//store captions
 				if($this->is_user_post_author() && $postid) {
 					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.htmlentities($caption).'" placeholder="Click here to add a caption"/>';
@@ -405,11 +405,11 @@ class CoWoBo_Posts
 					if( empty($caption) ) $caption = '<a class="resize" href="#">Click here to resize the media viewer</a>';
 					$captions[] = '<span class="caption hide" id="caption-'.$x.'">'.$caption.'</span>';
 				}
-	
+
 	           unset($imgid); unset($zoom2src);
-	
+
 	        endfor;
-	
+
 		}
 
 		//include streetview if available
@@ -425,7 +425,7 @@ class CoWoBo_Posts
 				$captions[] = '<span class="caption hide" id="caption-street">'.$default.'</span>';
 			}
 		}
-			
+
 		//include map if available
 		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
 			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
@@ -439,19 +439,19 @@ class CoWoBo_Posts
 				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
 			}
 		}
-		       
+
 		//show map first on homepage
 		if( ! is_home() ) {
-			$thumbs = array_reverse( $thumbs ); 
+			$thumbs = array_reverse( $thumbs );
 		} else {
-			$slides = array_reverse($slides); 
-			$captions = array_reverse( $captions ); 
+			$slides = array_reverse($slides);
+			$captions = array_reverse( $captions );
 		}
-		
+
 		//show first caption and slide
 		$captions[0] = str_replace('caption hide' , 'caption' , $captions[0]);
 		$slides[0] = str_replace('slide hide' , 'slide' , $slides[0]);
-		
+
 		//include caption form if user is author of post
 		if($this->is_user_post_author() && $postid) {
 			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
@@ -462,7 +462,7 @@ class CoWoBo_Posts
 		} else {
 			$captionsdiv = implode('', $captions);
 		}
-					
+
 		//echo html
 		echo '<div class="imageholder">';
 			echo implode('', $slides);
@@ -489,7 +489,20 @@ class CoWoBo_Posts
 			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
             return;
         }
-		
+
+        if ( $catslug == 'coder' ) {
+            $fallback = '';
+            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
+                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID );
+                if ( is_array ( $attached_src ) )
+                    $fallback = $attached_src[0];
+            }
+            if ( $user = cowobo()->users->get_users_by_profile_id( $postid, true ) ) {
+                echo get_avatar( $user->ID, '149', $fallback );
+                return;
+            }
+        }
+
 		for ($x=0; $x<3; $x++):
 			$url = get_post_meta($postid, 'cwb_url'.$x, true);
 	        $imgid = get_post_meta($postid, 'imgid'.$x, true);
@@ -692,14 +705,14 @@ class CoWoBo_Posts
     }
 
     public function is_user_post_author ( $postid = 0, $profile_id = 0 ) {
-        	
+
 		if ( ! is_user_logged_in() ) return false;
 
         if ( ! $profile_id ) $profile_id = $GLOBALS['profile_id'];
         $authors = $this->get_post_authors( $postid );
-		
+
 		if(current_user_can('edit_others_posts') || in_array( $profile_id, $authors ))
-		
+
         return true;
     }
 
