@@ -126,7 +126,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				$tabtype = 'post';
 				$tabpost = $tabposts[0];
 			endif;
-			include(TEMPLATEPATH.'/templates/tabs.php')
+			include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
 
