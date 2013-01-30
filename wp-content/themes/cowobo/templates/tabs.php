@@ -7,7 +7,7 @@ $cubepoints = cowobo()->points;
 $prefix = '';
 $sort = ( isset ( $sort ) ) ? $sort : '';
 
-if($tabtype == 'cat'):
+if( isset ( $tabtype ) && $tabtype == 'cat'):
 	if ( isset ( $tabposts ) && ! empty ( $tabposts ) ) $catposts = $tabposts;
     /** @todo something is wrong with $sort **/
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
@@ -49,7 +49,7 @@ if($tabtype == 'cat'):
 						elseif($tabcat->slug == 'project'):
 							echo $title.$status.$date.$score;
 						elseif($tabcat->slug == 'location'):
-							echo $title.$views.$sections;
+							echo $title.$views; // .$sections;
 						elseif($tabcat->slug == 'news'):
 							echo $title.$views.$date;
 						else:
@@ -74,6 +74,7 @@ else:
 	$date = '<li>Updated: '.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tags = get_the_category($tabpost->ID);
 	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);
+    $location = '';
 
 	if(count($tags)>1) {
 		$taglist = '<br/>Posted under: ';
@@ -91,15 +92,15 @@ else:
 	if($cityid = get_post_meta($tabpost->ID, 'cityid', true)){
 		$citypost = get_post($cityid);
 		$citylink = '<a href="'.get_permalink($citypost->ID).'">'.$citypost->post_title.'</a>';
-		$countrycat = get_the_category($cityid);
-		$countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
+		$country = current ( get_the_category( $cityid ) );
+        $countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
 		$location = '<li>Location: '.$citylink.', '.$countrylink.'</li>';
 	}
 
 	echo '<div class="tab">';
 
 		echo '<a class="tabthumb" href="'.get_permalink($tabpost->ID).'">';
-			cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
+			cowobo()->posts->the_thumbnail($tabpost->ID, $tabcat->slug);
 		echo '</a>';
 
 		echo '<div class="tabtext">';
@@ -113,7 +114,7 @@ else:
 			elseif($tabcat->slug == 'coder'):
 				$specialty = get_post_meta($tabpost->ID, 'specialty', true);
 				if( !empty($specialty) ) $specialty = '<li>Specialty: '.$specialty.'</li>';
-				else $specialty = $views.$replies;
+				else $specialty = $views.$comments;
 				$date = 'Last Active: '; //to do last active code
 				echo '<ul class="horlist nowrap grey">'.$score.$specialty.$date.'</ul>';
 				echo $oneliner;
