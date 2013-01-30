@@ -18,6 +18,31 @@ elseif ( cowobo()->query->lostpassword ) :
     echo '<input type="text" name="user_login" placeholder="Your e-mailadres" value="' . cowobo()->query->email . '">';
     echo '<button type="submit" class="button">Reset password</button>';
 
+elseif ( cowobo()->query->rp ) :
+
+    $user = cowobo()->users->check_password_reset_key();
+    if ( is_wp_error($user) ) {
+        cowobo()->add_notice('An error has occurred.', 'error' );
+    } else {
+        if ( cowobo()->query->pass1 ) {
+            if ( cowobo()->query->pass1 != cowobo()->query->pass2 )
+                cowobo()->add_notice ( 'The passwords do not match.', 'error' );
+            cowobo()->users->reset_password($user, cowobo()->query->pass1 );
+            cowobo()->add_notice('Your password has been reset.', 'message' );
+        } else {
+            echo "<form action='' method='POST'>";
+            echo '<input type="hidden" id="user_login" value="' . cowobo()->query->login . '">';
+            echo '<label for="pass1">New password<br />';
+            echo '<input type="password" name="pass1" id="pass1" class="input" size="20" value=""></label>';
+            echo '<label for="pass2">Confirm new password<br />';
+            echo '<input type="password" name="pass2" id="pass2" class="input" size="20" value=""></label>';
+            echo '<button type="submit" class="button">Reset Password</button>';
+            echo "</form>";
+        }
+    }
+    cowobo()->print_notices( array ( 'message', 'error' ) );
+
+
 elseif ( cowobo()->has_notice( 'INVALIDUSER' ) ) :
 
 	echo '<h2>We could not find your profile, are you new here?</h2><br/>';

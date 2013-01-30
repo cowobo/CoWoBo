@@ -257,6 +257,7 @@ if (!class_exists('CoWoBo')) :
             // User actions
             if( $verify->confirm ) $notices = $users->create_user();
             elseif( $verify->login && ! $query->user ) $notices = $users->login_user();
+            elseif( $verify->lost_pass ) $users->lost_password();
 
             // Feed actions
             elseif( $query->sort ) $notices = $feed->filter_feed();
