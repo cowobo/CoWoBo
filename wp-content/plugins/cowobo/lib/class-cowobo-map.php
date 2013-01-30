@@ -84,7 +84,7 @@ function adjustLatByPx($lat, $amount, $zoom) {
 function cwb_streetview($postid) {
 	$coordinates = get_post_meta($postid, 'coordinates', true);
 	if($coordinates ){
-		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&pitch=-30&ll='.$coordinates);
+		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&&ll='.$coordinates);
 		$xml = simplexml_load_string($xmlstring);
 		if($pano_id = $xml->data_properties['pano_id']) {;
 			$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
@@ -194,6 +194,7 @@ function cwb_loadmap() {
 
 	//sort $posts by related count
 	if( is_search() or is_category() && have_posts() ){
+		$originapost = $post;
 		while (have_posts()) : the_post();
 			if($coordinates = get_post_meta($post->ID, 'coordinates', true)){
 				$linkedids = $cowobo->relations->get_related_ids($post->ID);
@@ -202,6 +203,7 @@ function cwb_loadmap() {
 				$linkedmarkers[] = $post;
 			}
 		endwhile;
+		$post = $originapost;
 	} elseif( is_single() ) {
 		$countarray[$post->ID] = 1;
 		$linkedmarkers[] = $post;
