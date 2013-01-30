@@ -489,23 +489,20 @@ class CoWoBo_Posts
 			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
             return;
         }
-        if ( $catslug == 'coder' ) {
-            $fallback = '';
-            if ( $attached = get_children( 'post_parent='.$postid.'&numberposts=1&post_mime_type=image' ) ) {
-                $attached_src = wp_get_attachment_image_src( current ( $attached )->ID );
-                if ( is_array ( $attached_src ) )
-                    $fallback = $attached_src[0];
-            }
-            if ( $user = cowobo()->users->get_users_by_profile_id( $postid, true ) ) {
-                echo get_avatar( $user->ID, '149', $fallback );
-                return;
-            }
-        }
-
-        foreach(get_children('post_parent='.$postid.'&numberposts=1&post_mime_type=image') as $image) {
-            $imgsrc = wp_get_attachment_image_src( $image->ID );
-            echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/>';
-        }
+		
+		for ($x=0; $x<3; $x++):
+			$url = get_post_meta($postid, 'cwb_url'.$x, true);
+	        $imgid = get_post_meta($postid, 'imgid'.$x, true);
+	        $videocheck = explode( "?v=", $url );
+	        $image_check = $this->is_image_url( $url );
+			if($imgsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
+				echo '<img src="'.$imgsrc[0].'" width="100%" alt=""/></a>'; return;
+			} elseif( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
+				echo '<img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" width="100%" alt=""/></a>'; return;
+	        } elseif ( $image_check ) {
+				echo '<img src="'.$url.'" width="100%" alt=""/></a>'; return;
+			}
+		endfor;
 
     }
 
