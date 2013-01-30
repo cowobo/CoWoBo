@@ -263,7 +263,8 @@ if (!class_exists('CoWoBo')) :
             elseif( $query->showall ) $notices = $feed->related_feed();
 
             // Post actions
-            elseif( $verify->delete ) $posts->delete_post();
+            elseif( $verify->delete ) $posts->confirm_delete();
+            elseif( $verify->delete_confirmed ) $posts->delete_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
 			elseif( $verify->captions ) $GLOBALS['postmsg'] = $posts->save_captions();
             elseif( $verify->linkposts ) $notices = $relations->link_post();

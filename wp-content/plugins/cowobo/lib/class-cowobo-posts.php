@@ -30,6 +30,23 @@ class CoWoBo_Posts
         }
     }
 
+    public function confirm_delete() {
+        $postid = cowobo()->query->post_ID;
+        $nonce = wp_create_nonce( 'delete_confirmed', 'delete_confirmed' );
+        $post_id_field = "postid";
+        $title = '<a href="' . get_permalink( $postid ) . '">' . get_the_title( $postid ) . '</a>';
+        $out = "<form action='' method='POST'><p>You are about to delete $title. You <strong>cannot</stron> undo this action</p>
+            <p>Are you sure you want to do this?</p>
+            <input type='hidden' name='post_ID' value='$postid'>
+            <p>
+                <button type='submit' class='button' name='delete_confirmed' value='$nonce'>Yes, delete this post</button>
+                <a href='" . get_permalink( $postid ) . "'>No, take me back!</a>
+            </p>
+            </form>";
+        cowobo()->add_notice( $out, 'confirm_delete');
+
+    }
+
     /**
      * Save post with new data
      * @todo This is one beast of a method - can we make some subroutines?
