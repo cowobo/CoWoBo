@@ -3,11 +3,11 @@
 global $user_ID;
 
 //common variables
-$cubepoints = cowobo()->points;
+$cubepoints = &cowobo()->points;
 $prefix = '';
 $sort = ( isset ( $sort ) ) ? $sort : '';
 
-if($tabtype == 'cat'):
+if( isset ( $tabtype ) && $tabtype == 'cat'):
 	if ( isset ( $tabposts ) && ! empty ( $tabposts ) ) $catposts = $tabposts;
     /** @todo something is wrong with $sort **/
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
@@ -30,26 +30,32 @@ if($tabtype == 'cat'):
 		echo '<div class="tabtext">';
 			echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
 			if($catposts):
-				
+
 				foreach($catposts as $catpost):
 					$title = '<li><a class="light" href="'.get_permalink($catpost->ID).'">'. cowobo()->L10n->the_title($catpost->ID).'</a></li>';
 					$views = '<li>Views: '.cowobo()->posts->get_views($catpost->ID).'</li>';
 					$score = '<li>Score: '.$cubepoints->get_post_points($catpost->ID).'</li>';
 					$comments = '<li>Replies: '.get_comments_number($catpost->ID).'</li>';
-					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';				
-					$status = '<li>'.get_post_meta($catpost->ID, 'status', true).'</li>';					
-				
+					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
+					$status = '<li>'.get_post_meta($catpost->ID, 'status', true).'</li>';
+
 					echo '<ul class="horlist nowrap grey">';
 						if($tabcat->slug == 'event'):
 							$date = get_post_meta($catpost->ID, 'startdate', true);
 							echo $title.$views.$score.$comments.$date;
 						elseif($tabcat->slug == 'coder'):
-							$date = 'Last Active: '; //to do last active code
-							echo $title.$views.$score.$comments.$date;
+							echo $title.$views.$score.$comments;
+
+                            $last_activity = $cubepoints->get_user_last_activity_by_profile ( $catpost->ID );
+                            if ( ! empty ( $last_activity ) ) :
+                                echo 'Last Active: ' . $last_activity; //to do last active code
+                            endif;
+                            unset ( $last_activity );
+
 						elseif($tabcat->slug == 'project'):
 							echo $title.$status.$date.$score;
 						elseif($tabcat->slug == 'location'):
-							echo $title.$views.$sections;
+							echo $title.$views; // .$sections;
 						elseif($tabcat->slug == 'news'):
 							echo $title.$views.$date;
 						else:
@@ -57,14 +63,14 @@ if($tabtype == 'cat'):
 						endif;
 					echo '</ul>';
 				endforeach;
-				
+
 			endif;
 		echo '</div>';
 
 	echo '</div>';
 
 else:
-	
+
 	$tabpost = $post;
 	$tabcat = cowobo()->posts->get_category($tabpost->ID);
 	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).' &raquo;</a>';
@@ -73,7 +79,8 @@ else:
 	$score = '<li>Score: '.$cubepoints->get_post_points($tabpost->ID).'</li>';
 	$date = '<li>Updated: '.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tags = get_the_category($tabpost->ID);
-	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);	
+	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);
+    $location = '';
 
 	if(count($tags)>1) {
 		$taglist = '<br/>Posted under: ';
@@ -82,41 +89,44 @@ else:
 		}
 		$taglist .= implode(', ', $taglinks);
 	}
-	
+
 	if(empty($oneliner)) {
 		$firstline = explode('.', strip_tags($tabpost->post_content));
 		$oneliner = substr($firstline[0], 0 , 140).'..';
 	}
-		
+
 	if($cityid = get_post_meta($tabpost->ID, 'cityid', true)){
 		$citypost = get_post($cityid);
 		$citylink = '<a href="'.get_permalink($citypost->ID).'">'.$citypost->post_title.'</a>';
-		$countrycat = get_the_category($cityid);
-		$countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
+		$country = current ( get_the_category( $cityid ) );
+        $countrylink = '<a href="'.get_category_link($country->term_id).'">'.$country->name.'</a>';
 		$location = '<li>Location: '.$citylink.', '.$countrylink.'</li>';
 	}
 
 	echo '<div class="tab">';
 
 		echo '<a class="tabthumb" href="'.get_permalink($tabpost->ID).'">';
-			cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
+			cowobo()->posts->the_thumbnail($tabpost->ID, $tabcat->slug);
 		echo '</a>';
 
 		echo '<div class="tabtext">';
 			echo '<h2>'.$title.'</h2>';
 			if($tabcat->slug == 'project'):
 				$status = get_post_meta($tabpost->ID, 'status', true);
-				if( !empty($status) ) $status = '<li>Status: '.$status.'</li>';				
+				if( !empty($status) ) $status = '<li>Status: '.$status.'</li>';
 				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$location.$status.'</ul>';
 			elseif($tabcat->slug == 'coder'):
 				$specialty = get_post_meta($tabpost->ID, 'specialty', true);
 				if( !empty($specialty) ) $specialty = '<li>Specialty: '.$specialty.'</li>';
-				else $specialty = $views.$replies;
-				$date = 'Last Active: '; //to do last active code		
+				else $specialty = $views.$comments;
+
+                $last_activity = $cubepoints->get_user_last_activity_by_profile ( $tabpost->ID );
+                $date = ( ! empty ( $last_activity ) ) ? 'Last Active: ' . $last_activity : '';
+                unset ( $last_activity );
 				echo '<ul class="horlist nowrap grey">'.$score.$specialty.$date.'</ul>';
-				echo $oneliner;	
+				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$location.'</ul>';
 			elseif($tabcat->slug == 'job'):
 				$skills = get_post_meta($tabpost->ID, 'skills', true);
@@ -134,7 +144,7 @@ else:
 				$startdate = get_post_meta($tabpost->ID, 'startdate', true);
 				$enddate = get_post_meta($tabpost->ID, 'enddate', true);
 				if($startdate != $enddate) $date = 'Date: '.date("j F", strtotime($startdate)).' - '.date("j F", strtotime($enddate));
-				else $date = 'Date: '.date("j F", strtotime($startdate)); 
+				else $date = 'Date: '.date("j F", strtotime($startdate));
 				echo '<ul class="horlist nowrap grey">'.$date.$location.'</ul>';
 				echo $oneliner;
 				echo $taglist;

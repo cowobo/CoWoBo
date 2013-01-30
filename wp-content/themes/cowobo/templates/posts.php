@@ -3,14 +3,14 @@
 
 
 if (have_posts()) : while (have_posts()) : the_post();
-	
+
 	$postid = get_the_ID();
 	$postcat = cowobo()->posts->get_category($postid);
-		
+
 	echo '<div class="tab">';
-	
+
 	    if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
-	
+
 	        $index = 0;
 	        foreach(cowobo()->layouts->layout[$postcat->term_id] as $field): $index++;
 	            $slug = $field['type'].$index;
@@ -93,11 +93,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                endif;
 	            endif;
 	        endforeach;
-	
+
 	        do_action ( 'cowobo_after_layouts', $postid, $postcat, $author );
-	
+
 	    }
-	
+
 		//include main text if post has content
 		if(get_the_content()):
 			echo '<div style="margin-top:10px">';
@@ -105,7 +105,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				the_content();
 			echo '</div>';
 		endif;
-	
+
 	echo '</div>';
 
 
@@ -115,7 +115,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	if( $postcat &&  ( $postcat->slug == 'coder' || $postcat->slug == 'location' ) ) {
 		$exclude[] = $postcat->term_id;
 	}
-	
+
 	if( $types = cowobo()->relations->get_related_types($linkedids, $exclude ) ):
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
@@ -151,12 +151,12 @@ if (have_posts()) : while (have_posts()) : the_post();
 	echo '</div>';
 
 	if( $postcat->slug == 'coder' ) {
-	    	do_action ( 'cowobo_after_post', $postid, $postcat, $author );	
+	    	do_action ( 'cowobo_after_post', $postid, $postcat, $author );
 	}
-	
+
 	//show comments
     if ( is_object ( $postcat ) ) comments_template();
-	
+
 endwhile;
 endif;
 ?>

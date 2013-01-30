@@ -508,10 +508,10 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 $data_arr = array();
                 parse_str ( $data, $data_arr );
-                if ( empty ( $data_arr ) ) {
+                /*if ( empty ( $data_arr ) ) {
                     echo "Corrupted data";
                     return;
-                }
+                }*/
 
                 if ( isset ( $data_arr['userid'] ) ) {
                     $user_profile = get_post( cowobo()->users->get_user_profile_id( $data_arr['userid'] ) );
@@ -524,7 +524,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     $secondary_post_link = '<a href="'.get_permalink( $secondary_post ).'">' . $secondary_post->post_title . '</a>';
                 }
 
-                if ( ! $user_profile && ! $post ) return;
+                //if ( ! $user_profile && ! $post ) return;
 
             } else {
                 // Fallback
@@ -731,6 +731,25 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
             return $profile_ids;
         }
+
+        public function get_user_last_activity( $userid, $formatted = true ) {
+            global $wpdb;
+
+            if ( ! $last_active = wp_cache_get ( "last_activity_$userid", 'cowobo_cubepoints' ) ) {
+                $query = $wpdb->prepare ( 'SELECT timestamp FROM `' . CP_DB . '` WHERE uid = %d ORDER BY id DESC LIMIT 1', $userid );
+                $last_active = current ( $wpdb->get_col ( $query ) );
+                if ( empty ( $last_active ) ) return false;
+                wp_cache_set ( "last_activity_$userid", $last_active, 'cowobo_cubepoints' );
+            }
+            if ( ! $formatted ) return $last_active;
+
+            $time = cp_relativeTime( $last_active );
+            return $time;
+        }
+
+            public function get_user_last_activity_by_profile ( $profile_id ) {
+                return $this->get_user_last_activity( cowobo()->users->get_user_by_profile_id ( $profile_id )->ID );
+            }
 
     }
 

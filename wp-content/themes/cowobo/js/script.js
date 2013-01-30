@@ -25,21 +25,27 @@ jQuery(document).ready(function() {
         }
     });
 
-	
+    // Login in tour widget
+    jQuery('.toggle-loginform').click(function(e) {
+        e.preventDefault();
+        jQuery('.loginform').slideToggle();
+    });
+
+
 	//Add minimize buttons to all tabs
 	jQuery('.tab, .widget').each(function () {
 		jQuery(this).append('<div class="minimize">-</div>');
 	});
-	
+
 	jQuery('.minimize').live('click', function () {
 		var tab = jQuery(this).parent();
 		if(tab.height() != 20) var newheight = 20;
-		else var newheight = tab.get(0).scrollHeight; 
+		else var newheight = tab.get(0).scrollHeight;
 		tab.animate({height: newheight});
 	});
-	
-	
-	//center images when window is resized	
+
+
+	//center images when window is resized
 	jQuery(window).resize(function () {
 		jQuery('.slide').each(function(){ center_slide(jQuery(this)) });
 	});
@@ -56,7 +62,7 @@ jQuery(document).ready(function() {
         jQuery(".point-descriptions").slideToggle();
     });
 
-	//center slides and store zoom levels 
+	//center slides and store zoom levels
 	jQuery('.slide').each(function(){
 		var slide = jQuery(this);
 		var img = slide.find('.slideimg');
@@ -68,7 +74,7 @@ jQuery(document).ready(function() {
 		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
 		else var level = 0;
 		slide.data('zoom', level);
-	});	
+	});
 
 	//Enable Map Resizing and Panning
 	jQuery(".imageholder").mousedown(function(e) {
@@ -145,7 +151,7 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	var ymax = viewheight - slide.height();
 	if(ymax > 0) ymax =0;
 	var amount; var newstyle;
-	
+
 	if(action == 'labels') {
 		//to do: change day/night maptype
 	} else if(action == 'panleft') {
@@ -271,7 +277,7 @@ jQuery('.smallthumbs a').live('click', function(event) {
 		caption.show().prependTo('.captions');
 		jQuery('.caption').not(caption).hide();
 		jQuery('.slide:first').fadeOut(1000);
-		slide.prependTo(jQuery('.imageholder')).show();	
+		slide.prependTo(jQuery('.imageholder')).show();
 	}
 });
 
