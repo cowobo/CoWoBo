@@ -382,6 +382,10 @@ class CoWoBo_Users
         return current ( $users );
     }
 
+        public function get_user_by_profile_id ( $id ) {
+            return $this->get_users_by_profile_id( $id, true );
+        }
+
     public function is_profile( $post_id = 0 ) {
         if ( $post_id ) {
             $category = cowobo()->posts->get_category( $post_id );
