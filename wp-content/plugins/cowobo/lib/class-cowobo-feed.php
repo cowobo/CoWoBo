@@ -102,7 +102,7 @@ class CoWoBo_Feed
             $feedlink = get_permalink();
         } elseif(is_category()) {
             $feedtitle = $currentcat->name;
-            $feedlink = get_category_link ( $currentcat );
+            //$feedlink = get_category_link ( $currentcat );
         } elseif( is_home() ) {
             $feedtitle = 'Live News Feed';
         }
@@ -135,15 +135,15 @@ class CoWoBo_Feed
              if(!$pages) $pages = 1;
          }
          if(1 != $pages){
-		 	$pagination = '<div class="tab center horlinks">'; 
+		 	$pagination = '<div class="tab center horlinks">';
             for ($i=1; $i <= $pages; $i++){
                  if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ))
                      $pagination .= ($paged == $i)? "<span class='current'>".$i."</span>":"<a href='".get_pagenum_link($i)."' class='inactive' >".$i."</a>";
             }
             $pagination .= '<a href="'.get_pagenum_link($paged + 1).'">Next</a>';
-			$pagination .= '</div>'; 
+			$pagination .= '</div>';
          }
-		 
+
          return $pagination;
     }
 }
