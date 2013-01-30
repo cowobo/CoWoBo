@@ -43,9 +43,9 @@ form {margin:0 auto;}
 .grey {color:#ccc;}
 .center {text-align:center}
 .horlist {list-style:none;}
-.horlist li, .horlist span, .horlist a{margin:0 15px 0 0; display:inline-block; cursor:pointer;}
+.horlist li, .horlist span, .horlinks a {margin:0 15px 0 0; float:left; cursor:pointer;}
 .inline {display: inline!important;}
-.nowrap {white-space:nowrap; height:25px; overflow:hidden; color:#999; text-overflow: ellipsis;}
+.nowrap {height:25px; overflow:hidden; color:#888;}
 .shade {position:absolute; left:0; top:0; width:100%; height:100%; background:#000; opacity:0.3;}
 .unselectable {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 .hint {font-weight:bold; color:#999; margin-left:5px;}
@@ -107,8 +107,8 @@ form {margin:0 auto;}
 .pagesource div.code { text-align: justify; font-family: monospace; }
 
 /* Search Form Styles */
-.searchfield {margin-bottom:15px;}
-.searchbar {margin-bottom:-3px;}
+.searchfield {margin-bottom:15px; }
+.searchbar {margin-bottom:-3px; overflow:hidden;}
 .searchbar li {color:#666; font-size:17px; font-weight:bold;}
 .searchbar li:hover {color:#333;}
 .extracturl, .searchfield {width:100%; line-height:50px; padding-left:10px; height:50px; margin-bottom:15px; font-size:17px}
