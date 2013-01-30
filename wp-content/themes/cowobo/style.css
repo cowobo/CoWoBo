@@ -122,9 +122,9 @@ form {margin:0 auto;}
 
 /* Tab Styles */
 .widget {float:right; margin:10px; width:280px; clear:right;}
-.tab {margin-bottom:20px;}
-.tab, .widget {position:relative; border:13px solid #fff; background:#fff; overflow:hidden;}
-.tab, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
+.feed .tab {margin-bottom:20px;}
+.feed .tab, .widget {position:relative; border:13px solid #fff; background:#fff; overflow:hidden;}
+.feed .tab, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
 .tabthumb, .square {display:block; float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
 .square {height: 149px; }
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
@@ -133,7 +133,6 @@ form {margin:0 auto;}
 .notice {background: #eee; border:#EEE solid 12px; font-weight: bold; }
 .notice.error { background: rgba(255,210,210,0.7); }
 body.js.notice { padding-right: 60px; }
-{float:right; margin-left: 20px; cursor: pointer; font-weight: normal; }
 .minimize, .close {position:absolute; top:0px; right:0px; line-height: 10px; font-weight:bold; color:#ccc; font-size:22px; cursor:pointer;}
 
 /* Comment Styles */
@@ -227,17 +226,17 @@ span.time-since{color:#aaa;font-weight:bold}
 .active-no .points-tag:before { border-color:transparent #cc7575 transparent transparent; }
 
 /* Responsive Styles */
-@media (max-width: 990px) { 
-.container {max-width:660px;} 
-.widget {clear:inherit} 
+@media (max-width: 990px) {
+.container {max-width:660px;}
+.widget {clear:inherit}
 }
 
-@media (max-width: 660px) { 
-.container {max-width:330px;} 
-.tabthumb {max-width:285px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; } 
-.feed {width:310px;} 
+@media (max-width: 660px) {
+.container {max-width:330px;}
+.tabthumb {max-width:285px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; }
+.feed {width:310px;}
 .captions {margin-right:110px!important;}
 .capform {padding:0;}
 .capform .button {position:relative;}
-.smallthumbs {width:90px;} 
+.smallthumbs {width:90px;}
 }
