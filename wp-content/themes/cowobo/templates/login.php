@@ -37,7 +37,8 @@ else:
 		echo '<input type="text" name="email" class="lefthalf" value="'.$default.'" onfocus="this.value=\'\'" onblur="if(this.value==\'\') this.value=\'ie John\'" />';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
 		echo '<input type="password" name="userpw" class="righthalf" value=""/>';
-		echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
+        if ( isset ( $redirect ) )
+            echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
         wp_nonce_field( 'login', 'login' );
 		echo '<button type="submit" class="button">Login</button>';
 		echo 'We will not disclose your email to others';
