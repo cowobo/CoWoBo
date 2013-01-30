@@ -46,7 +46,6 @@ class CoWoBo_Posts
         $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcityid = get_post_meta($postid, 'cwb_city', true);
-		//$oldslug = $post->post_name; todo add option to change slug
         $involvement = cowobo()->query->involvement;
         $newslug = sanitize_title($post_title);
 
@@ -79,15 +78,18 @@ class CoWoBo_Posts
 
         //check if the user entered all text in english
         if(!cowobo()->query->confirmenglish)  $postmsg['confirmenglish'] = 'Please check if all text is in English and check the checbox below';
-
-        /**
-         * update all the custom fields
-         * @todo !! Iterate over POST more conciously
-         */
+	 
+	 
+		//delete old post data in case they were cleared in the form
+		foreach (get_post_custom_keys($postid) as $key ) {
+		    $valuet = trim($key);
+		    if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
+		    delete_post_meta($postid, $key);  
+		}
+		
+		//now store the new data
         foreach ($_POST as $key => $value) {
             if( empty ( $value ) ) continue;
-
-            delete_post_meta($postid, $key);
             if(strpos($key,'-checked')== true) {
                 foreach ($value as $newval) {
                     add_post_meta($postid, $key, $newval);
@@ -98,7 +100,7 @@ class CoWoBo_Posts
         }
 
         //if its a new location post geocode its location
-        if( $postcat->slug == 'location' ) {
+        if( $postcat->slug == 'location') {
             if( $country = cowobo()->query->country ) {
 				if($location = cwb_geocode( $post_title.', '.$country ) ) {
 					//check if location has already been added
@@ -185,7 +187,7 @@ class CoWoBo_Posts
         /**
          * @todo check for malicious code in jpg?
          */
-        for ($x=0; $x<5; $x++):
+        for ($x=0; $x<3; $x++):
             $imgid = "imgid$x";
             $imgid = cowobo()->query->imgid;
             $file = ( isset ( $_FILES['file'.$x] ) ) ? $_FILES['file'.$x]['name'] : '';
@@ -200,10 +202,12 @@ class CoWoBo_Posts
                 wp_delete_attachment($imgid, true);
                 delete_post_meta($postid, 'imgid'.$x);
             endif;
+			
             //add new image
             if(!empty($file)):
                 $imgid = $this->insert_attachment('file'.$x, $postid);
                 update_post_meta($postid, 'imgid'.$x, $imgid);
+				delete_post_meta($postid, 'cwb_url'.$x);
             endif;
         endfor;
 
@@ -369,8 +373,16 @@ class CoWoBo_Posts
 	            $image_check = $this->is_image_url( $url );
 				$caption = get_post_meta($postid, 'caption-'.$x, true);
 			
-				//check if the slide is video or image;
-	            if( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
+				//check if the slide is uploaded image, youtuve video, or image url;
+	            if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
+	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
+					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
+					$slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
+	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
+						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
+	                $slides[$x] .= '</div>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
+				} elseif( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
 	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'"><object>';
 	                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
 	                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
@@ -383,19 +395,12 @@ class CoWoBo_Posts
 	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
 	                $slides[$x] .= '</div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
-	            } elseif($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
-	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
-					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
-					$slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
-	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
-						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
-	                $slides[$x] .= '</div>';
-					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
+
 	            }
 				
 				//store captions
 				if($this->is_user_post_author() && $postid) {
-					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.$caption.'" placeholder="Click here to add a caption"/>';
+					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.htmlentities($caption).'" placeholder="Click here to add a caption"/>';
 				} else {
 					if( empty($caption) ) $caption = '<a class="resize" href="#">Click here to resize the media viewer</a>';
 					$captions[] = '<span class="caption hide" id="caption-'.$x.'">'.$caption.'</span>';
@@ -414,7 +419,7 @@ class CoWoBo_Posts
 			$caption = get_post_meta($postid, 'caption-street', true);
 			if($this->is_user_post_author() && $postid) {
 				$default = 'Click here to add a caption';
-				$captions[] = '<input type="text" class="caption hide" id="caption-street" name="caption-street" value="'.$caption.'" placeholder="'.$default.'"/>';
+				$captions[] = '<input type="text" class="caption hide" id="caption-street" name="caption-street" value="'.htmlentities($caption).'" placeholder="'.$default.'"/>';
 			} else {
 				$default = 'Use the navigation controls to zoom into the map';
 				$captions[] = '<span class="caption hide" id="caption-street">'.$default.'</span>';
@@ -428,7 +433,7 @@ class CoWoBo_Posts
 			$caption = get_post_meta($postid, 'caption-map', true);
 			if($this->is_user_post_author() && $postid) {
 				$default = 'Click here to add a caption';
-				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.$caption.'" placeholder="'.$default.'"/>';
+				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.htmlentities($caption).'" placeholder="'.$default.'"/>';
 			} else {
 				$default = 'Use the navigation controls to zoom into the map';
 				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
