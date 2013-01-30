@@ -33,7 +33,7 @@ jQuery(document).ready(function() {
 	
 	jQuery('.minimize').live('click', function () {
 		var tab = jQuery(this).parent();
-		if(tab.height() != 22) var newheight = 22;
+		if(tab.height() != 20) var newheight = 20;
 		else var newheight = tab.get(0).scrollHeight; 
 		tab.animate({height: newheight});
 	});
