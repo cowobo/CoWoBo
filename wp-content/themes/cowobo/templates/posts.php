@@ -110,20 +110,13 @@ if (have_posts()) : while (have_posts()) : the_post();
 
 
 	//sort linked posts by type
-	if($linkedids = cowobo()->relations->get_related_ids($postid)):
-		foreach($linkedids as $linkedid):
-			$typecat = cowobo()->posts->get_category($linkedid);
-			$excludecats = array(get_cat_ID('Uncategorized'));
-			if( $postcat &&  ( $postcat->slug == 'coder' || $postcat->slug == 'location' ) )
-                $excludecats[] = $postcat->term_id;
-			if($typecat && !in_array($typecat->term_id, $excludecats)):
-				$types[$typecat->term_id][] = $linkedid;
-			endif;
-		endforeach;
-	endif;
-
-	//show linked posts
-	if(isset ( $types ) && is_array ( $types ) ):
+	$linkedids = cowobo()->relations->get_related_ids($postid);
+	$exclude = array(get_cat_ID('Uncategorized') );
+	if( $postcat &&  ( $postcat->slug == 'coder' || $postcat->slug == 'location' ) ) {
+		$exclude[] = $postcat->term_id;
+	}
+	
+	if( $types = cowobo()->relations->get_related_types($linkedids, $exclude ) ):
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
 			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
@@ -133,7 +126,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 				$tabtype = 'post';
 				$tabpost = $tabposts[0];
 			endif;
-			include(TEMPLATEPATH.'/templates/tabs.php');
+			include(TEMPLATEPATH.'/templates/tabs.php')
 		endforeach;
 	endif;
 
