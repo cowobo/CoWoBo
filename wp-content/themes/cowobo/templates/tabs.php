@@ -19,9 +19,9 @@ if($tabtype == 'cat'):
 
 	echo '<div class="tab">';
 
-		echo '<div class="tabthumb">';
-	    cowobo()->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
-		echo '</div>';
+		echo '<a class="tabthumb" href="'.$catlink.'">';
+	    	cowobo()->posts->the_thumbnail($catposts[0]->ID, $tabcat->slug);
+		echo '</a>';
 
 		echo '<div class="tabtext">';
 			echo '<h2><a class="black" href="'.$catlink.'">'.$prefix.$tabcat->name.' &raquo;</a></h2>';
@@ -68,9 +68,9 @@ else:
 
 	echo '<div class="tab">';
 
-		echo '<div class="tabthumb">';
+		echo '<a class="tabthumb" href="'.get_permalink($tabpost->ID).'">';
 			cowobo()->posts->the_thumbnail($tabpost->ID, $tabtype->slug);
-		echo '</div>';
+		echo '</a>';
 
 		echo '<div class="tabtext">';
 			if($tabtype->slug == 'wiki'):
