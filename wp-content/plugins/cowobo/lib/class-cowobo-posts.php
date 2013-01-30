@@ -131,9 +131,9 @@ class CoWoBo_Posts
         //if post contains a location create or link to that location post
         if( $newlocation = cowobo()->query->location) {
 			if( $location = cwb_geocode( $newlocation ) ):
-				//check if location has already been added
 				$coordinates = $location['lat'].','.$location['lng'];
 				$citypost = get_page_by_title( $location['city'], 'OBJECT', 'post' );
+				//check if location has already been added
                 if( $citypost ):
                 	$cityid = $citypost->ID;
 					$countrycat = get_the_category($cityid);
@@ -148,12 +148,16 @@ class CoWoBo_Posts
 					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'Publish'));
 					update_post_meta( $cityid, 'coordinates', $coordinates);
 				endif;
+				//check if streetview is available
+				if(cowobo()->query->cwb_includestreet && !cwb_streetview($postid) ) {
+					$postmsg['location'] = 'The address you entered does not have streetview, try another?';
+				}
 				update_post_meta( $postid, 'cwb_country', $countryid );
 				update_post_meta( $postid, 'cwb_city', $cityid );
 				update_post_meta( $postid, 'coordinates', $coordinates);
                 cowobo()->relations->delete_relations($postid, $oldcityid);
                 cowobo()->relations->create_relations($postid, array($cityid));
-             else:
+			 else:
              	$postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
              endif;
 		} else {
@@ -404,10 +408,9 @@ class CoWoBo_Posts
 		}
 
 		//include streetview if available
-		if( get_post_meta($postid, 'cwb_includestreet', true)) {
+		if( get_post_meta($postid, 'cwb_includestreet', true) && $slides[] = cwb_streetview($postid) ) {
 			$coordinates = get_post_meta($postid, 'coordinates', true);
 			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=50x50&location='.$coordinates.'&sensor=false" /></a>';
-			$slides[] = cwb_streetview($postid);
 			$caption = get_post_meta($postid, 'caption-street', true);
 			if($this->is_user_post_author() && $postid) {
 				$default = 'Click here to add a caption';
@@ -776,7 +779,7 @@ class CoWoBo_Posts
 
         $x = 0;
         foreach ( $images as $image ) {
-            $caption_id = "caption$x";
+            $caption_id = "cwb_url$x";
             $query->$caption_id = $image;
             $x++;
         }
