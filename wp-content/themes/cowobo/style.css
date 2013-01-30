@@ -170,8 +170,8 @@ body.js.notice { padding-right: 60px; }
 .field a {margin-left:5px}
 .smallfield {width:290px; margin:10px 10px 0 0;}
 .savebar span {padding-right:10px; font-size:18px; font-weight:bold; cursor:pointer; color:#5c63b3}
-.lefthalf, .righthalf {width:295px;}
-.lefthalf {margin:0 20px 15px 0;}
+.feed .lefthalf, .feed .righthalf {width:295px;}
+.feed .lefthalf {margin:0 20px 15px 0;}
 
 /* Rich Editor Styles */
 .richtext {min-height:200px; border:1px solid #ccc; padding: 0 10px 0 10px; margin-bottom:15px;}
