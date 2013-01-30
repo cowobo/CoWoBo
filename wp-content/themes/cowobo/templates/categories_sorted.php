@@ -15,7 +15,6 @@ $out_arr = array();
                 $sort_value = $currentcat->name;
             } else $sort_value = '';
 
-			$tabpost = $post;
 			$tabtype = 'post'; include(TEMPLATEPATH.'/templates/tabs.php');
 
             if ( ! isset ( $out_arr[$sort_value] ) )

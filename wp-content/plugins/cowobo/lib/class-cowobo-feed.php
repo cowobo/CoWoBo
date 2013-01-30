@@ -84,7 +84,7 @@ class CoWoBo_Feed
         } elseif( cowobo()->query->userpw ) {
             $feedtitle = 'Welcome to the club';
         } elseif( cowobo()->query->showall ) {
-            $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'. cowobo()->L10n->the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
+            $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'.get_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
             $feedlink = '';
         } elseif( cowobo()->query->s ) {
 			$feedtitle = 'Search Results';

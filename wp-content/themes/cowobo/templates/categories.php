@@ -3,7 +3,6 @@
 if (have_posts()):
 	//$sort = $sort[$cat->term_id];
 	while (have_posts()) : the_post();
-		$tabpost = $post;
 		$tabtype = 'post'; include(TEMPLATEPATH.'/templates/tabs.php');
 	endwhile;
 endif;
