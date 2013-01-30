@@ -3,7 +3,7 @@
 global $user_ID;
 
 //common variables
-$cubepoints = cowobo()->points;
+$cubepoints = &cowobo()->points;
 $prefix = '';
 $sort = ( isset ( $sort ) ) ? $sort : '';
 
@@ -44,8 +44,14 @@ if( isset ( $tabtype ) && $tabtype == 'cat'):
 							$date = get_post_meta($catpost->ID, 'startdate', true);
 							echo $title.$views.$score.$comments.$date;
 						elseif($tabcat->slug == 'coder'):
-							$date = 'Last Active: '; //to do last active code
-							echo $title.$views.$score.$comments.$date;
+							echo $title.$views.$score.$comments;
+
+                            $last_activity = $cubepoints->get_user_last_activity_by_profile ( $catpost->ID );
+                            if ( ! empty ( $last_activity ) ) :
+                                echo 'Last Active: ' . $last_activity; //to do last active code
+                            endif;
+                            unset ( $last_activity );
+
 						elseif($tabcat->slug == 'project'):
 							echo $title.$status.$date.$score;
 						elseif($tabcat->slug == 'location'):
@@ -115,7 +121,10 @@ else:
 				$specialty = get_post_meta($tabpost->ID, 'specialty', true);
 				if( !empty($specialty) ) $specialty = '<li>Specialty: '.$specialty.'</li>';
 				else $specialty = $views.$comments;
-				$date = 'Last Active: '; //to do last active code
+
+                $last_activity = $cubepoints->get_user_last_activity_by_profile ( $tabpost->ID );
+                $date = ( ! empty ( $last_activity ) ) ? 'Last Active: ' . $last_activity : '';
+                unset ( $last_activity );
 				echo '<ul class="horlist nowrap grey">'.$score.$specialty.$date.'</ul>';
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$location.'</ul>';
