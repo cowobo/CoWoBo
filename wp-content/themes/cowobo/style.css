@@ -87,8 +87,8 @@ form {margin:0 auto;}
 .smallthumbs a {position:relative; float:right; width:35px; height:35px; background:#fff; overflow:hidden; margin:5px 10px 0 0;}
 .smallthumbs a:hover img {opacity:0.8}
 .capform {position:relative; padding-right:120px;}
-.capform .button {position:absolute; right:0; top:0; margin:0; background:none;}
-.capform .caption {font-size:17px; line-height: 25px; color:#eee; border:none; margin:0;}
+.capform .button {position:absolute; right:0; top:-3px; margin:0; height:35px;}
+.capform .caption {font-size:17px; line-height: 25px; font-weight:bold; height:auto; color:#eee; border:none; margin:0; padding:0;}
 .resizeicon {position:absolute; left:10px; top:8px; cursor:pointer;}
 .resizeicon:hover {opacity:0.8}
 
@@ -234,10 +234,8 @@ span.time-since{color:#aaa;font-weight:bold}
 
 @media (max-width: 660px) { 
 .container {max-width:330px;} 
-.tabthumb {max-width:285px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; } 
 .feed {width:310px;} 
+.tabthumb {max-width:285px; height:160px; line-height:160px; margin:0 0 10px 0; float:inherit; } 
 .captions {margin-right:110px!important;}
-.capform {padding:0;}
-.capform .button {position:relative;}
 .smallthumbs {width:90px;} 
 }

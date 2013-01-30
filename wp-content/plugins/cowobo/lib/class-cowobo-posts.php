@@ -455,8 +455,10 @@ class CoWoBo_Posts
 		//include caption form if user is author of post
 		if($this->is_user_post_author() && $postid) {
 			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
+			$captionsdiv .= '<input type="hidden" name="imgpos" value="" />';
 			$captionsdiv .= '<input type="hidden" name="post_ID" value="'.$postid.'" />';
-			$captionsdiv .= '<input type="submit" class="button" value="Save Captions" />';
+			$captionsdiv .= '<span class="caption hide" id="caption-save">Click Save to store all changes to captions and image positions</span>';
+			$captionsdiv .= '<input type="submit" class="button" value="Save"/>';
 			$captionsdiv .= wp_nonce_field( 'captions', 'captions' );
 			$captionsdiv .= '</form>';
 		} else {

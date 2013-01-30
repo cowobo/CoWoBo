@@ -62,8 +62,8 @@ jQuery(document).ready(function() {
 		var img = slide.find('.slideimg');
 		var zoom = slide.attr('class').split(' ')[1];
 		if(!img.hasClass('map')) {
+			if(img.complete) center_slide(slide); 
 			img.load(function() {center_slide(slide)});
-			center_slide(slide); 
 		}
 		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
 		else var level = 0;
@@ -109,14 +109,14 @@ jQuery(document).ready(function() {
 	        previousY = e.clientY;
 	    }
 
-		if (drag) { // todo animate height of proportion div in percent instead
+		if (drag) { // todo animate height of ratio div in percent instead
 			var mousemove = previousY - e.clientY;
-			var newy = viewheight - mousemove;
-			var ymax = jQuery('.imageholder').height();
-			var ymin = jQuery(window).height() - ymax - jQuery('.page').height();
-			if(newy > ymax) newy = ymax;
-			if(newy < ymin) newy = ymin;
-			viewer.height(newy);
+			var ratiodiv = jQuery('.ratio');
+			var ratio = parseFloat(ratiodiv.attr('width').split('%')[0]);
+			var newratio = ratio - mousemove/3;
+			if(newratio > 100) newratio = 100
+			if(newratio < 60) newratio = 60
+			ratiodiv.attr('width', newratio + '%');
 	        previousY = e.clientY;
 			jQuery('.slide').each(function(){ center_slide(jQuery(this)) });
 	    }
@@ -268,24 +268,29 @@ jQuery('.smallthumbs a').live('click', function(event) {
 	var caption = jQuery('#caption-'+num);
 	event.preventDefault();
 	if(slide.index() > 0){
-		caption.show();
+		caption.show().prependTo('.captions');
 		jQuery('.caption').not(caption).hide();
 		jQuery('.slide:first').fadeOut(1000);
 		slide.prependTo(jQuery('.imageholder')).show();	
 	}
-	
+});
 
+//show 
+jQuery('.capform .button').live('hover', function(){
+	jQuery('.caption:first, #caption-save').toggle(); 
 });
 
 
 jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
-	var proportion = jQuery('.proportion');
-	var propercent = parseFloat(proportion.attr('width').split('%')[0]);
-	if(propercent < 80) var amount = 100;
+	var ratiodiv = jQuery('.ratio');
+	var ratio = parseFloat(ratiodiv.attr('width').split('%')[0]);
+	if(ratio < 80) var amount = 100;
 	else var amount = 70;
 	var newheight = jQuery(window).width()*(amount/100) / 2;
-	proportion.animate({width: amount + '%'}, 1000).attr('width', amount + '%');
+	ratiodiv.animate({width: amount + '%'}, 1000, function(){
+		ratiodiv.attr('width', amount + '%').removeAttr('style');
+	});
 	jQuery('html, body').animate({scrollTop: 0}, 1000);
 	jQuery('.slide').each(function(){
 		var newtop = (newheight - jQuery(this).height()) / 2 ;
