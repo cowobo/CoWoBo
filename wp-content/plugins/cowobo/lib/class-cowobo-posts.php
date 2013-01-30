@@ -60,7 +60,7 @@ class CoWoBo_Posts
         $postid = cowobo()->query->post_ID;
 
         $post_title  = ( cowobo()->query->post_title ) ? trim(strip_tags( cowobo()->query->post_title ) ) : null;
-        $post_content = ( cowobo()->query->post_content ) ? trim( cowobo()->query->post_content ) : null;
+        $post_content = ( cowobo()->query->post_content ) ? trim( strip_tags ( cowobo()->query->post_content, '<p><a><br><b><i><em><strong><ul><li><blockquote>' ) ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcityid = get_post_meta($postid, 'cwb_city', true);
         $involvement = cowobo()->query->involvement;
