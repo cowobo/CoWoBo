@@ -126,6 +126,7 @@ class CoWoBo_Feed
 
     // Returns pagination for a feed
     public function pagination($pages = '', $range = 2){
+        $pagination = '';
          $showitems = ($range * 2)+1;
          global $paged;
          if(empty($paged)) $paged = 1;
