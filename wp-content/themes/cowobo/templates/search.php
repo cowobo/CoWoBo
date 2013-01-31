@@ -12,10 +12,10 @@ echo '<div class="tab">';
 		echo '<li id="catmenu">Categories ▼</li>';
 		echo '<li id="sortmenu">Sort ▼</li>';
 		echo '<li id="addmenu" class="blue">Add New ▼</li>';
-		echo '<li id="rssmenu">RSS ▼</li>';
 		echo '<li id="editmenu">';
-			echo '<a class="black" href="'.$editlink.'">Edit Page ▼</a>';
+			echo '<a class="black" href="'.$editlink.'">Edit ▼</a>';
 		echo '</li>';
+		echo '<li id="rssmenu">Your Profile</li>';
 	echo '</ul>';
 	
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
