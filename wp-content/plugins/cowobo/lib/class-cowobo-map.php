@@ -86,7 +86,7 @@ function cwb_streetview($postid) {
 	if($coordinates ){
 		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&&ll='.$coordinates);
 		$xml = simplexml_load_string($xmlstring);
-		if($pano_id = $xml->data_properties['pano_id']) {;
+		if($pano_id = $xml->data_properties['pano_id']) {
 			$baseurl = 'http://cbk0.google.com/cbk?output=tile&panoid='.$pano_id.'&zoom=1';
 			$tiles = '';
 			for ($x=0; $x<=1; $x++) {
@@ -96,7 +96,6 @@ function cwb_streetview($postid) {
 			$slide .= '<img class="proportion" src="'.get_bloginfo('template_url').'/images/ratio-streetview.png" width="100%" alt=""/>';
 			$slide .= '<div style="position:absolute; width:100%; top:0%;"/>'.$tiles.'</div>';
 			$slide .= '</div>';
-			
 			return $slide;
 		} else {
 			return false;

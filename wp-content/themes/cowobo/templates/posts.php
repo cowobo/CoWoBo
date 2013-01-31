@@ -120,13 +120,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
 			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
-			if(count($tabposts) > 1):
-				$tabtype = 'cat';
-			else:
-				$tabtype = 'post';
-				$tabpost = $tabposts[0];
-			endif;
-			include(TEMPLATEPATH.'/templates/tabs.php');
+			$tabtype = 'cat'; include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
 

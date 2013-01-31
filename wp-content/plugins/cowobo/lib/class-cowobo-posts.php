@@ -148,37 +148,39 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $newlocation = cowobo()->query->location) {
-			if( $location = cwb_geocode( $newlocation ) ):
+        if( $newlocation = cowobo()->query->location ) {
+			if( $location = cwb_geocode( $newlocation ) ) {			
 				$coordinates = $location['lat'].','.$location['lng'];
 				$citypost = get_page_by_title( $location['city'], 'OBJECT', 'post' );
 				//check if location has already been added
-                if( $citypost ):
+                if( $citypost ) {
                 	$cityid = $citypost->ID;
 					$countrycat = get_the_category($cityid);
 					$countryid  = $countrycat[0]->term_id;
-                else:
-					if( $countrycat = get_cat_ID( $location['country'] ) )
+                } else {
+					if( $countrycat = get_cat_ID( $location['country'] ) ) {
 						$countryid = $countrycat;
-					else {
+					} else {
 						$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 						$countryid = $tagid['term_id'];
 					}
 					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'Publish'));
 					update_post_meta( $cityid, 'coordinates', $coordinates);
-				endif;
-				//check if streetview is available
-				if(cowobo()->query->cwb_includestreet && !cwb_streetview($postid) ) {
-					$postmsg['location'] = 'The address you entered does not have streetview, try another?';
 				}
+							
 				update_post_meta( $postid, 'cwb_country', $countryid );
 				update_post_meta( $postid, 'cwb_city', $cityid );
 				update_post_meta( $postid, 'coordinates', $coordinates);
                 cowobo()->relations->delete_relations($postid, $oldcityid);
                 cowobo()->relations->create_relations($postid, array($cityid));
-			 else:
+				
+				//check if streetview is available
+				if( cowobo()->query->cwb_includestreet && !cwb_streetview($postid) )
+				$postmsg['location'] = 'The address you entered does not have streetview, try another?';
+				
+			} else {
              	$postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
-             endif;
+			}
 		} else {
 			delete_post_meta( $postid, 'cwb_country');
 			delete_post_meta( $postid, 'cwb_city' );
@@ -568,12 +570,16 @@ class CoWoBo_Posts
 			$options = '';
 					
 			//store image data
-			if ( $imgid = get_post_meta($postid, 'imgid'.$x, true) ) {
-				$thumb = wp_get_attachment_image( $imgid, $size = 'thumbnail' );						
+			if ( $imgid = get_post_meta($postid, 'imgid'.$x, true) ) {			
 				$uploadurl = wp_get_attachment_image_src( $imgid, $size = 'full' );
 				$urlbits = explode( '/', $uploadurl[0] );
 				$imgurl = end( $urlbits );
+				$thumb = wp_get_attachment_image( $imgid, $size = 'thumbnail' );
+			} else {
+				$imgurl = get_post_meta( $postid, $url_id, true );
+				$thumb = '<img src="'.$imgurl.'" alt=""/>';	
 			}
+			
 	       	if ( $unsaved_data ) {
 	           	$imgurl =  $query->$url_id;
 				$imgpos = $query->$pos_id;
