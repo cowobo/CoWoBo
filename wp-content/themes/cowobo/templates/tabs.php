@@ -42,7 +42,7 @@ if( isset ( $tabtype ) && $tabtype == 'cat'):
 					echo '<ul class="horlist nowrap grey">';
 						if($tabcat->slug == 'event'):
 							$date = get_post_meta($catpost->ID, 'startdate', true);
-							echo $title.$views.$score.$comments.$date;
+							echo $title.$views.$date;
 						elseif($tabcat->slug == 'coder'):
 							echo $title.$views.$score.$comments;
 
