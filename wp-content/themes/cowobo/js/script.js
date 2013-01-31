@@ -39,9 +39,13 @@ jQuery(document).ready(function() {
 
 	jQuery('.minimize').live('click', function () {
 		var tab = jQuery(this).parent();
-		if(tab.height() != 22) var newheight = 22;
-		else var newheight = tab.get(0).scrollHeight;
-		tab.animate({height: newheight});
+		if(tab.children('.feedtitle').length >0) {
+			tab.find('.dropmenu').slideUp();
+		} else {
+			if(tab.height() != 22) var newheight = 22;
+			else var newheight = tab.get(0).scrollHeight;
+			tab.animate({height: newheight});
+		}
 	});
 
 
