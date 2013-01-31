@@ -10,28 +10,19 @@ $fburl .= '&description='.urlencode( get_bloginfo( 'description' ) );
 $fburl .= '&redirect_uri='.$pagelink;
 $tweeturl = 'http://twitter.com/home?status='.urlencode('Check this out "http://www.cowobo.org/"');
 
-//echo '<div class="tab">';
-	echo '<h2>Spread the word &raquo;</h2>';
 	if( isset ( $_POST['user_email'] ) ) echo 'Your message has been sent.';
 
-    echo '<a class="fbbutton" href="'.$fburl.'">Share on Facebook</a>';
-    echo '<a class="tweetbutton" target="_blank" href="'.$tweeturl.'">Tweet</a>';
-    echo '<div class="fb-like" data-layout="button_count" data-width="250" data-show-faces="false" data-font="trebuchet ms"></div>';
-
-
 	echo '<form method="post" action="">';
-    echo '<div class="clear" style="margin-top:5px"></div>';
-    echo '<div class="hide-if-js email-form">';
-		echo '<textarea name="emailtext" rows="3" class="emailtext"></textarea>';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
 		echo '<input type="input" name="user_firstname" placeholder="Your name"/>';
-		echo '<input type="input" name="user_friends" placeholder="Email addresses separate by commas" />';
-    echo '</div>';
-    echo '<button type="submit" class="button email-form-toggle">Send Email</button>';
-		//echo '</div>';
+		echo '<input type="input" name="user_friends" placeholder="Friend\'s addresses separate by commas" />';
+   		echo '<input type="submit" class="button sendemail" value="Send Email">';
+		echo '<a class="fbbutton" href="'.$fburl.'">Facebook</a>';
+    	echo '<a class="tweetbutton" target="_blank" href="'.$tweeturl.'">Twitter</a>';
 	echo '</form>';
-    //echo '<div class="clear" style="margin-top:5px"></div>';
-//echo '</div>';
+	
+	echo '<div class="fb-like" data-layout="button_count" data-width="250" data-show-faces="false" data-font="trebuchet ms"></div>';
+
 ?>
 
 <script>

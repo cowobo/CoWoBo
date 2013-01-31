@@ -1,10 +1,12 @@
 <?php
 add_action('widgets_init', 'cowobo_register_widgets' );
+
 function cowobo_register_widgets() {
     register_widget('cowobo_profile_widget');
     register_widget('cowobo_share_widget');
-    register_widget('cowobo_actionlinks_widget');
     register_widget('cowobo_tour_widget');
+	register_widget('cowobo_rss_widget');
+	register_widget('cowobo_contact_widget');
 }
 
 class CoWoBo_Profile_Widget extends WP_Widget {
@@ -20,13 +22,14 @@ class CoWoBo_Profile_Widget extends WP_Widget {
     public function widget($args, $instance) {
         extract($args, EXTR_SKIP);
 
-        echo $before_widget . "<div class='profilemenu'>";
-        echo $before_title . "Update Your Profile &raquo;" . $after_title;
-        do_action ( 'cowobo_profile_widget' );
-        echo "</div>" . $after_widget;
+        echo $before_widget;
+		echo "<div class='profilemenu'>";
+	        echo $before_title . "Update Your Profile &raquo;" . $after_title;
+	        do_action ( 'cowobo_profile_widget' );
+			echo "<a href='" . wp_logout_url( "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'] ) . "'>Logout</a>";
+        echo "</div>";
+		echo $after_widget;
     }
-
-
 
 }
 
@@ -44,33 +47,14 @@ class CoWoBo_Share_widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='share-widget'>";
+	    echo $before_title . "Spread the word &raquo;" . $after_title;
 
-        include ( TEMPLATEPATH . '/templates/widgets/share.php' );
-
-        echo "</div>" . $after_widget;
-    }
-}
-
-class CoWoBo_Actionlinks_widget extends WP_Widget {
-
-    public function __construct() {
-        parent::WP_Widget('cowobo_actionlinks_widget', 'CoWoBo Action Links Widget', array('description' => 'Logout etc.' ) );
-    }
-
-        public function cowobo_actionlinks_widget() {
-            $this->__construct();
-        }
-
-    public function widget( $args, $instance ) {
-        extract($args, EXTR_SKIP);
-
-        echo $before_widget . "<div class='actionlinks-widget'>";
-
-        include TEMPLATEPATH . '/templates/widgets/actionlinks.php';
+        include COWOBO_PLUGIN_DIR . '/widgets/share.php';
 
         echo "</div>" . $after_widget;
     }
 }
+
 
 class CoWoBo_Tour_widget extends WP_Widget {
 
@@ -87,7 +71,54 @@ class CoWoBo_Tour_widget extends WP_Widget {
 
         echo $before_widget . "<div class='tour-widget'>";
 
-        include TEMPLATEPATH . '/templates/widgets/tour.php';
+        include COWOBO_PLUGIN_DIR . '/widgets/tour.php';
+
+        echo "</div>" . $after_widget;
+    }
+}
+
+
+class CoWoBo_RSS_widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_rss_widget', 'CoWoBo RSS Widget', array('description' => 'RSS Links!' ) );
+    }
+
+        public function cowobo_rss_widget() {
+            $this->__construct();
+        }
+
+    public function widget( $args, $instance ) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='rss-widget'>";
+
+	    echo $before_title . "Stay in touch &raquo;" . $after_title;
+
+        include COWOBO_PLUGIN_DIR . '/widgets/rss.php';
+
+        echo "</div>" . $after_widget;
+    }
+}
+
+
+class CoWoBo_Contact_widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_contact_widget', 'CoWoBo Contact Widget', array('description' => 'Contact Us Form' ) );
+    }
+
+        public function cowobo_contact_widget() {
+            $this->__construct();
+        }
+
+    public function widget( $args, $instance ) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='contact-widget'>";
+	    echo $before_title . "Any questions? &raquo;" . $after_title;
+
+        include COWOBO_PLUGIN_DIR . '/widgets/contactus.php';
 
         echo "</div>" . $after_widget;
     }
