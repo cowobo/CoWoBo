@@ -10,7 +10,7 @@ Author URI: http://www.cowobo.org
 /* Tag Styles */
 * {margin:0; padding:0;}
 html {overflow-y:scroll; height:100%;}
-html, body {top: 0!important; position:relative;}
+html, body {top: 0!important; position:relative; background:#ddd;}
 body {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; color: #555; min-height:100%;  min-width:330px; line-height:1.6em; font-size:15px; }
 a {text-decoration:none; color:#5c63b3; font-weight:bold;}
 a:hover {color:#666}
@@ -98,7 +98,7 @@ form {margin:0 auto;}
 .page .shadow  {height:20px; opacity:0.6;}
 .container {position:relative; max-width:990px; margin:10px auto 40px auto; overflow:hidden;  z-index: 2;}
 .feed {float:left; margin:10px 10px 0 10px; width:640px;}
-.feedtitle {font-size:28px; margin:3px 0 12px 0;}
+.feedtitle {font-size:26px; margin:3px 0 12px 0; line-height: 32px;}
 .background {position:absolute; top:0; left:0; width:100%; height:100%; background:#ddd; z-index:1;}
 .pagesource {position:relative; text-align:center; margin-top:25px; direction:ltr; color:#ccc; z-index:3}
 .unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}

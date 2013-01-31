@@ -480,7 +480,7 @@ class CoWoBo_Posts
 		if($this->is_user_post_author() && $postid) {
 			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
 			$captionsdiv .= '<input type="hidden" name="post_ID" value="'.$postid.'" />';
-			$captionsdiv .= '<input type="submit" class="button" value="Save Captions"/>';
+			$captionsdiv .= '<input type="submit" class="button" value="Save" title="Save All Captions"/>';
 			$captionsdiv .= wp_nonce_field( 'captions', 'captions' );
 			$captionsdiv .= '</form>';
 		} else {

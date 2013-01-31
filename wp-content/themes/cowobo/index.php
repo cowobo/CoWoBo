@@ -37,9 +37,6 @@ echo '<div class="imageviewer grabcursor">';
 	//set the height on load of the image viewer
 	echo '<img class="ratio" src="'.$imgfolder.'/ratio-map.png" width="'.$viewerheight.'" alt=""/>';
 
-	//include site title
-	echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
-
 	//include planet/imageviewer controls
 	echo '<a class="pan panleft" href="?pan=left"></a>';
 	echo '<a class="pan panright" href="?pan=right"></a>';
