@@ -454,14 +454,9 @@ class CoWoBo_Posts
 		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
 			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
 			$slides[] = cwb_loadmap();
-			$caption = get_post_meta($postid, 'caption-map', true);
-			if($this->is_user_post_author() && $postid) {
-				$default = 'Click here to add a caption';
-				$captions[] = '<input type="text" class="caption hide" id="caption-map" name="caption-map" value="'.htmlentities($caption).'" placeholder="'.$default.'"/>';
-			} else {
-				$default = 'Use the navigation controls to zoom into the map';
-				$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
-			}
+			if(is_home()) $default = 'Welcome Coding Angel! <a href="'.get_bloginfo('url').'/category/wiki">Click here to take the tour &raquo;</a>';
+			else $default = 'Use the navigation controls to pan and zoom into the map';
+			$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
 		}
 
 		//show map first on homepage
