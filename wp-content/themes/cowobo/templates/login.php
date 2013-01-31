@@ -56,27 +56,25 @@ elseif ( cowobo()->has_notice( 'INVALIDUSER' ) ) :
 
 else:
 
-	echo '<h2>';
-		if ( cowobo()->query->login == 'login' )  echo 'To login';
-		elseif ( cowobo()->query->action == 'editrequest' ) echo 'To edit this post';
-		elseif( $redirect = 'comment' ) echo 'To comment';
-		echo ' simply enter your e-mail address and a password &raquo;';
-	echo '</h2>';
+		if ( cowobo()->query->login == 'login' )  echo '';
+		elseif ( cowobo()->query->action == 'editrequest' ) echo 'To edit this post ';
+		elseif( $redirect = 'comment' ) echo 'To comment ';
+		echo 'Simply enter your e-mail address and a password';
 
     /**
      * @todo is relogin still working?
      */
 	$default = ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) ? cowobo()->query->email : 'ie john@doe.com';
-	echo '<form method="post" action="?action=login">';
+	echo '<form method="post" action="?action=login" style="margin-top:10px">';
 		echo '<input type="text" name="email" class="lefthalf" value="'.$default.'" onfocus="this.value=\'\'" onblur="if(this.value==\'\') this.value=\'ie John\'" />';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
-		echo '<input type="password" name="userpw" class="righthalf" value=""/>';
+		echo '<input type="password" name="userpw" class="righthalf" value="fakepassword"/>';
         if ( isset ( $redirect ) )
             echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
         wp_nonce_field( 'login', 'login' );
-		echo '<button type="submit" class="button">Login</button>';
+		echo '<button type="submit" class="button">Enter</button>';
+		echo '<input type="checkbox" class="auto" name="rememberme"> Remember me!';
 		if ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) echo '<a href="/?action=login&lostpassword=1&email=' . cowobo()->query->email . '">Help, I forgot my password</a>';
-		else echo 'We will not disclose your email to others';
 	echo '</form>';
 
 endif;

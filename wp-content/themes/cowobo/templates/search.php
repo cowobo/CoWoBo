@@ -61,10 +61,6 @@ echo '<div class="tab">';
 	        echo '</div>';
 	        echo '<input type="submit" class="button" value="Update"/>';
 	    echo '</div>';
-		
-		echo '<div class="hide dropmenu rssmenu horlinks">';
-	      	cowobo()->posts->print_rss_links();
-	    echo '</div>';
 	
 	echo '</form>';
 	
