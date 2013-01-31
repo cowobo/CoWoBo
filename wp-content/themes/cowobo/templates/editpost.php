@@ -65,34 +65,8 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			if($field['type'] == 'title'):
 				$post_title = ( ! $unsaved_data ) ? get_the_title($postid) : $query->post_title;
 				echo '<input type="text" name="post_title" value="'.$post_title.'"/>';
-			elseif($field['type'] == 'gallery'): unset($thumbs);
-				echo '<div class="headerrow">';
-					echo '<div class="thumbcol">Thumb</div>';
-					echo '<div class="browsecol">Browse for new image</div>';
-					echo '<div class="urlcol">or URL of image/youtube video</div>';
-					echo '<div class="deletecol"><b>Delete</b></div>';
-				echo '</div>';
-				for ($x=0; $x<3; $x++):
-					if($imgid = get_post_meta($postid, 'imgid'.$x, true)):
-						$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail');
-					else:
-						$imgid = 0; $thumb = '';
-					endif;
-	                $url_id = "cwb_url$x";
-	                if ( $unsaved_data ) {
-	                    $imgurl =  $query->$url_id;
-	                    if ( cowobo()->posts->is_image_url ( $imgurl ) )
-	                        $thumb = "<div style='background: url(\"$imgurl\") no-repeat 50% 50%;background-size: cover;width:40px; height:30px;'></div>";
-	                }
-	                else
-	                    $imgurl =  get_post_meta( $postid, $url_id, true );
-					echo '<div class="imgrow">';
-						echo '<div class="thumbcol">'.$thumb.'</div>';
-						echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';					
-						echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
-						echo '<div class="deletecol"><input type="checkbox" class="full" name="delete'.$x.'" value="1"><input type="hidden" name="imgid'.$x.'" value="'.$imgid.'"/></div>';
-					echo '</div>';
-				endfor;
+			elseif($field['type'] == 'gallery'): 
+				cowobo()->posts->cwb_upload_form($postid, 3);
 			elseif($field['type'] == 'tags'):
 	            if ( ! $unsaved_data ) {
 	                $tags = array();
@@ -141,8 +115,10 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				if($street==1) $streetstate = 'checked'; else $streetstate = '';
 				if($map==1) $mapstate = 'checked'; else $mapstate = '';
 				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="location" value="'.$location.'"/>';
-				echo '<input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Show Map';
-				echo '<input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Show Streetview';
+				echo '<ul class="righthalf horlist">';
+					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Show Map</li>';
+					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Show Streetview</li>';
+				echo '</li>';
 			elseif($field['type'] == 'smalltext'):
 				$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
 				echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';

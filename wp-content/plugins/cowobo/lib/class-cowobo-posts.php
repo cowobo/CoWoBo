@@ -206,35 +206,28 @@ class CoWoBo_Posts
          */
         for ($x=0; $x<3; $x++):
             $imgid = "imgid$x";
-            $imgid = cowobo()->query->imgid;
+			$oldid = cowobo()->query->$imgid;
             $file = ( isset ( $_FILES['file'.$x] ) ) ? $_FILES['file'.$x]['name'] : '';
             $url_id = "cwb_url$x";
             $imgurl = cowobo()->query->$url_id;
-            $videocheck = explode("?v=", $imgurl );
+		    $videocheck = explode("?v=", $imgurl );
             $imagecheck = $this->is_image_url ( $imgurl );
-
-            //delete image if selected or being replaced by something else
-            $deletex = "delete$x";
-            if(cowobo()->query->$deletex || !empty($file) || !empty($videocheck[1]) || !empty($imagecheck) ):
-                wp_delete_attachment($imgid, true);
+			
+            //delete old image if url is empty or being replaced by another image/imageurl/videourl
+            if(!empty($file) || empty($imgurl) || !empty($videocheck[1]) || $imagecheck ):
+				wp_delete_attachment($oldid, true);
                 delete_post_meta($postid, 'imgid'.$x);
-            endif;
-
-
+            else: 
+				update_post_meta($postid, 'imgid'.$x, $oldid);
+			endif;
+			
             //add new image
             if(!empty($file)) {
-                $imgid = $this->insert_attachment('file'.$x, $postid);
-                update_post_meta($postid, 'imgid'.$x, $imgid);
-				delete_post_meta($postid, 'cwb_url'.$x);
-            } elseif ( $imagecheck ) {
-                update_post_meta($postid, 'cwb_url'.$x, $imgid);
-            }
+                $newid = $this->insert_attachment('file'.$x, $postid);
+                update_post_meta($postid, 'imgid'.$x, $newid);
+            } 
+			
         endfor;
-
-        //update draft post
-        // @todo does this work well with new posts?
-        //$postdata = array('ID' => $postid, 'post_title' => $post_title, 'post_content' => $post_content, 'post_status' => 'auto-draft', 'post_category' => $tagarray);
-        //wp_update_post($postdata);
 
         // if there are no errors publish post, add links, and show thanks for saving message
         if(empty($postmsg)) {
@@ -249,7 +242,7 @@ class CoWoBo_Posts
             if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
 
             wp_redirect ( add_query_arg ( array ( "action" => "editpost", "message" => "post_saved" ), get_permalink ( $postid ) ) );
-            //cowobo()->add_notice ( 'Thank you, your post was saved successfully. <a href="'.get_permalink($postid).'">Click here to view the result</a> or add another', "saved" );
+
             //$GLOBALS['newpostid'] = null;
         } else {
             cowobo()->add_notice ( "There has been an error saving your post. Please check all the fields below.", "savepost" );
@@ -258,7 +251,6 @@ class CoWoBo_Posts
             }
         }
 
-        //return $postmsg;
     }
 
 	/**
@@ -381,28 +373,38 @@ class CoWoBo_Posts
         $slides = array();
 		$thumbs = array();
 		$imgfolder = get_bloginfo('template_url').'/images';
-
+		$viewratio = 0.4; //default aspect ratio of image viewer
+		
 		if($postid) {
 
 			for ($x=0; $x<3; $x++):
 
 				//store slide info
-	            $url = get_post_meta($postid, 'cwb_url'.$x, true);
-	            $imgid = get_post_meta($postid, 'imgid'.$x, true);
-	            $videocheck = explode( "?v=", $url );
-	            $image_check = $this->is_image_url( $url );
 				$caption = get_post_meta($postid, 'caption-'.$x, true);
+				$imgpos = get_post_meta($postid, 'cwb_pos'.$x, true);
+				$imgid = get_post_meta($postid, 'imgid'.$x, true);
+				$image_check = false;
+				$top = 0; $url = '';
+				
+				if ($imgurl = wp_get_attachment_image_src($imgid, $size = 'large')) {
+					$url = $imgurl[0];
+					$image_check = true;
+				} elseif ( $url = get_post_meta($postid, 'cwb_url'.$x, true) ) {
+					$videocheck = explode( "?v=", $url );
+	            	$image_check = $this->is_image_url( $url );
+				}
 
-				//check if the slide is uploaded image, youtuve video, or image url;
-	            if($imgsrc = wp_get_attachment_image_src($imgid, $size ='large')) {
-	                $zoom2src = wp_get_attachment_image_src($imgid, $size ='extra-large');
-					$thumbsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail');
-					$slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
-	                    $slides[$x] .= '<img class="slideimg" src="'.$imgsrc[0].'" width="100%" alt=""/>';
-						if( $zoom2src ) $slides[$x] .= '<input type="hidden" class="zoomsrc2" value="'.$zoom2src[0].'"/>';
-	                $slides[$x] .= '</div>';
-					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$thumbsrc[0].'" height="100%" alt=""/></a>';
-				} elseif( is_array ( $videocheck ) && isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
+				//determine image position
+				if( $image_check && $imgpos != 'top') {
+					list($width, $height) = getimagesize($url);
+					$imgratio = $height/$width;
+					$offset = $imgratio - $viewratio;
+					if($imgpos == 'middle') $top = $offset * -100;
+					elseif($imgpos == 'bottom') $top = $offset * -200;
+				}
+
+				//check if the slide is uploaded image, youtube video, or image url;
+				if( isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
 	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'"><object>';
 	                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
 	                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
@@ -411,10 +413,10 @@ class CoWoBo_Posts
 	                $slides[$x] .= '</object></div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
 	            } elseif ( $image_check ) {
-	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'">';
+	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'" style="top:'.$top.'%">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
 	                $slides[$x] .= '</div>';
-					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'. $caption .'" height="100%" alt=""/></a>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$url.'" height="100%" alt=""/></a>';
 
 	            }
 
@@ -475,10 +477,8 @@ class CoWoBo_Posts
 		//include caption form if user is author of post
 		if($this->is_user_post_author() && $postid) {
 			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
-			$captionsdiv .= '<input type="hidden" name="imgpos" value="" />';
 			$captionsdiv .= '<input type="hidden" name="post_ID" value="'.$postid.'" />';
-			$captionsdiv .= '<span class="caption hide" id="caption-save">Click Save to store all changes to captions and image positions</span>';
-			$captionsdiv .= '<input type="submit" class="button" value="Save"/>';
+			$captionsdiv .= '<input type="submit" class="button" value="Save Captions"/>';
 			$captionsdiv .= wp_nonce_field( 'captions', 'captions' );
 			$captionsdiv .= '</form>';
 		} else {
@@ -540,6 +540,72 @@ class CoWoBo_Posts
 		endfor;
 
     }
+	
+    /**
+     * Handle requests to edit posts
+     *
+     * @todo add BP notifications
+     */
+    public function cwb_upload_form($postid, $rows) {
+		$query = cowobo()->query;
+		$unsaved_data = ( ( $query->url || $query->save ) && ! cowobo()->has_notice ( 'saved' ) ) ? true : false;
+
+		//include labels
+		echo '<div class="lefthalf headerrow">';
+			echo '<div class="thumbcol left">Thumb</div>';
+			echo '<div class="urlcol">URL of image or youtube video</div>';
+		echo '</div>';
+		echo '<div class="righthalf">';
+			echo '<div class="poscol right">Position</div>';
+			echo '<div class="browsecol">Upload a new image</div>';
+		echo '</div>';
+				
+		for ($x=0; $x<$rows; $x++):
+			$url_id = "cwb_url$x";
+			$pos_id = "cwb_pos$x";
+			$imgurl = '';
+			$thumb = '';
+			$options = '';
+					
+			//store image data
+			if ( $imgid = get_post_meta($postid, 'imgid'.$x, true) ) {
+				$thumb = wp_get_attachment_image( $imgid, $size = 'thumbnail' );						
+				$uploadurl = wp_get_attachment_image_src( $imgid, $size = 'full' );
+				$urlbits = explode( '/', $uploadurl[0] );
+				$imgurl = end( $urlbits );
+			}
+	       	if ( $unsaved_data ) {
+	           	$imgurl =  $query->$url_id;
+				$imgpos = $query->$pos_id;
+				if ( cowobo()->posts->is_image_url ( $imgurl ) ) {
+			    	$thumb = '<img src="'.$imgurl.'" alt=""/>';					
+				} 	
+			} else {
+				$imgpos = get_post_meta( $postid, $pos_id, true );
+			}
+					
+			//setup positions dropdown
+			$positions = array('top', 'middle','bottom');
+			foreach($positions as $pos){
+				if($pos == $imgpos) $state ='selected'; else $state= '';
+				$options .= '<option value="'.$pos.'" '.$state.'/>'.$pos.'</option>';
+			}
+					
+			//include media form
+			echo '<div class="lefthalf imgrow">';
+				echo '<div class="thumbcol left">'.$thumb.'<input type="hidden" name="imgid'.$x.'" value="'. $imgid .'"/></div>';
+				echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
+			echo '</div>';
+			echo '<div class="righthalf imgrow">';
+				echo '<div class="poscol right"><select name="cwb_pos'.$x.'">'.$options.'</select></div>';
+				echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';					
+			echo '</div>';
+		endfor;
+		
+    }
+	
+	
+	
 
     /**
      * Handle requests to edit posts
@@ -837,7 +903,9 @@ class CoWoBo_Posts
 
     public function is_image_url ( $url ) {
         $image_extensions = array ( 'jpg', 'jpeg', 'png', 'gif' );
-        return in_array ( substr(strrchr ( $url,'.'), 1 ), $image_extensions );
+        $check_extensions = in_array ( substr(strrchr ( $url,'.'), 1 ), $image_extensions );
+		if( strpos( $url , 'http') === 0 && $check_extensions) return true;
+		else return false;
     }
 
 }

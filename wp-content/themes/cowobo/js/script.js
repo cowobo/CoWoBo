@@ -39,16 +39,14 @@ jQuery(document).ready(function() {
 
 	jQuery('.minimize').live('click', function () {
 		var tab = jQuery(this).parent();
-		if(tab.height() != 20) var newheight = 20;
+		if(tab.height() != 22) var newheight = 22;
 		else var newheight = tab.get(0).scrollHeight;
 		tab.animate({height: newheight});
 	});
 
 
 	//center images when window is resized
-	jQuery(window).resize(function () {
-		jQuery('.slide').each(function(){ center_slide(jQuery(this)) });
-	});
+	
 
 
     // Point descriptions
@@ -62,15 +60,10 @@ jQuery(document).ready(function() {
         jQuery(".point-descriptions").slideToggle();
     });
 
-	//center slides and store zoom levels
+	//store initial zoom levels of each slide
 	jQuery('.slide').each(function(){
 		var slide = jQuery(this);
-		var img = slide.find('.slideimg');
 		var zoom = slide.attr('class').split(' ')[1];
-		if(!img.hasClass('map')) {
-			if(img.complete) center_slide(slide); 
-			img.load(function() {center_slide(slide)});
-		}
 		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
 		else var level = 0;
 		slide.data('zoom', level);
@@ -274,19 +267,13 @@ jQuery('.smallthumbs a').live('click', function(event) {
 	var caption = jQuery('#caption-'+num);
 	event.preventDefault();
 	if(slide.index() > 0){
-		caption.show().prependTo('.captions');
-		jQuery('.caption').not(caption).hide();
+		caption.show().siblings('.caption').hide();
 		jQuery('.slide:first').fadeOut(1000);
 		slide.prependTo(jQuery('.imageholder')).show();
 	}
 });
 
-//show 
-jQuery('.capform .button').live('hover', function(){
-	jQuery('.caption:first, #caption-save').toggle(); 
-});
-
-
+//resize imageviewer
 jQuery('.resizeicon').live('click', function(event){
 	event.stopPropagation();
 	var ratiodiv = jQuery('.ratio');

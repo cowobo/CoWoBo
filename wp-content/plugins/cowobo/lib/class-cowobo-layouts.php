@@ -43,7 +43,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Wikis')] = array(
 			array('type' => 'title', 'label' =>'Title', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'website', 'label' =>'Source', 'hint' => 'ie http://www.wikipedia.org/cowobo'),
@@ -52,7 +52,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('News')] = array(
 			array('type' => 'title', 'label' =>'Title', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'website', 'label' =>'Source', 'hint' => 'ie http://www.wikipedia.org/cowobo'),
@@ -61,7 +61,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Projects')] = array(
 			array('type' => 'title', 'label' =>'Project Name', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => '(Optional) Select the city nearest to the project'),
 			array('type' => 'involvement', 'label' =>'Involvement', 'hint' => 'Select your role in the project'),
@@ -72,8 +72,8 @@ class Cowobo_Layouts {
 		);
 
 		$this->layout[get_cat_ID('Coders')] = array(
-			array('type' => 'title', 'label' =>'Full Name', 'hint' => 'Keep it real'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'title', 'label' =>'Full Name', 'hint' => 'Keep it real if you can'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'email', 'label' =>'Email', 'hint' => 'Required to notify you of responses (will stay hidden)'),
 			array('type' => 'location', 'label' =>'Current Location', 'hint' => 'Enter nearest city and country'),
@@ -94,7 +94,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Events')] = array(
 			array('type' => 'title', 'label' =>'Title', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'dates', 'label' =>'Dates', 'hint' => 'Please use the format dd/mm/yyyy'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
@@ -106,7 +106,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Jobs')] = array(
 			array('type' => 'title', 'label' =>'Title', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'smalltext', 'label' =>'Contact Info', 'hint' => 'Will only be visible to logged in users'),
@@ -116,14 +116,14 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Locations')] = array(
 			array('type' => 'title', 'label' =>'Name of location', 'hint' => 'Make sure it does not already exist on our site'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'country', 'label' =>'Country', 'hint' => 'Enter the correct English spelling'),
 			array('type' => 'largetext', 'label' =>'Description', 'hint' => 'Keep it short and sweet and sweet'),
 		);
 
 		$this->layout[get_cat_ID('Blogs')] = array(
 			array('type' => 'title', 'label' =>'Title', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'largetext', 'label' =>'Blog Text', 'hint' => 'Max 3000 characters'),
@@ -131,7 +131,7 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Partners')] = array(
 			array('type' => 'title', 'label' =>'Name of Partner', 'hint' => 'Keep it short and sweet'),
-			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add relevant images or youtube videos'),
+			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
 			array('type' => 'location', 'label' =>'Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'slogan', 'label' =>'Slogan', 'hint' => 'One line that helps describe the project'),
