@@ -65,7 +65,7 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			if($field['type'] == 'title'):
 				$post_title = ( ! $unsaved_data ) ? get_the_title($postid) : $query->post_title;
 				echo '<input type="text" name="post_title" value="'.$post_title.'"/>';
-			elseif($field['type'] == 'gallery'): 
+			elseif($field['type'] == 'gallery'):
 				cowobo()->posts->cwb_upload_form($postid, 3);
 			elseif($field['type'] == 'tags'):
 	            if ( ! $unsaved_data ) {
@@ -164,17 +164,17 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 					echo '<a class="htmlmode" href="#">HTML</a>';
 					echo '<a class="richmode" href="#">WYSIWYG</a>';
 				echo '</div>';
-				echo '<div id="rte" contenteditable="true" unselectable="off" tabindex="'.$index.'" class="richtext">'.trim ( $post_content ).'</div>';
+				echo '<div id="rte" contenteditable="true" onpaste="tag_cleanup_listener(this, event)" unselectable="off" tabindex="'.$index.'" class="richtext">'.trim ( $post_content ).'</div>';
 				echo '<textarea name="post_content" rows="12" class="htmlbox"></textarea>';
 			endif;
 			echo '</div>';
-	
+
 	        cowobo()->print_notices( $field['type'], 'error' );
-	
+
 		endforeach;
-	
+
 	    cowobo()->print_notices( 'confirmenglish', 'error' );
-	
+
 		echo '<div class="tab">';
 			$state = ($query->new) ? '' : 'checked="checked"';
 			echo '<input type="checkbox" class="auto" name="confirmenglish" value="1" '.$state.'"/> I confirm all text has been added in English.';
