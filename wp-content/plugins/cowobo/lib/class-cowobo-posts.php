@@ -255,20 +255,6 @@ class CoWoBo_Posts
 
     }
 
-	/**
-     * Save captions with new data
-     */
-
-    public function save_captions(){
-		$postid = cowobo()->query->post_ID;
-		$fields = array('0','1','2','3','map','street');
-		foreach ($fields as $field) {
-			$fieldname = 'caption-'.$field;
-	        update_post_meta($postid, $fieldname, cowobo()->query->$fieldname);
-		}
-	}
-
-
     /**
      * Get primal category of post
      */
@@ -374,15 +360,14 @@ class CoWoBo_Posts
 
         $slides = array();
 		$thumbs = array();
-		$imgfolder = get_bloginfo('template_url').'/images';
 		$viewratio = 0.4; //default aspect ratio of image viewer
+		$imgfolder = get_bloginfo('template_url').'/images';
 		
 		if($postid) {
 
 			for ($x=0; $x<3; $x++):
 
 				//store slide info
-				$caption = get_post_meta($postid, 'caption-'.$x, true);
 				$imgpos = get_post_meta($postid, 'cwb_pos'.$x, true);
 				$imgid = get_post_meta($postid, 'imgid'.$x, true);
 				$image_check = false;
@@ -422,14 +407,6 @@ class CoWoBo_Posts
 
 	            }
 
-				//store captions
-				if($this->is_user_post_author() && $postid) {
-					$captions[] = '<input type="text" class="caption hide" id="caption-'.$x.'" name="caption-'.$x.'" value="'.htmlentities($caption).'" placeholder="Click here to add a caption"/>';
-				} else {
-					if( empty($caption) ) $caption = '<a class="resize" href="#">Click here to resize the media viewer</a>';
-					$captions[] = '<span class="caption hide" id="caption-'.$x.'">'.$caption.'</span>';
-				}
-
 	           unset($imgid); unset($zoom2src);
 
 	        endfor;
@@ -440,23 +417,12 @@ class CoWoBo_Posts
 		if( get_post_meta($postid, 'cwb_includestreet', true) && $slides[] = cwb_streetview($postid) ) {
 			$coordinates = get_post_meta($postid, 'coordinates', true);
 			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=50x50&location='.$coordinates.'&sensor=false" /></a>';
-			$caption = get_post_meta($postid, 'caption-street', true);
-			if($this->is_user_post_author() && $postid) {
-				$default = 'Click here to add a caption';
-				$captions[] = '<input type="text" class="caption hide" id="caption-street" name="caption-street" value="'.htmlentities($caption).'" placeholder="'.$default.'"/>';
-			} else {
-				$default = 'Use the navigation controls to zoom into the map';
-				$captions[] = '<span class="caption hide" id="caption-street">'.$default.'</span>';
-			}
 		}
 
 		//include map if available
 		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
 			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
 			$slides[] = cwb_loadmap();
-			if(is_home()) $default = 'Welcome Coding Angel! <a href="'.get_bloginfo('url').'/category/wiki">Click here to take the tour &raquo;</a>';
-			else $default = 'Use the navigation controls to pan and zoom into the map';
-			$captions[] = '<span class="caption hide" id="caption-map">'.$default.'</span>';
 		}
 
 		//show map first on homepage
@@ -464,23 +430,10 @@ class CoWoBo_Posts
 			$thumbs = array_reverse( $thumbs );
 		} else {
 			$slides = array_reverse($slides);
-			$captions = array_reverse( $captions );
 		}
 
-		//show first caption and slide
-		$captions[0] = str_replace('caption hide' , 'caption' , $captions[0]);
+		//show first slide
 		$slides[0] = str_replace('slide hide' , 'slide' , $slides[0]);
-
-		//include caption form if user is author of post
-		if($this->is_user_post_author() && $postid) {
-			$captionsdiv = '<form method="post" action="" class="capform">'.implode('', $captions);
-			$captionsdiv .= '<input type="hidden" name="post_ID" value="'.$postid.'" />';
-			$captionsdiv .= '<input type="submit" class="button" value="Save" title="Save All Captions"/>';
-			$captionsdiv .= wp_nonce_field( 'captions', 'captions' );
-			$captionsdiv .= '</form>';
-		} else {
-			$captionsdiv = implode('', $captions);
-		}
 
 		//echo html
 		echo '<div class="imageholder">';
@@ -491,9 +444,11 @@ class CoWoBo_Posts
 		echo '<div class="titlebar">';
 			echo '<div class="shade"></div>';
 			echo '<img class="resizeicon" src="'.$imgfolder.'/resizeicon.png" title="Toggle viewer height" alt=""/>';
-			echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
-			$margin = count($thumbs)*45+20;
-			echo '<div class="captions" style="margin-right:'.$margin.'px">'.$captionsdiv.'</div>';
+			echo '<div class="container">';
+				echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';		
+				echo '<a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';		
+				echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
+			echo '</div>';
 		echo '</div>';
     }
 

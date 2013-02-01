@@ -71,41 +71,48 @@ class CoWoBo_Feed
      *
      * @todo What's showall?
      */
-    function feed_title(){
+function feed_title(){
         global $currentcat, $post, $cowobo;
 
-        $feedtitle = '<a class="grey" href="'.get_bloginfo('url').'" title="Back to Homepage">Cowobo</a> ';
-		
+        $feedtitle = '';
         $feedlink = get_bloginfo ( 'url' );
         if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
+            $feedlink = get_category_link( get_cat_ID ( cowobo()->query->new ) );
         } elseif( is_404() ) {
-            $feedtitle .= 'Yikes we cannot find that content';
+            $feedtitle = 'Yikes we cannot find that content';
         } elseif( cowobo()->query->userpw ) {
             $feedtitle = 'Welcome to the club';
         } elseif( cowobo()->query->showall ) {
-            $feedtitle .= '<a href="'.get_permalink( $post->ID ).'">'.get_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
+            $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'.get_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
+            $feedlink = '';
         } elseif( cowobo()->query->s ) {
-			$feedtitle .= 'Search Results';
+			$feedtitle = 'Search Results';
         } elseif( cowobo()->query->action == 'login') {
-            $feedtitle .= 'Who are you?';
+            $feedtitle = 'Who are you?';
         } elseif( cowobo()->query->action == 'contact') {
-            $feedtitle .= 'Contact';
+            $feedtitle = 'Contact';
         } elseif( cowobo()->query->action == 'translate') {
-            $feedtitle .= 'Change Language';
+            $feedtitle = 'Change Language';
         } elseif( cowobo()->query->action == 'editpost') {
-            $feedtitle .= 'Edit Post';
+            $feedtitle = 'Edit Post';
+            $feedlink = remove_query_arg( 'action' );
         } elseif( is_single() ) {
-			$feedtitle .= '<a href="'.get_permalink().'">'.$post->post_title.'</a>';
+			$feedtitle = $post->post_title;
+            $feedlink = get_permalink();
         } elseif(is_category()) {
-            $feedtitle .= '<a href="'.get_category_link ( $currentcat->term_id ).'">'.$currentcat->name.'</a>';
+            $feedtitle = $currentcat->name;
+            $feedlink = get_category_link ( $currentcat );
+            //$feedlink = get_category_link ( $currentcat );
         } elseif( is_home() ) {
-        	$feedtitle = '<a href="'.get_bloginfo('url').'" title="Back to Homepage">Coders Without Borders</a>';
+            $feedtitle = 'Live News Feed';
         }
+
+        if ( ! empty ( $feedlink ) )
+            $feedtitle = "<a href='$feedlink' alt='$feedtitle'>$feedtitle</a>";
 
         return $feedtitle;
     }
-
     //Get primal category of feed category
     function get_type($catid) {
         $ancestors = get_ancestors($catid,'category');
