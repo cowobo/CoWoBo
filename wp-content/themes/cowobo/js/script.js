@@ -50,7 +50,7 @@ jQuery(document).ready(function() {
 
 
 	//center images when window is resized
-	
+
 
 
     // Point descriptions
@@ -371,4 +371,26 @@ function getInputSelection() {
         return document.selection.createRange();
     }
     return null;
+}
+
+function tag_cleanup_listener( elem, e ) {
+    var element = jQuery(elem);
+    var current_content = element.text();
+    setTimeout ( function() { tag_cleanup ( element, current_content, 0 ) }, 100 );
+}
+
+function tag_cleanup ( element, old_content, it ) {
+    if ( element.text() == old_content && it < 10) { it++;
+        setTimeout ( tag_cleanup ( element, old_content, it ), 100 );
+        return;
+    }
+
+    var whitelist = 'p, a, br, b, i, em, strong, ul, li, blockquote'; // <p><a><br><b><i><em><strong><ul><li><blockquote>
+    element.find('*').not(whitelist).each(function() {
+        var content = jQuery(this).contents();
+        jQuery(this).replaceWith(content);
+    });
+    element.find("*").each(function() {
+        jQuery(this).removeAttr('style');
+    })
 }
