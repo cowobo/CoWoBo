@@ -348,15 +348,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $goal = (int) $next_rank['points'] - (int) $current_rank['points'];
             if ( $goal == 0 ) return false;
             $percentage = round ( ($current_points / $goal) * 100 );
-            if ( $percentage < 10 ) $percentage = 100;
+            if ( $percentage < 5 ) $percentage = 100;
 
-            $image_url = COWOBO_CP_INC_URL . 'progress_bar_angels.png';
+            $image_width = 50;
+            $pixels = ( $image_width / 100 ) * $percentage;
 
             ?>
-            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
-                <div class="stat-bar" style="width:<?php echo $percentage;?>px; overflow: hidden;">
-                    <img title="Another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
-                </div>
+            <div class="points-progression-container" style="width:100px;display: inline-block;position:relative;height:15px">
+                <div class="stat-bar" style="width:<?php echo $pixels ;?>px; overflow: hidden;height:15px;background:#ff0;">                </div>
+                <img title="Another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo COWOBO_CP_INC_URL ?>progress_hearts.png" style="position:absolute;top:0;">
             </div>
             <?php
             return $goal - $current_points;
