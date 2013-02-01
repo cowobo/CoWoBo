@@ -11,7 +11,7 @@ Author URI: http://www.cowobo.org
 * {margin:0; padding:0;}
 html {overflow-y:scroll; height:100%;}
 html, body {top: 0!important; position:relative; background:#ddd;}
-body {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; color: #555; min-height:100%;  min-width:330px; line-height:1.6em; font-size:15px; }
+body {font-family: 'Trebuchet MS', arial; letter-spacing:-0.1em; color: #555; min-height:100%; background:#ccc url(images/background.jpg); min-width:330px; line-height:1.6em; font-size:15px; }
 a {text-decoration:none; color:#5c63b3; font-weight:bold;}
 a:hover {color:#666}
 li {margin-left:15px;}

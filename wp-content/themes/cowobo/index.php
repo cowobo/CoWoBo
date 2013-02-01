@@ -108,13 +108,6 @@ echo '<div class="page">';
 		
 	echo '</div>';
 		
-	//include background source code
-	echo '<div class="background">';
-		echo '<div class="pagesource unselectable" unselectable="on">';
-			echo '<div class="notranslate code"><pre>'.htmlentities(file_get_contents(TEMPLATEPATH.'/templates/pagesource.php')).'</pre></div>';
-		echo '</div>';
-	echo '</div>';
-
 echo '</div>';
 
 get_footer();
