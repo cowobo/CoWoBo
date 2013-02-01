@@ -1,8 +1,5 @@
 <?php
 
-
-echo '<div class="tab">';
-
 //Warn users trying to access via the google translate iframe.
 if( isset ( $_SERVER['HTTP_VIA'] ) && ! empty ( $_SERVER['HTTP_VIA'] ) ):
 
@@ -56,27 +53,26 @@ elseif ( cowobo()->has_notice( 'INVALIDUSER' ) ) :
 
 else:
 
-		if ( cowobo()->query->login == 'login' )  echo '';
-		elseif ( cowobo()->query->action == 'editrequest' ) echo 'To edit this post ';
-		elseif( $redirect = 'comment' ) echo 'To comment ';
-		echo 'Simply enter your e-mail address and a password';
-
     /**
      * @todo is relogin still working?
      */
-	$default = ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) ? cowobo()->query->email : 'ie john@doe.com';
-	echo '<form method="post" action="?action=login" style="margin-top:10px">';
-		echo '<input type="text" name="email" class="lefthalf" value="'.$default.'" onfocus="this.value=\'\'" onblur="if(this.value==\'\') this.value=\'ie John\'" />';
+	$default = cowobo()->query->email;
+	echo '<div style="margin-bottom:10px">Simply enter your e-mail address and a password:</div>';
+	
+	echo '<form method="post" action="?action=login">';
+		echo '<input type="text" name="email" class="lefthalf" value="'.$default.'" placeholder="ie john@doe.com" />';
 		echo '<input type="text" name="user" class="hide" value=""/>'; //spammer trap
-		echo '<input type="password" name="userpw" class="righthalf" value="fakepassword"/>';
+		echo '<input type="password" name="userpw" class="righthalf" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;"/>';
         if ( isset ( $redirect ) )
             echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
-        wp_nonce_field( 'login', 'login' );
-		echo '<button type="submit" class="button">Enter</button>';
-		echo '<input type="checkbox" class="auto" name="rememberme"> Remember me';
-		if ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) echo '<a href="/?action=login&lostpassword=1&email=' . cowobo()->query->email . '">Help, I forgot my password</a>';
+		echo '<div class="clear">';
+			echo '<button type="submit" class="button">Enter</button>';
+			echo '<input type="checkbox" class="auto" name="rememberme"> Remember me';
+		echo '</div>';
+		if ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) 
+			echo '<a href="/?action=login&lostpassword=1&email=' . cowobo()->query->email . '">Help, I forgot my password</a>';
+		wp_nonce_field( 'login', 'login' );
 	echo '</form>';
 
 endif;
-
-echo '</div>';	?>
+?>

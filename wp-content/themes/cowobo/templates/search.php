@@ -3,6 +3,11 @@
 if(is_single()) $editlink = '?action=editpost';
 else  $editlink = '?action=editpage';
 
+if(! is_user_logged_in()) $profilelink = '<li id="loginmenu">Your Profile ▼</li>';
+else $profilelink = '<li><a href="'.get_permalink (cowobo()->users->current_user_profile_id ).'">Your Profile ▼</a></li>';
+
+
+
 echo '<div class="tab">';
 
 	echo '<div class="feedtitle">'.cowobo()->feed->feed_title().'</div>';
@@ -15,7 +20,7 @@ echo '<div class="tab">';
 		echo '<li id="editmenu">';
 			echo '<a class="black" href="'.$editlink.'">Edit ▼</a>';
 		echo '</li>';
-		echo '<li id="rssmenu">Your Profile</li>';
+		echo $profilelink;
 	echo '</ul>';
 	
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
@@ -60,6 +65,10 @@ echo '<div class="tab">';
 	            endforeach;
 	        echo '</div>';
 	        echo '<input type="submit" class="button" value="Update"/>';
+	    echo '</div>';
+		
+		echo '<div class="hide dropmenu loginmenu">';
+			include(TEMPLATEPATH.'/templates/login.php');
 	    echo '</div>';
 	
 	echo '</form>';
