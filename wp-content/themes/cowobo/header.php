@@ -9,7 +9,7 @@
 <link rel="shortcut icon" href="<?php bloginfo('template_url');?>/images/favicon.ico" />
 <link rel="icon" type="image/gif" href="<?php bloginfo('template_url');?>/images/animated_favicon1.gif" />
 <link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/style.css" media="screen"/>
-<link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/print.css" media="print"/>
+<link rel="stylesheet" type="text/css" href="<?php bloginfo('template_url') ?>/style.css" media="print"/>
 <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="<?php bloginfo('rss2_url'); ?>" />
 <link rel="alternate" type="text/xml" title="RSS .92" href="<?php bloginfo('rss_url'); ?>" />
 <link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="<?php bloginfo('atom_url'); ?>" />
