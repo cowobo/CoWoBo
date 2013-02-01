@@ -175,11 +175,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_your_score_box() {
-            echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
+            echo '<li id="profilemenu" class="icon-heart">' . $this->current_user_points . ' ▼</li>';
         }
 
         public function do_userlink_score() {
-            echo "<br><em>{$this->current_user_rank['rank']} ({$this->current_user_points})</em>";
+            echo "<br><em>{$this->current_user_rank['rank']} <span class='icon-heart'>{$this->current_user_points}</span></em>";
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
@@ -555,7 +555,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 $this->setup_displayed_user();
 
-                echo ' <span class="field"><h3>Score:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+                echo ' <span class="field"><span class="hint icon-heart">' . $this->displayed_user_points . '</span></span>';
                 echo ' <span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
                 echo ' <span class="field">';
                 $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
@@ -674,7 +674,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $points = $config['points'];
                 if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
 
-                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'>+$points</span><p>{$config['description']}</p></div>";
+                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'><span class='icon-heart'>$points</span></span><p>{$config['description']}</p></div>";
             }
             krsort ( $out );
 
