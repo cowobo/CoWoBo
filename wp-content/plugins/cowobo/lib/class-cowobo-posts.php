@@ -371,14 +371,15 @@ class CoWoBo_Posts
 				$imgpos = get_post_meta($postid, 'cwb_pos'.$x, true);
 				$imgid = get_post_meta($postid, 'imgid'.$x, true);
 				$image_check = false;
-				$top = 0; $url = '';
-				
+				$top = 0; $url = ''; $thumb = '';
 				if ($imgurl = wp_get_attachment_image_src($imgid, $size = 'large')) {
-					$url = $imgurl[0];
+					$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail', array('height'=>'100%'));
 					$image_check = true;
 				} elseif ( $url = get_post_meta($postid, 'cwb_url'.$x, true) ) {
 					$videocheck = explode( "?v=", $url );
-	            	$image_check = $this->is_image_url( $url );
+					if($image_check = $this->is_image_url( $url )) 
+					$thumb = '<img src="'.$url.'" style="margin:-100px" alt=""/>'; 
+					//note: scaling large image to thumb results underlying gallery to drag slower
 				}
 
 				//determine image position
@@ -403,7 +404,7 @@ class CoWoBo_Posts
 	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'" style="top:'.$top.'%">';
 	                    $slides[$x] .= '<img class="slideimg" src="'.$url.'" width="100%" alt=""/>';
 	                $slides[$x] .= '</div>';
-					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="'.$url.'" height="100%" alt=""/></a>';
+					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'">'.$thumb.'</a>';
 
 	            }
 

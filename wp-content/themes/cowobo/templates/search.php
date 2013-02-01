@@ -4,7 +4,7 @@ if(is_single()) $editlink = '?action=editpost';
 else  $editlink = '?action=editpage';
 
 if(! is_user_logged_in()) $profilelink = '<li id="loginmenu">Your Profile ▼</li>';
-else $profilelink = '<li><a href="'.get_permalink (cowobo()->users->current_user_profile_id ).'">Your Profile ▼</a></li>';
+else $profilelink = '<li><a class="black" href="'.get_permalink (cowobo()->users->current_user_profile_id ).'">Your Profile ▼</a></li>';
 
 
 
