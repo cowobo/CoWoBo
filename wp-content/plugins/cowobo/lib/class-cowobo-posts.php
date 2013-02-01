@@ -372,8 +372,10 @@ class CoWoBo_Posts
 				$imgid = get_post_meta($postid, 'imgid'.$x, true);
 				$image_check = false;
 				$top = 0; $url = ''; $thumb = '';
+				
 				if ($imgurl = wp_get_attachment_image_src($imgid, $size = 'large')) {
 					$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail', array('height'=>'100%'));
+					$url = $imgurl[0];
 					$image_check = true;
 				} elseif ( $url = get_post_meta($postid, 'cwb_url'.$x, true) ) {
 					$videocheck = explode( "?v=", $url );

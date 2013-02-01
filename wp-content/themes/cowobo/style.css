@@ -116,7 +116,7 @@ form {margin:0 auto;}
 /* Tab Styles */
 .widget {float:right; margin:10px; width:290px; clear:right;}
 .feed .tab {margin-bottom:20px;}
-.feed .tab, .widget {position:relative; border:10px solid #fff; background:#fff; overflow:hidden;}
+.feed .tab, .widget {position:relative; border:10px solid #fff; background:#fff; overflow:hidden; -moz-border-radius: 3px; border-radius: 3px;}
 .feed .tab, .widget {-moz-box-shadow: 0 0 3px rgba(0,0,0,0.2); -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2); box-shadow: 0 0 3px rgba(0,0,0,0.2);}
 .tabthumb, .square {display:block; float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
 .square {height: 149px; }
