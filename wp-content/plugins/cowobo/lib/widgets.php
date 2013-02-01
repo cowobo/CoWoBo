@@ -116,7 +116,7 @@ class CoWoBo_Contact_widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='contact-widget'>";
-	    echo $before_title . "Any questions? &raquo;" . $after_title;
+	    echo $before_title . "Tell us what you think &raquo;" . $after_title;
 
         include COWOBO_PLUGIN_DIR . '/widgets/contactus.php';
 

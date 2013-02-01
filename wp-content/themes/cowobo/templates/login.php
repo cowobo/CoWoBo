@@ -73,7 +73,7 @@ else:
             echo '<input type="hidden" name="redirect" value="'.$redirect.'"/>';
         wp_nonce_field( 'login', 'login' );
 		echo '<button type="submit" class="button">Enter</button>';
-		echo '<input type="checkbox" class="auto" name="rememberme"> Remember me!';
+		echo '<input type="checkbox" class="auto" name="rememberme"> Remember me';
 		if ( cowobo()->has_notice( 'WRONGPASSWORD' ) ) echo '<a href="/?action=login&lostpassword=1&email=' . cowobo()->query->email . '">Help, I forgot my password</a>';
 	echo '</form>';
 
