@@ -748,7 +748,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             public function get_user_last_activity_by_profile ( $profile_id ) {
-                return $this->get_user_last_activity( cowobo()->users->get_user_by_profile_id ( $profile_id )->ID );
+                $user = cowobo()->users->get_user_by_profile_id ( $profile_id );
+                if ( ! is_a ( $user, "WP_User" ) ) return;
+                return $this->get_user_last_activity( $user->ID );
             }
 
     }
