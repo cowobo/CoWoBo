@@ -105,9 +105,9 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				echo '<input tabindex="'.$index.'" type="text" name="email" class="blue bold" value="'.$email.'"/>';
 				echo '<br/>';
 			elseif($field['type'] == 'country'):
-				$cat = ( ! $unsaved_data ) ? get_post_meta($postid, 'country', true) : $query->country ;
-				echo '<input type="text" class="" tabindex="'.$index.'" name="country" value="'.$cat->name.'"/>';
-				echo '<br/>';
+				$country = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_country', true) : $query->cwb_country ;
+				if( empty($country) ) $country = get_post_meta($postid, 'country', true);
+				echo '<input type="text" tabindex="'.$index.'" name="cwb_country" value="'.$country.'"/>';
 			elseif($field['type'] == 'location'):
 				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'location', true) : $query->location;
 				$map = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includemap', true) : $query->cwb_includemap;

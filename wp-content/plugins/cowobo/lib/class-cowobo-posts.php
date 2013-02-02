@@ -118,25 +118,27 @@ class CoWoBo_Posts
 
         //if its a new location post geocode its location
         if( $postcat->slug == 'location') {
-            if( $country = cowobo()->query->country ) {
+            if( $country = cowobo()->query->cwb_country ) {
 				if($location = cwb_geocode( $post_title.', '.$country ) ) {
 					//check if location has already been added
-					$coordinates = $location['lat'].','.$location['lng'];
-					$citypost = get_posts('meta_key=coordinates&meta_value='.$coordinates);
+					$countryid = get_cat_ID( $location['country']);
+					$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
+					
 					if( $citypost && $citypost[0]->ID != $postid ) {
-                        $postmsg['title'] = 'The location you are trying to add already exists';
+                        $postmsg['title'] = 'This location already exists, <a href="'.get_permalink($$citypost[0]->ID).'?action=editpost">click here to edit it</a>';
                     } else {
 						//use title and country returned from geocode to avoid spelling duplicates
-                        $post_title = $location['cwb_city'];
+                        $post_title = $location['city'];
+						$coordinates = $location['lat'].','.$location['lng'];
 						update_post_meta($postid, 'cwb_country', $location['country']);
-						add_post_meta($postid, 'coordinates', $coordinates);
-						if($countryid = get_cat_ID( $location['country'] ))
+						update_post_meta($postid, 'coordinates', $coordinates);
+						if($countryid)
 							$tagarray[] = $countryid;
 						else {
 							$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 							$tagarray[] = $tagid['term_id'];
 				            $tagarray = array_map('intval', $tagarray);
-						}
+						}						
                     }
                     if( ! empty( $linkedid ) ) cowobo()->relations->create_relations($postid, array($linkedid));
                 } else {
@@ -151,16 +153,15 @@ class CoWoBo_Posts
         if( $newlocation = cowobo()->query->location ) {
 			if( $location = cwb_geocode( $newlocation ) ) {			
 				$coordinates = $location['lat'].','.$location['lng'];
-				$citypost = get_page_by_title( $location['city'], 'OBJECT', 'post' );
+				$countryid = get_cat_ID( $location['country']);
+				$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
 				//check if location has already been added
                 if( $citypost ) {
-                	$cityid = $citypost->ID;
+                	$cityid = $citypost[0]->ID;
 					$countrycat = get_the_category($cityid);
 					$countryid  = $countrycat[0]->term_id;
                 } else {
-					if( $countrycat = get_cat_ID( $location['country'] ) ) {
-						$countryid = $countrycat;
-					} else {
+					if( ! $countryid ) {
 						$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 						$countryid = $tagid['term_id'];
 					}
@@ -182,9 +183,6 @@ class CoWoBo_Posts
              	$postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
 			}
 		} else {
-			delete_post_meta( $postid, 'cwb_country');
-			delete_post_meta( $postid, 'cwb_city' );
-			delete_post_meta( $postid, 'coordinates', $coordinates);
 			cowobo()->relations->delete_relations($postid, $oldcityid);
         }
 
@@ -241,7 +239,8 @@ class CoWoBo_Posts
             }
 
             if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
-            if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
+            
+			if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
 
             wp_redirect ( add_query_arg ( array ( "action" => "editpost", "message" => "post_saved" ), get_permalink ( $postid ) ) );
 
@@ -362,6 +361,7 @@ class CoWoBo_Posts
 		$thumbs = array();
 		$viewratio = 0.4; //default aspect ratio of image viewer
 		$imgfolder = get_bloginfo('template_url').'/images';
+		$postcat = cowobo()->posts->get_category($postid);
 		
 		if($postid) {
 
@@ -417,13 +417,16 @@ class CoWoBo_Posts
 		}
 
 		//include streetview if available
-		if( get_post_meta($postid, 'cwb_includestreet', true) && $slides[] = cwb_streetview($postid) ) {
+		$isstreet = get_post_meta($postid, 'cwb_includestreet', true);
+		if( ( $isstreet or $postcat->slug == 'location' ) && $streetcheck = cwb_streetview($postid) ) {
+			$slides[] = $streetcheck;
 			$coordinates = get_post_meta($postid, 'coordinates', true);
 			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=50x50&location='.$coordinates.'&sensor=false" /></a>';
 		}
 
 		//include map if available
-		if( get_post_meta($postid, 'cwb_includemap', true) or empty ( $thumbs ) ) {
+		$ismap = get_post_meta($postid, 'cwb_includemap', true);
+		if( $ismap or $postcat->slug == 'location' or empty ( $thumbs ) ) {
 			$thumbs[] = '<a class="map" href="?img=map"><img src="'.$imgfolder.'/maps/day_thumb.jpg" height="100%" /></a>';
 			$slides[] = cwb_loadmap();
 		}
