@@ -67,7 +67,7 @@ jQuery(document).ready(function() {
 	//store initial zoom levels of each slide
 	jQuery('.slide').each(function(){
 		var slide = jQuery(this);
-		var zoom = slide.attr('class').split(' ')[1];
+		var zoom = slide.attr('class').split(' ')[2];
 		if(typeof(zoom) != 'undefined') var level = zoom.split('-')[1];
 		else var level = 0;
 		slide.data('zoom', level);
