@@ -10,7 +10,10 @@ if ( post_password_required() ) { ?>
 
 
 if(!is_user_logged_in()):
-	$redirect = 'comment'; include(TEMPLATEPATH.'/templates/login.php');
+	echo '<div class="tab">';
+	echo '<h2>To leave a comment or message &raquo;</h2>';
+	include(TEMPLATEPATH.'/templates/login.php');
+	echo '</div>';
 else:
 	echo '<div class="tab">';
 		echo '<h2>Comments &raquo;</h2>';
