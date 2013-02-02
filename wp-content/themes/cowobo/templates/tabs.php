@@ -37,11 +37,11 @@ if( isset ( $tabtype ) && $tabtype == 'cat'):
 					$score = '<li>Score: '.$cubepoints->get_post_points($catpost->ID).'</li>';
 					$comments = '<li>Replies: '.get_comments_number($catpost->ID).'</li>';
 					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
-					$status = '<li>'.get_post_meta($catpost->ID, 'status', true).'</li>';
+					$status = '<li>'.get_post_meta($catpost->ID, 'cwb_status', true).'</li>';
 
 					echo '<ul class="horlist nowrap grey">';
 						if($tabcat->slug == 'event'):
-							$date = get_post_meta($catpost->ID, 'startdate', true);
+							$date = get_post_meta($catpost->ID, 'cwb_startdate', true);
 							echo $title.$views.$date;
 						elseif($tabcat->slug == 'coder'):
 							echo $title.$views.$score.$comments;
@@ -79,7 +79,7 @@ else:
 	$score = '<li>Score: '.$cubepoints->get_post_points($tabpost->ID).'</li>';
 	$date = '<li>Updated: '.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tags = get_the_category($tabpost->ID);
-	$oneliner = get_post_meta($tabpost->ID, 'oneliner', true);
+	$oneliner = get_post_meta($tabpost->ID, 'cwb_oneliner', true);
     $location = '';
 
 	if(count($tags)>1) {
@@ -95,7 +95,7 @@ else:
 		$oneliner = substr($firstline[0], 0 , 140).'..';
 	}
 
-	if($cityid = get_post_meta($tabpost->ID, 'cityid', true)){
+	if($cityid = get_post_meta($tabpost->ID, 'cwb_cityid', true)){
 		$citypost = get_post($cityid);
 		$citylink = '<a href="'.get_permalink($citypost->ID).'">'.$citypost->post_title.'</a>';
 		$country = current ( get_the_category( $cityid ) );
@@ -112,13 +112,13 @@ else:
 		echo '<div class="tabtext">';
 			echo '<h2>'.$title.'</h2>';
 			if($tabcat->slug == 'project'):
-				$status = get_post_meta($tabpost->ID, 'status', true);
+				$status = get_post_meta($tabpost->ID, 'cwb_status', true);
 				if( !empty($status) ) $status = '<li>Status: '.$status.'</li>';
 				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$location.$status.'</ul>';
 			elseif($tabcat->slug == 'coder'):
-				$specialty = get_post_meta($tabpost->ID, 'specialty', true);
+				$specialty = get_post_meta($tabpost->ID, 'cwb_specialty', true);
 				if( !empty($specialty) ) $specialty = '<li>Specialty: '.$specialty.'</li>';
 				else $specialty = $views.$comments;
 
@@ -129,20 +129,20 @@ else:
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$location.'</ul>';
 			elseif($tabcat->slug == 'job'):
-				$skills = get_post_meta($tabpost->ID, 'skills', true);
+				$skills = get_post_meta($tabpost->ID, 'cwb_skills', true);
 				if( !empty($skills) ) $skills = '<li>Skills required: '.$skills.'</li>';
 				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$skills.$location.'</ul>';
 			elseif($tabcat->slug == 'news'):
-				$source = get_post_meta($tabpost->ID, 'source', true);
+				$source = get_post_meta($tabpost->ID, 'cwb_source', true);
 				if( !empty($source) ) $source = '<li>Skills required: '.$source.'</li>';
 				echo '<ul class="horlist nowrap grey">'.$views.$score.$comments.$date.'</ul>';
 				echo $oneliner;
 				echo '<ul class="horlist nowrap">'.$source.'</ul>';
 			elseif($tabcat->slug == 'event'):
-				$startdate = get_post_meta($tabpost->ID, 'startdate', true);
-				$enddate = get_post_meta($tabpost->ID, 'enddate', true);
+				$startdate = get_post_meta($tabpost->ID, 'cwb_startdate', true);
+				$enddate = get_post_meta($tabpost->ID, 'cwb_enddate', true);
 				if($startdate != $enddate) $date = 'Date: '.date("j F", strtotime($startdate)).' - '.date("j F", strtotime($enddate));
 				else $date = 'Date: '.date("j F", strtotime($startdate));
 				echo '<ul class="horlist nowrap grey">'.$date.$location.'</ul>';

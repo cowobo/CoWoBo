@@ -33,7 +33,7 @@ class CoWoBo_Feed
         elseif( $sort == 'rating' ) {
             $sort = 'meta_value_num';
 			//$metaquery[] = array( 'metakey'=>'cowobo_points' );
-            $query['meta_key'] = 'cowobo_points';
+            $query['meta_key'] = 'cwb_points';
 		} elseif ( $sort == 'a-z' ) {
 			$sort = 'title';
 		} elseif ( $sort == 'z-a' ) {

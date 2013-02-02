@@ -82,7 +82,7 @@ function adjustLatByPx($lat, $amount, $zoom) {
 
 //return streetview tiles
 function cwb_streetview($postid) {
-	$coordinates = get_post_meta($postid, 'coordinates', true);
+	$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
 	if($coordinates ){
 		$xmlstring = file_get_contents('http://cbk0.google.com/cbk?output=xml&&ll='.$coordinates);
 		$xml = simplexml_load_string($xmlstring);
@@ -161,10 +161,10 @@ function cwb_loadmap() {
 	$data = array('lat'=> '20', 'lng'=>'0');
 	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
 	$zoom3src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
-	
+
 	if ( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
 	elseif ( is_single() ) $postid = $post->ID;
-		
+
 	//get coordinates if specified in url or post
 	if(is_single() && $postcoordinates = get_post_meta($postid, 'coordinates', true)):
 		$pos= latlng_to_percent($postcoordinates);
@@ -195,7 +195,7 @@ function cwb_loadmap() {
 	if( is_search() or is_category() && have_posts() ){
 		$originapost = $post;
 		while (have_posts()) : the_post();
-			if($coordinates = get_post_meta($post->ID, 'coordinates', true)){
+			if($coordinates = get_post_meta($post->ID, 'cwb_coordinates', true)){
 				$linkedids = $cowobo->relations->get_related_ids($post->ID);
 				$count = count($linkedids);
 				$countarray[$post->ID] = $count;
@@ -223,7 +223,7 @@ function cwb_loadmap() {
 	//find marker position and add it to map
     $id = 0; $xmid = 1000; $ymid = 500;
 	foreach($linkedmarkers as $markerpost): $id++;
-		$coordinates = get_post_meta($markerpost->ID, 'coordinates', true);
+		$coordinates = get_post_meta($markerpost->ID, 'cwb_coordinates', true);
         if ( empty ( $coordinates ) ) continue;
 		$latlng = explode(',', $coordinates);
 		$delta_x  = (LonToX($latlng[1]) - LonToX($data['lng'])) >> 1;
