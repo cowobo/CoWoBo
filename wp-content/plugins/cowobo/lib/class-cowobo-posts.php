@@ -86,7 +86,7 @@ class CoWoBo_Posts
         if($involvement == 'none') {
             cowobo()->relations->delete_relations($postid, $profile_id); //existing posts
             $linkedid = false;
-        } else {
+        } elseif($postcat->slug != 'location') {
             $linkedid = $profile_id;
         }
 
@@ -140,7 +140,6 @@ class CoWoBo_Posts
 				            $tagarray = array_map('intval', $tagarray);
 						}						
                     }
-                    if( ! empty( $linkedid ) ) cowobo()->relations->create_relations($postid, array($linkedid));
                 } else {
                     $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
                 }
