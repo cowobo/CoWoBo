@@ -34,7 +34,7 @@ if( isset ( $tabtype ) && $tabtype == 'cat'):
 				foreach($catposts as $catpost):
 					$title = '<li><a class="light" href="'.get_permalink($catpost->ID).'">'. cowobo()->L10n->the_title($catpost->ID).'</a></li>';
 					$views = '<li>Views: '.cowobo()->posts->get_views($catpost->ID).'</li>';
-					$score = '<li>Score: '.$cubepoints->get_post_points($catpost->ID).'</li>';
+					$score = '<li class="icon-heart">'.$cubepoints->get_post_points($catpost->ID).'</li>';
 					$comments = '<li>Replies: '.get_comments_number($catpost->ID).'</li>';
 					$date = '<li>'.cwb_time_passed(strtotime($catpost->post_modified)).'</li>';
 					$status = '<li>'.get_post_meta($catpost->ID, 'cwb_status', true).'</li>';
@@ -76,7 +76,7 @@ else:
 	$title = '<a href="'.get_permalink($tabpost->ID).'">'. cowobo()->L10n->the_title($tabpost->ID).' &raquo;</a>';
 	$comments = '<li>Replies: '.get_comments_number($tabpost->ID).'</li>';
 	$views = '<li>Views: '.cowobo()->posts->get_views($tabpost->ID).' </li>';
-	$score = '<li>Score: '.$cubepoints->get_post_points($tabpost->ID).'</li>';
+	$score = '<li class="icon-heart">'.$cubepoints->get_post_points($tabpost->ID).'</li>';
 	$date = '<li>Updated: '.cwb_time_passed(strtotime($tabpost->post_modified)).'</li>';
 	$tags = get_the_category($tabpost->ID);
 	$oneliner = get_post_meta($tabpost->ID, 'cwb_oneliner', true);
