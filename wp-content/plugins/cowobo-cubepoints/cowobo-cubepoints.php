@@ -331,10 +331,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
                     //echo "<p class='next-rank'>Next rank: <strong>{$this->current_user_next_rank['rank']}</strong> ({$this->current_user_next_rank['points']})";
                     $this->do_progression( $this->current_user_points, $this->current_user_rank, $this->current_user_next_rank );
                 }
-                echo "<p class='clear'><a href='#' class='show-points-descriptions'>Improve your score &raquo;</a></p>";
-                echo "<div class='point-descriptions hide-if-js'>";
-                    $this->do_point_descriptions( 'mixed' );
-                echo "</div>";
             echo "</div>";
         }
 

@@ -3,6 +3,7 @@ add_action('widgets_init', 'cowobo_cp_register_widgets' );
 function cowobo_cp_register_widgets() {
     register_widget('cowobo_recent_activity_widget');
     register_widget('cowobo_recently_active_widget');
+	register_widget('cowobo_points_chart_widget');
 }
 
 class CoWoBo_Recent_Activity_Widget extends WP_Widget {
@@ -76,5 +77,30 @@ class CoWoBo_Recently_Active_Widget extends WP_Widget {
     }
 
 
+
+}
+
+
+
+class CoWoBo_Points_Chart_Widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_points_chart_widget', 'CoWoBo Points Chart', array('description' => 'Display ways to get points' ) );
+    }
+
+        public function cowobo_points_chart_widget() {
+            $this->__construct();
+        }
+
+    public function widget($args, $instance) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='points_chart'>";
+        echo $before_title . "Get more points &raquo;" . $after_title;
+
+       	cowobo()->points->do_point_descriptions( 'mixed' );
+
+        echo "</div>" . $after_widget;
+    }
 
 }

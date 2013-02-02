@@ -70,9 +70,10 @@ class CoWoBo_Users
     }
 
     public function do_avatar_current_user() {
-        echo "<p class='left'><a href='?upload-avatar' class='upload-avatar-link'>";
+        echo "<div class='left'>";
+		echo "<a href='?upload-avatar' class='upload-avatar-link'>";
         echo get_avatar( get_current_user_id() );
-        echo "</a></p>";
+        echo "</a></div>";
     }
 
     public function do_avatar_with_upload_form() {
