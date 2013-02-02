@@ -116,8 +116,8 @@ class Cowobo_Layouts {
 
 		$this->layout[get_cat_ID('Locations')] = array(
 			array('type' => 'title', 'label' =>'Name of location', 'hint' => 'Make sure it does not already exist on our site'),
+			array('type' => 'country', 'label' =>'Country', 'hint' => 'Enter the correct English spelling'),			
 			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
-			array('type' => 'country', 'label' =>'Country', 'hint' => 'Enter the correct English spelling'),
 			array('type' => 'largetext', 'label' =>'Description', 'hint' => 'Keep it short and sweet and sweet'),
 		);
 
