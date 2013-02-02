@@ -79,66 +79,66 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 	            }
 				echo '<input type="text" name="tags" value="'.$tags.'"/>';
 			elseif($field['type'] == 'involvement'):
-				$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'involvement', true) : $query->involvement;
+				$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_involvement', true) : $query->involvement;
 				$options = array(
 					'none'=>'I am not currently involved in this project',
 					'founder'=>'I founded this project',
 					'employee'=>'I work for this project',
 				);
-				echo '<select name="involvement"><option value="none"></option>';
+				echo '<select name="cwb_involvement"><option value="none"></option>';
 				foreach($options as $optionslug =>$option):
 					if($value == $optionslug) $state = 'selected'; else $state = '';
 					echo '<option value="'.$optionslug.'" '.$state.'> '.$option.'</option>';
 				endforeach;
 				echo '</select>';
 			elseif($field['type'] == 'dates'):
-				$startdate = ( ! $unsaved_data ) ? get_post_meta($postid, 'startdate', true) : $query->startdate;
-				$enddate = ( ! $unsaved_data ) ? get_post_meta($postid, 'enddate', true) : $query->enddate;
-				echo '<input tabindex="'.$index.'" type="text" name="startdate" class="lefthalf" value="'.$startdate.'" placeholder="Starting Date"/>';
-				echo '<input tabindex="'.$index.'" type="text" name="enddate" class="righthalf" value="'.$enddate.'" placeholder="Ending Date"/>';
+				$startdate = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_startdate', true) : $query->startdate;
+				$enddate = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_enddate', true) : $query->enddate;
+				echo '<input tabindex="'.$index.'" type="text" name="cwb_startdate" class="lefthalf" value="'.$startdate.'" placeholder="Starting Date"/>';
+				echo '<input tabindex="'.$index.'" type="text" name="cwb_enddate" class="righthalf" value="'.$enddate.'" placeholder="Ending Date"/>';
 			elseif($field['type'] == 'website'):
-				$websiteurl = ( ! $unsaved_data ) ? get_post_meta($postid, 'website', true) : $query->website;
-				echo '<input tabindex="'.$index.'" type="text" name="website" class="blue bold" value="'.$websiteurl.'"/>';
+				$websiteurl = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_website', true) : $query->website;
+				echo '<input tabindex="'.$index.'" type="text" name="cwb_website" class="blue bold" value="'.$websiteurl.'"/>';
 				echo '<br/>';
 			elseif($field['type'] == 'email'):
-				$email = ( ! $unsaved_data ) ? get_post_meta($postid, 'email', true) : $query->email;
-				echo '<input tabindex="'.$index.'" type="text" name="email" class="blue bold" value="'.$email.'"/>';
+				$email = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_email', true) : $query->email;
+				echo '<input tabindex="'.$index.'" type="text" name="cwb_email" class="blue bold" value="'.$email.'"/>';
 				echo '<br/>';
 			elseif($field['type'] == 'country'):
 				$country = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_country', true) : $query->cwb_country ;
-				if( empty($country) ) $country = get_post_meta($postid, 'country', true);
+				if( empty($country) ) $country = get_post_meta($postid, 'cwb_country', true);
 				echo '<input type="text" tabindex="'.$index.'" name="cwb_country" value="'.$country.'"/>';
 			elseif($field['type'] == 'location'):
-				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'location', true) : $query->location;
+				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_location', true) : $query->location;
 				$map = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includemap', true) : $query->cwb_includemap;
 				$street = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includestreet', true) : $query->cwb_includestreet;
 				if($street==1) $streetstate = 'checked'; else $streetstate = '';
 				if($map==1) $mapstate = 'checked'; else $mapstate = '';
-				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="location" value="'.$location.'"/>';
+				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="cwb_location" value="'.$location.'"/>';
 				echo '<ul class="righthalf horlist">';
 					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Show Map</li>';
 					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Show Streetview</li>';
 				echo '</li>';
 			elseif($field['type'] == 'smalltext'):
-				$value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
-				echo '<input type="text" tabindex="'.$index.'" name="'.$slug.'" value="'.$value.'"/>';
+				$value = ( ! $unsaved_data ) ? get_post_meta($postid, "cwb_" . $slug, true) : $query->{"cwb_$slug"};
+				echo '<input type="text" tabindex="'.$index.'" name="cwb_'.$slug.'" value="'.$value.'"/>';
 			elseif($field['type'] == 'checkboxes'):
 				$options = explode(',', $field['hint']);
 	            $slug_checked = "$slug-checked";
-				$values = ( ! $unsaved_data ) ? get_post_meta($postid, $slug.'-checked', false) : $query->$slug_checked;
+				$values = ( ! $unsaved_data ) ? get_post_meta($postid, "cwb_" . $slug.'-checked', false) : $query->$slug_checked;
 				if($values == false) $values = array();
 				unset($counter);
 				echo '<ul class="horlist box">';
 	            $counter = 0;
 				foreach($options as $option): $counter++;
 					if(in_array($slug.$counter, $values)) $state = 'checked'; else $state = '';
-					echo  '<li><input type="checkbox" name="'.$slug.'-checked[]" value="'.$slug.$counter.'" '.$state.'/>'.$option.'</li>';
+					echo  '<li><input type="checkbox" name="cwb_'.$slug.'-checked[]" value="'.$slug.$counter.'" '.$state.'/>'.$option.'</li>';
 				endforeach;
 				echo '</ul>';
 			elseif($field['type'] == 'dropdown'):
 				$options = explode(',',$field['hint']); unset($counter);
-				echo '<select name="'.$slug.'"><option></option>';
-	            $value = ( ! $unsaved_data ) ? get_post_meta($postid, $slug, true) : $query->$slug;
+				echo '<select name="cwb_'.$slug.'"><option></option>';
+	            $value = ( ! $unsaved_data ) ? get_post_meta($postid, "cwb_" . $slug, true) : $query->$slug;
 				foreach($options as $option): $counter++;
 					if($value == $slug.$counter) $state = 'selected'; else $state = '';
 					echo '<option value="'.$slug.$counter.'" '.$state.'> '.$option.'</option>';
@@ -147,8 +147,8 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			elseif($field['type'] == 'slogan'):
 				//if($error = $postmsg['slogan']) echo '<span class="red bold">'.$error.'</span>';
 				echo '<span class="hint">'.$field['hint'].'</span><br/>';
-				$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'slogan', true) : $query->slogan;
-				echo '<input type="text" tabindex="'.$index.'" name="slogan" value="'.$value.'"/>';
+				$value = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_slogan', true) : $query->slogan;
+				echo '<input type="text" tabindex="'.$index.'" name="cwb_slogan" value="'.$value.'"/>';
 			elseif($field['type'] == 'largetext'):
 				if ( ! $unsaved_data ) {
 	                //$thispost = get_post($postid);

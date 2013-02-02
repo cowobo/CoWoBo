@@ -63,7 +63,7 @@ class CoWoBo_Posts
         $post_content = ( cowobo()->query->post_content ) ? trim( strip_tags ( cowobo()->query->post_content, '<p><a><br><b><i><em><strong><ul><li><blockquote>' ) ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcityid = get_post_meta($postid, 'cwb_city', true);
-        $involvement = cowobo()->query->involvement;
+        $involvement = cowobo()->query->cwb_involvement;
         $newslug = sanitize_title($post_title);
 
         $postcat = ( ! cowobo()->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( cowobo()->query->new ) );
@@ -71,7 +71,8 @@ class CoWoBo_Posts
 
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
-            add_post_meta( $postid, 'author', $profile_id);
+            add_post_meta( $postid, 'cwb_author', $profile_id);
+            //$_POST['cwb_author'] = $profile_id;
         }
 
         //check if post is created from within another post
@@ -100,13 +101,14 @@ class CoWoBo_Posts
 		//delete old post data in case they were cleared in the form
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
-		    if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
+		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
+            if ( "cwb_" != substr ( $valuet, 0, 4 ) || $valuet == "cwb_author" ) continue;
 		    delete_post_meta($postid, $key);
 		}
 
 		//now store the new data
         foreach ($_POST as $key => $value) {
-            if( empty ( $value ) ) continue;
+            if( empty ( $value ) || "cwb_" != substr ( $key, 0, 4 ) ) continue;
             if(strpos($key,'-checked')== true) {
                 foreach ($value as $newval) {
                     add_post_meta($postid, $key, $newval);
@@ -123,7 +125,7 @@ class CoWoBo_Posts
 					//check if location has already been added
 					$countryid = get_cat_ID( $location['country']);
 					$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
-					
+
 					if( $citypost && $citypost[0]->ID != $postid ) {
                         $postmsg['title'] = 'This location already exists, <a href="'.get_permalink($$citypost[0]->ID).'?action=editpost">click here to edit it</a>';
                     } else {
@@ -131,14 +133,14 @@ class CoWoBo_Posts
                         $post_title = $location['city'];
 						$coordinates = $location['lat'].','.$location['lng'];
 						update_post_meta($postid, 'cwb_country', $location['country']);
-						update_post_meta($postid, 'coordinates', $coordinates);
+						update_post_meta($postid, 'cwb_coordinates', $coordinates);
 						if($countryid)
 							$tagarray[] = $countryid;
 						else {
 							$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 							$tagarray[] = $tagid['term_id'];
 				            $tagarray = array_map('intval', $tagarray);
-						}						
+						}
                     }
                 } else {
                     $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
@@ -149,8 +151,8 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $newlocation = cowobo()->query->location ) {
-			if( $location = cwb_geocode( $newlocation ) ) {			
+        if( $newlocation = cowobo()->query->cwb_location ) {
+			if( $location = cwb_geocode( $newlocation ) ) {
 				$coordinates = $location['lat'].','.$location['lng'];
 				$countryid = get_cat_ID( $location['country']);
 				$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
@@ -165,19 +167,19 @@ class CoWoBo_Posts
 						$countryid = $tagid['term_id'];
 					}
 					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'Publish'));
-					update_post_meta( $cityid, 'coordinates', $coordinates);
+					update_post_meta( $cityid, 'cwb_coordinates', $coordinates);
 				}
-							
+
 				update_post_meta( $postid, 'cwb_country', $countryid );
 				update_post_meta( $postid, 'cwb_city', $cityid );
-				update_post_meta( $postid, 'coordinates', $coordinates);
+				update_post_meta( $postid, 'cwb_coordinates', $coordinates);
                 cowobo()->relations->delete_relations($postid, $oldcityid);
                 cowobo()->relations->create_relations($postid, array($cityid));
-				
+
 				//check if streetview is available
 				if( cowobo()->query->cwb_includestreet && !cwb_streetview($postid) )
 				$postmsg['location'] = 'The address you entered does not have streetview, try another?';
-				
+
 			} else {
              	$postmsg['location'] = 'We could not find that city. Check your spelling or internet connection.';
 			}
@@ -211,21 +213,21 @@ class CoWoBo_Posts
             $imgurl = cowobo()->query->$url_id;
 		    $videocheck = explode("?v=", $imgurl );
             $imagecheck = $this->is_image_url ( $imgurl );
-			
+
             //delete old image if url is empty or being replaced by another image/imageurl/videourl
             if(!empty($file) || empty($imgurl) || !empty($videocheck[1]) || $imagecheck ):
 				wp_delete_attachment($oldid, true);
-                delete_post_meta($postid, 'imgid'.$x);
-            else: 
-				update_post_meta($postid, 'imgid'.$x, $oldid);
+                delete_post_meta($postid, 'cwb_imgid'.$x);
+            else:
+				update_post_meta($postid, 'cwb_imgid'.$x, $oldid);
 			endif;
-			
+
             //add new image
             if(!empty($file)) {
                 $newid = $this->insert_attachment('file'.$x, $postid);
-                update_post_meta($postid, 'imgid'.$x, $newid);
-            } 
-			
+                update_post_meta($postid, 'cwb_imgid'.$x, $newid);
+            }
+
         endfor;
 
         // if there are no errors publish post, add links, and show thanks for saving message
@@ -238,7 +240,7 @@ class CoWoBo_Posts
             }
 
             if ( cowobo()->query->link_to ) cowobo()->relations->create_relations($postid, cowobo()->query->link_to );
-            
+
 			if(!empty($linkedid)) cowobo()->relations->create_relations($postid, $linkedid );
 
             wp_redirect ( add_query_arg ( array ( "action" => "editpost", "message" => "post_saved" ), get_permalink ( $postid ) ) );
@@ -285,7 +287,7 @@ class CoWoBo_Posts
      * Store post views
      */
     public function update_views( $postID ) {
-        $count_key = 'cowobo_post_views';
+        $count_key = 'cwb_post_views';
         $count = get_post_meta($postID, $count_key, true);
         if( empty ( $count ) )
             $count = 0;
@@ -301,7 +303,7 @@ class CoWoBo_Posts
      * Retrieve post views
      */
     public function get_views($postID){
-        $count_key = 'cowobo_post_views';
+        $count_key = 'cwb_post_views';
         $count = get_post_meta($postID, $count_key, true);
         if($count==''){
             delete_post_meta($postID, $count_key);
@@ -361,25 +363,25 @@ class CoWoBo_Posts
 		$viewratio = 0.4; //default aspect ratio of image viewer
 		$imgfolder = get_bloginfo('template_url').'/images';
 		$postcat = cowobo()->posts->get_category($postid);
-		
+
 		if($postid) {
 
 			for ($x=0; $x<3; $x++):
 
 				//store slide info
 				$imgpos = get_post_meta($postid, 'cwb_pos'.$x, true);
-				$imgid = get_post_meta($postid, 'imgid'.$x, true);
+				$imgid = get_post_meta($postid, 'cwb_imgid'.$x, true);
 				$image_check = false;
 				$top = 0; $url = ''; $thumb = '';
-				
+
 				if ($imgurl = wp_get_attachment_image_src($imgid, $size = 'large')) {
 					$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail', array('height'=>'100%'));
 					$url = $imgurl[0];
 					$image_check = true;
 				} elseif ( $url = get_post_meta($postid, 'cwb_url'.$x, true) ) {
 					$videocheck = explode( "?v=", $url );
-					if($image_check = $this->is_image_url( $url )) 
-					$thumb = '<img src="'.$url.'" style="margin:-100px" alt=""/>'; 
+					if($image_check = $this->is_image_url( $url ))
+					$thumb = '<img src="'.$url.'" style="margin:-100px" alt=""/>';
 					//note: scaling large image to thumb results underlying gallery to drag slower
 				}
 
@@ -419,7 +421,7 @@ class CoWoBo_Posts
 		$isstreet = get_post_meta($postid, 'cwb_includestreet', true);
 		if( ( $isstreet or $postcat->slug == 'location' ) && $streetcheck = cwb_streetview($postid) ) {
 			$slides[] = $streetcheck;
-			$coordinates = get_post_meta($postid, 'coordinates', true);
+			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
 			$thumbs[] = '<a class="street" href="?img=street"><img src="http://maps.googleapis.com/maps/api/streetview?size=50x50&location='.$coordinates.'&sensor=false" /></a>';
 		}
 
@@ -450,8 +452,8 @@ class CoWoBo_Posts
 			echo '<div class="shade"></div>';
 			echo '<img class="resizeicon" src="'.$imgfolder.'/resizeicon.png" title="Toggle viewer height" alt=""/>';
 			echo '<div class="container">';
-				echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';		
-				echo '<a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';		
+				echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
+				echo '<a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';
 				echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
 			echo '</div>';
 		echo '</div>';
@@ -463,7 +465,7 @@ class CoWoBo_Posts
      */
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location') {
-			$coordinates = get_post_meta($postid, 'coordinates', true);
+			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
             $position = get_map_position(149, 100, $coordinates);
 			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
             return;
@@ -484,7 +486,7 @@ class CoWoBo_Posts
 
 		for ($x=0; $x<3; $x++):
 			$url = get_post_meta($postid, 'cwb_url'.$x, true);
-	        $imgid = get_post_meta($postid, 'imgid'.$x, true);
+	        $imgid = get_post_meta($postid, 'cwb_imgid'.$x, true);
 	        $videocheck = explode( "?v=", $url );
 	        $image_check = $this->is_image_url( $url );
 			if($imgsrc = wp_get_attachment_image_src($imgid, $size ='thumbnail')) {
@@ -497,7 +499,7 @@ class CoWoBo_Posts
 		endfor;
 
     }
-	
+
     /**
      * Handle requests to edit posts
      *
@@ -516,57 +518,57 @@ class CoWoBo_Posts
 			echo '<div class="poscol right">Position</div>';
 			echo '<div class="browsecol">Upload a new image</div>';
 		echo '</div>';
-				
+
 		for ($x=0; $x<$rows; $x++):
 			$url_id = "cwb_url$x";
 			$pos_id = "cwb_pos$x";
 			$imgurl = '';
 			$thumb = '';
 			$options = '';
-					
+
 			//store image data
-			if ( $imgid = get_post_meta($postid, 'imgid'.$x, true) ) {			
+			if ( $imgid = get_post_meta($postid, 'cwb_imgid'.$x, true) ) {
 				$uploadurl = wp_get_attachment_image_src( $imgid, $size = 'full' );
 				$urlbits = explode( '/', $uploadurl[0] );
 				$imgurl = end( $urlbits );
 				$thumb = wp_get_attachment_image( $imgid, $size = 'thumbnail' );
 			} else {
 				$imgurl = get_post_meta( $postid, $url_id, true );
-				$thumb = '<img src="'.$imgurl.'" alt=""/>';	
+				$thumb = '<img src="'.$imgurl.'" alt=""/>';
 			}
-			
+
 	       	if ( $unsaved_data ) {
 	           	$imgurl =  $query->$url_id;
 				$imgpos = $query->$pos_id;
 				if ( cowobo()->posts->is_image_url ( $imgurl ) ) {
-			    	$thumb = '<img src="'.$imgurl.'" alt=""/>';					
-				} 	
+			    	$thumb = '<img src="'.$imgurl.'" alt=""/>';
+				}
 			} else {
 				$imgpos = get_post_meta( $postid, $pos_id, true );
 			}
-					
+
 			//setup positions dropdown
 			$positions = array('top', 'middle','bottom');
 			foreach($positions as $pos){
 				if($pos == $imgpos) $state ='selected'; else $state= '';
 				$options .= '<option value="'.$pos.'" '.$state.'/>'.$pos.'</option>';
 			}
-					
+
 			//include media form
 			echo '<div class="lefthalf imgrow">';
 				echo '<div class="thumbcol left">'.$thumb.'<input type="hidden" name="imgid'.$x.'" value="'. $imgid .'"/></div>';
-				echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
+				echo '<div class="urlcol"><input type="text" name="url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
 			echo '</div>';
 			echo '<div class="righthalf imgrow">';
-				echo '<div class="poscol right"><select name="cwb_pos'.$x.'">'.$options.'</select></div>';
-				echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';					
+				echo '<div class="poscol right"><select name="pos'.$x.'">'.$options.'</select></div>';
+				echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';
 			echo '</div>';
 		endfor;
-		
+
     }
-	
-	
-	
+
+
+
 
     /**
      * Handle requests to edit posts
@@ -587,7 +589,7 @@ class CoWoBo_Posts
         //if we are dealing with an existing request get its meta
         $toedit = '';
         if($rqtype != 'add'):
-            $requests = get_post_meta($rqpost, 'request', false);
+            $requests = get_post_meta($rqpost, 'cwb_request', false);
             foreach($requests as $request):
                 $rqdata = explode('|', $request);
                 if ($rqdata[0] == $rquser) $toedit =  $request;
@@ -596,19 +598,19 @@ class CoWoBo_Posts
 
         //handle the request
         if($rqtype == 'add'):
-            add_post_meta($rqpost, 'request', $rquser.'|'.$rqmsg);
+            add_post_meta($rqpost, 'cwb_request', $rquser.'|'.$rqmsg);
             $notices = 'editrequest_sent';
         elseif($rqtype == 'accept'):
-            delete_post_meta($rqpost, 'request', $toedit);
-            add_post_meta($rqpost, 'author', $rquser);
+            delete_post_meta($rqpost, 'cwb_request', $toedit);
+            add_post_meta($rqpost, 'cwb_author', $rquser);
             do_action ( 'editrequest_accepted', $rquser, $rqpost );
             $notices = 'editrequest_accepted';
         elseif($rqtype == 'deny'):
-            delete_post_meta($rqpost, 'request', $toedit);
-            add_post_meta($rqpost, 'request', $requestuser.'|deny');
+            delete_post_meta($rqpost, 'cwb_request', $toedit);
+            add_post_meta($rqpost, 'cwb_request', $requestuser.'|deny');
             $notices = 'editrequest_denied';
         elseif($rqtype == 'cancel'):
-            delete_post_meta($rqpost, 'request', $toedit);
+            delete_post_meta($rqpost, 'cwb_request', $toedit);
             $notices = 'editrequest_cancelled';
         endif;
 
@@ -715,11 +717,11 @@ class CoWoBo_Posts
     private function has_requests() {
         global $profile_id;
         //check if the user has any pending author requests
-        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
+        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'cwb_author', 'value'=> $profile_id ), array('key'=>'request')), ));
 
         if( ! empty ( $requestposts ) ) {
             foreach($requestposts as $requestpost) {
-                $requests = get_post_meta($requestpost->ID, 'request', false);
+                $requests = get_post_meta($requestpost->ID, 'cwb_request', false);
                 $msg = '';
                 foreach($requests as $request) {
                     $requestdata = explode('|', $request);
@@ -750,7 +752,7 @@ class CoWoBo_Posts
         if ( ! $postid ) $postid = get_the_ID();
         if ( ! $postid ) return array();
 
-        return get_post_meta( $postid, 'author', false );
+        return get_post_meta( $postid, 'cwb_author', false );
     }
 
     public function is_user_post_author ( $postid = 0, $profile_id = 0 ) {

@@ -1,10 +1,10 @@
 <?php
 if(is_user_logged_in()):
 	//check if the user has already requested
-	$requests = get_post_meta(get_the_ID(), 'request', false);
+	$requests = get_post_meta(get_the_ID(), 'cwb_request', false);
 
 	echo '<div class="tab">';
-	
+
 	foreach($requests as $request):
 		$rqdata = explode('|', $request);
 		if($rqdata[0] == $GLOBALS['profile_id']):
