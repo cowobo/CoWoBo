@@ -33,7 +33,7 @@ jQuery(document).ready(function() {
 
 
 	//Add minimize buttons to all tabs
-	jQuery('.tab, .widget').each(function () {
+	jQuery('.tab, .widget').not('.notice').each(function () {
 		jQuery(this).append('<div class="minimize">-</div>');
 	});
 
