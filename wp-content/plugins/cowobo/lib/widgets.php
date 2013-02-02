@@ -7,6 +7,7 @@ function cowobo_register_widgets() {
     register_widget('cowobo_tour_widget');
 	register_widget('cowobo_rss_widget');
 	register_widget('cowobo_contact_widget');
+	register_widget('cowobo_translate_widget');
 }
 
 class CoWoBo_Profile_Widget extends WP_Widget {
@@ -123,3 +124,31 @@ class CoWoBo_Contact_widget extends WP_Widget {
         echo "</div>" . $after_widget;
     }
 }
+
+
+class CoWoBo_Translate_widget extends WP_Widget {
+
+    public function __construct() {
+        parent::WP_Widget('cowobo_translate_widget', 'CoWoBo Translate Widget', array('description' => 'Translate Drop Down Menu' ) );
+    }
+
+        public function cowobo_translate_widget() {
+            $this->__construct();
+        }
+
+    public function widget( $args, $instance ) {
+        extract($args, EXTR_SKIP);
+
+        echo $before_widget . "<div class='translate-widget'>";
+	    echo $before_title . "Translate our site &raquo;" . $after_title;
+		
+		//todo improve edit translation button
+		//$args = 
+     	if(function_exists("transposh_widget")) transposh_widget(array(), array('title' => '', 'widget_file' => ''));
+		else echo 'Please activate the transposh plugin.';
+
+        echo "</div>" . $after_widget;
+    }
+	
+}
+?>
