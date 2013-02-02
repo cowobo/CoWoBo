@@ -63,7 +63,7 @@ class CoWoBo_Posts
         $post_content = ( cowobo()->query->post_content ) ? trim( strip_tags ( cowobo()->query->post_content, '<p><a><br><b><i><em><strong><ul><li><blockquote>' ) ) : null;
         $tags  = ( cowobo()->query->tags ) ? trim(strip_tags( cowobo()->query->tags ) ) : null;
         $oldcityid = get_post_meta($postid, 'cwb_city', true);
-        $involvement = cowobo()->query->involvement;
+        $involvement = cowobo()->query->cwb_involvement;
         $newslug = sanitize_title($post_title);
 
         $postcat = ( ! cowobo()->query->new )  ?$this->get_category($postid) : get_category ( get_cat_ID( cowobo()->query->new ) );
@@ -71,7 +71,8 @@ class CoWoBo_Posts
 
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
-            add_post_meta( $postid, 'cwb_author', $profile_id);
+            //add_post_meta( $postid, 'cwb_author', $profile_id);
+            $_POST['cwb_author'] = $profile_id;
         }
 
         //check if post is created from within another post
@@ -100,19 +101,20 @@ class CoWoBo_Posts
 		//delete old post data in case they were cleared in the form
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
-		    if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
-		    delete_post_meta($postid, "cwb_" . $key);
+		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
+            if ( "cwb_" != substr ( $valuet, 0, 4 ) ) continue;
+		    delete_post_meta($postid, $key);
 		}
 
 		//now store the new data
         foreach ($_POST as $key => $value) {
-            if( empty ( $value ) ) continue;
+            if( empty ( $value ) || "cwb_" != substr ( $key, 0, 4 ) ) continue;
             if(strpos($key,'-checked')== true) {
                 foreach ($value as $newval) {
                     add_post_meta($postid, $key, $newval);
                 }
             }else {
-                add_post_meta($postid, "cwb_" . $key, $value);
+                add_post_meta($postid, $key, $value);
             }
         }
 
@@ -715,7 +717,7 @@ class CoWoBo_Posts
     private function has_requests() {
         global $profile_id;
         //check if the user has any pending author requests
-        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'author', 'value'=> $profile_id ), array('key'=>'request')), ));
+        $requestposts = get_posts(array('meta_query'=>array(array('key'=>'cwb_author', 'value'=> $profile_id ), array('key'=>'request')), ));
 
         if( ! empty ( $requestposts ) ) {
             foreach($requestposts as $requestpost) {
