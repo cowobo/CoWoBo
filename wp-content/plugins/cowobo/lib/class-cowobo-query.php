@@ -56,9 +56,10 @@ class CoWoBo_Query
     }
 
     public function set_cookie( $key, $value ) {
-        $user_id = get_current_user_id();
+        $secure = '';
+		$user_id = get_current_user_id();
         $expiration = time() + apply_filters('auth_cookie_expiration', 172800, $user_id, true);
-        $secure = apply_filters('secure_auth_cookie', $secure, $user_id);
+		$secure = apply_filters('secure_auth_cookie', $secure, $user_id);
 
         setcookie( $key, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
         if ( COOKIEPATH != SITECOOKIEPATH )
