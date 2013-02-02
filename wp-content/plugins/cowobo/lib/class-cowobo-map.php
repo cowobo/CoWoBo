@@ -92,9 +92,9 @@ function cwb_streetview($postid) {
 			for ($x=0; $x<=1; $x++) {
 				$tiles .= '<img class="slideimg" src="'.$baseurl.'&x='.$x.'&y=0" alt="" width="50%">';
 			}
-			$slide = '<div class="slide hide" id="slide-street" style="width:150%;">';
+			$slide = '<div class="slide hide" id="slide-street" style="width:150%; top:-10%;">';
 			$slide .= '<img class="proportion" src="'.get_bloginfo('template_url').'/images/ratio-streetview.png" width="100%" alt=""/>';
-			$slide .= '<div style="position:absolute; width:100%; top:0%;"/>'.$tiles.'</div>';
+			$slide .= '<div style="position:absolute; width:100%; top:0;"/>'.$tiles.'</div>';
 			$slide .= '</div>';
 			return $slide;
 		} else {
@@ -161,8 +161,9 @@ function cwb_loadmap() {
 	$data = array('lat'=> '20', 'lng'=>'0');
 	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
 	$zoom3src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
-	if( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
-	else $postid = $post->ID;
+	
+	if ( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
+	elseif ( is_single() ) $postid = $post->ID;
 		
 	//get coordinates if specified in url or post
 	if(is_single() && $postcoordinates = get_post_meta($postid, 'coordinates', true)):
@@ -182,7 +183,7 @@ function cwb_loadmap() {
 
 	//construct new maplayer
 	$map = '<div class="slide hide zoom-'.$zoomlevel.'" id="slide-map" '.$position.'>';
-	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100% height="100%">';
+	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100%">';
 	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
 
 	//include large angel on homepage
@@ -234,13 +235,9 @@ function cwb_loadmap() {
 		$newsize = 15 + round($percentage * 20);
 		$angelsrc = get_bloginfo("template_url").'/images/angel'.rand(1,2).'.png';
 		$newmargin = '-'.($newsize/2).'px 0 0 -'.($newsize/2);
-		$linkmargin = $newmargin - 10;
-		$posstyle = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:';
-		$markerstyle = $posstyle.$newmargin.'px';
-		$linkstyle = $posstyle.$linkmargin.'px';
-		$marker = '<img class="marker" style="'.$markerstyle.'" src="'.$angelsrc.'"/>';
-		
-		$markerlink = '<a class="markerlink" style="'.$linkstyle.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
+		$style = 'top:'.$marker_y.'%; left:'.$marker_x.'%; width:'.$newsize.'px; height:'.$newsize.'px; margin:'.$newmargin.'px';
+		$marker = '<img class="marker" style="'.$style.'" src="'.$angelsrc.'"/>';
+		$markerlink = '<a class="markerlink" style="'.$style.'" href="'.get_permalink($markerpost->ID).'">'.$markerpost->post_title.'</a>';
 		$newlayer .= $marker;
 		$newlayer .= $markerlink;
 	endforeach;
