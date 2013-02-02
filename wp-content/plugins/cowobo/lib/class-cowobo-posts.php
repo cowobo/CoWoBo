@@ -71,8 +71,8 @@ class CoWoBo_Posts
 
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
-            //add_post_meta( $postid, 'cwb_author', $profile_id);
-            $_POST['cwb_author'] = $profile_id;
+            add_post_meta( $postid, 'cwb_author', $profile_id);
+            //$_POST['cwb_author'] = $profile_id;
         }
 
         //check if post is created from within another post
@@ -102,7 +102,7 @@ class CoWoBo_Posts
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
 		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
-            if ( "cwb_" != substr ( $valuet, 0, 4 ) ) continue;
+            if ( "cwb_" != substr ( $valuet, 0, 4 ) || $valuet == "cwb_author" ) continue;
 		    delete_post_meta($postid, $key);
 		}
 
@@ -151,7 +151,7 @@ class CoWoBo_Posts
         }
 
         //if post contains a location create or link to that location post
-        if( $newlocation = cowobo()->query->location ) {
+        if( $newlocation = cowobo()->query->cwb_location ) {
 			if( $location = cwb_geocode( $newlocation ) ) {
 				$coordinates = $location['lat'].','.$location['lng'];
 				$countryid = get_cat_ID( $location['country']);

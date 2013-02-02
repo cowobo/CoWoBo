@@ -166,7 +166,7 @@ function cwb_loadmap() {
 	elseif ( is_single() ) $postid = $post->ID;
 
 	//get coordinates if specified in url or post
-	if(is_single() && $postcoordinates = get_post_meta($postid, 'coordinates', true)):
+	if(is_single() && $postcoordinates = get_post_meta($postid, 'cwb_coordinates', true)):
 		$pos= latlng_to_percent($postcoordinates);
 		$x = (-$pos['left']*200) + 50;
 		$y = (-$pos['top']*200) + 40;
