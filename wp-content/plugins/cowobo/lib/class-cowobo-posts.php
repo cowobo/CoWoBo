@@ -555,10 +555,10 @@ class CoWoBo_Posts
 			//include media form
 			echo '<div class="lefthalf imgrow">';
 				echo '<div class="thumbcol left">'.$thumb.'<input type="hidden" name="imgid'.$x.'" value="'. $imgid .'"/></div>';
-				echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
+				echo '<div class="urlcol"><input type="text" name="url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
 			echo '</div>';
 			echo '<div class="righthalf imgrow">';
-				echo '<div class="poscol right"><select name="cwb_pos'.$x.'">'.$options.'</select></div>';
+				echo '<div class="poscol right"><select name="pos'.$x.'">'.$options.'</select></div>';
 				echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';
 			echo '</div>';
 		endfor;
