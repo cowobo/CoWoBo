@@ -147,7 +147,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         public function bogfix_user_to_profile( $null, $object_id, $meta_key, $meta_value ) {
             if ( $meta_key == 'cpoints' ) {
                 $profile_id = cowobo()->users->get_user_profile_id( $object_id );
-                update_post_meta ( $profile_id, 'cowobo_points', $meta_value );
+                update_post_meta ( $profile_id, 'cwb_points', $meta_value );
             }
             return $null;
         }
@@ -481,11 +481,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             public function get_post_likes ( $post_id  ) {
-                return (int) get_post_meta( $post_id, 'cowobo_points', true );
+                return (int) get_post_meta( $post_id, 'cwb_points', true );
             }
 
             public function set_post_likes ( $post_id, $new_amount = 0 ) {
-                return update_post_meta( $post_id, 'cowobo_points', $new_amount );
+                return update_post_meta( $post_id, 'cwb_points', $new_amount );
             }
 
         public function get_post_points ( $post_id ) {
@@ -744,7 +744,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
             public function get_user_last_activity_by_profile ( $profile_id ) {
-                return $this->get_user_last_activity( cowobo()->users->get_user_by_profile_id ( $profile_id )->ID );
+                $user = cowobo()->users->get_user_by_profile_id ( $profile_id );
+                if ( ! is_a ( $user, "WP_User" ) ) return;
+                return $this->get_user_last_activity( $user->ID );
             }
 
     }

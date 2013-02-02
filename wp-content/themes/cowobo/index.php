@@ -16,8 +16,8 @@ if(is_home()) {
 	if ( $intropost ) $postid = $intropost->ID;
 } elseif(is_single()) {
 	$userid = $profile_id;
-	$location = get_post_meta($post->ID, 'location', true);
-	$profiles = get_post_meta($post->ID, 'author', false);
+	$location = get_post_meta($post->ID, 'cwb_location', true);
+	$profiles = get_post_meta($post->ID, 'cwb_author', false);
 	$canedit = current_user_can('edit_others_posts') || cowobo()->debug;
 	if( ! $postid ) $postid = $post->ID;
 	if( cowobo()->query->post_ID ) $postid = $_POST['post_ID'];
@@ -25,7 +25,7 @@ if(is_home()) {
 	else $author = false;
 	if($profiles && $userid && in_array($userid, $profiles))$author = true;
 	cowobo()->posts->update_views($post->ID);
-	$coordinates = get_post_meta($post->ID, 'coordinates', true);
+	$coordinates = get_post_meta($post->ID, 'cwb_coordinates', true);
 }
 
 //include hidden description for google index
@@ -46,7 +46,7 @@ echo '<div class="imageviewer grabcursor">';
 	echo '<a class="zoom zoomout" href="?zoom=out"></a>';
 
 	cowobo()->posts->loadgallery($postid);
-	
+
 echo '</div>';
 
 
@@ -102,9 +102,9 @@ echo '<div class="page">';
 		//include action sidebar
         if (is_user_logged_in() ) dynamic_sidebar('sidebar_logged_in');
         else dynamic_sidebar('sidebar');
-		
+
 	echo '</div>';
-		
+
 echo '</div>';
 
 get_footer();

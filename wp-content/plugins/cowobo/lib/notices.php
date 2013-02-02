@@ -1,6 +1,6 @@
 <?php
 function have_notices() {
-    
+
     $loop = &cowobo()->notices_loop;
     $notices = &cowobo()->notices;
 
@@ -27,7 +27,7 @@ function have_notices() {
 }
 
 function the_notice() {
-    
+
     $loop = &cowobo()->notices_loop;
     $notices = &cowobo()->notices;
     $notice = &cowobo()->notices_loop->the_notice;
@@ -54,9 +54,15 @@ function the_notice_content() {
 }
 
     function get_the_notice_content() {
-        
+
         $notice = &cowobo()->notices_loop->the_notice;
-        return current ( $notice );
+
+        $current_notice = current ( $notice );
+
+        if ( strpos ( $current_notice, "%post_permalink%") )
+            $current_notice = str_replace ( "%post_permalink%", get_permalink(), $current_notice );
+
+        return $current_notice;
     }
 
 function the_notice_type() {
@@ -64,7 +70,7 @@ function the_notice_type() {
 }
 
     function get_the_notice_type() {
-        
+
         $notice = &cowobo()->notices_loop->the_notice;
         return key ( $notice );
     }

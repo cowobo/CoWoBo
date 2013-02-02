@@ -24,8 +24,8 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                echo '</span>';
 	            elseif($field['type'] == 'dates'):
 	                echo '<span class="field"><h3>'.$field['label'].':</h3>';
-	                $startdate = get_post_meta(get_the_ID(), 'startdate', true);
-	                $enddate = get_post_meta(get_the_ID(), 'enddate', true);
+	                $startdate = get_post_meta(get_the_ID(), 'cwb_startdate', true);
+	                $enddate = get_post_meta(get_the_ID(), 'cwb_enddate', true);
 	                if($enddate) $date = $startdate.' to '.$enddate; else $date = $startdate;
 	                if($date):
 	                    echo $date;
@@ -35,7 +35,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                echo '</span>';
 	            elseif($field['type'] == 'website'):
 	                echo '<span class="field"><h3>'.$field['label'].':</h3>';
-	                if($value = get_post_meta(get_the_ID(), 'website', true)):
+	                if($value = get_post_meta(get_the_ID(), 'cwb_website', true)):
 	                    $checkurl = parse_url($value);
 	                    if (!isset($checkurl["scheme"])) $value = 'http://'.$value;
 	                    $domain = str_replace('www.', '', parse_url($value, PHP_URL_HOST));
@@ -54,7 +54,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                echo '</span>';
 	            elseif($field['type'] == 'smalltext'):
 	                echo '<span class="field"><h3>'.$field['label'].':</h3>';
-	                if($value = get_post_meta(get_the_ID(), $slug, true)):
+	                if($value = get_post_meta(get_the_ID(), "cwb_" . $slug, true)):
 	                    echo $value;
 	                else:
 	                    echo '<span class="hint">not specified</span>';
@@ -62,7 +62,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                echo '</span>';
 	            elseif($field['type'] == 'checkboxes'):
 	                echo '<span class="field"><h3>'.$field['label'].':</h3>';
-	                if($values = get_post_meta(get_the_ID(), $slug.'-checked', false)):
+	                if($values = get_post_meta(get_the_ID(), "cwb_" . $slug.'-checked', false)):
 	                    foreach(explode(',',$field['hint']) as $option): $counter++;
 	                        $labels[$slug.$counter] = $option;
 	                    endforeach;
@@ -78,7 +78,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                echo '</span>';
 	            elseif($field['type'] == 'dropdown'): unset($counter);
 	                echo '<span class="field"><h3>'.$field['label'].':</h3>';
-	                if($value = get_post_meta(get_the_ID(), $slug, true)):
+	                if($value = get_post_meta(get_the_ID(), "cwb_" . $slug, true)):
 	                    foreach(explode(',',$field['hint']) as $option): $counter++;
 	                        $labels[$slug.$counter] = $option;
 	                    endforeach;
@@ -88,7 +88,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                endif;
 	                echo '</span>';
 	            elseif($field['type'] == 'slogan'):
-	                if($value = get_post_meta(get_the_ID(), 'slogan', true)):
+	                if($value = get_post_meta(get_the_ID(), 'cwb_slogan', true)):
 	                    echo '<b>'.$value.'</b>';
 	                endif;
 	            endif;

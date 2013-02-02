@@ -138,11 +138,10 @@ if (!class_exists('CoWoBo')) :
                 "editrequest_denied"    => "Thank you, the edit request has been denied.",
                 "editrequest_cancelled" => "Thank you, your request has been cancelled.",
                 "post_deleted"          => "Post successfully deleted.",
-                "post_saved"            => "Your post has been saved."
+                "post_saved"            => "Your post has been saved. Click <a href='%post_permalink%'>here</a> to view it."
             );
 
         public $debug = false;
-
 
         static $instance = false;
 
