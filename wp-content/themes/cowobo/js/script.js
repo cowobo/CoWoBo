@@ -82,7 +82,7 @@ jQuery(document).ready(function() {
 	    pan = true;
 	});
 
-	jQuery(".dragbar").mousedown(function(e) {
+	jQuery(".titlebar").mousedown(function(e) {
 		e.preventDefault();
 		get_offsets();
 		jQuery('body').addClass('unselectable');

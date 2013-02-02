@@ -50,9 +50,6 @@ echo '<div class="imageviewer grabcursor">';
 echo '</div>';
 
 
-//include dragbar
-echo '<div class="dragbar"></div>';
-
 //include page
 echo '<div class="page">';
 
