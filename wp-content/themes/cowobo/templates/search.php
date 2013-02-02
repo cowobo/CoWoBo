@@ -74,15 +74,12 @@ echo '<div class="tab">';
 	echo '</form>';
 	
 	//Add Post form
-	if(! is_user_logged_in() or cowobo()->query->new or cowobo()->query->action or is_single())
-	$onload = 'hide'; else $onload = 'show';
-	
 	echo '<form method="GET" action="'.get_bloginfo('url').'">';
-		echo '<div class="dropmenu addmenu '.$onload.'">';
+		echo '<div class="dropmenu addmenu hide">';
 			echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
 			echo '<br/><input type="submit" class="button clear" value="Create"/>';
 			echo '<select name="new" class="addnew">';
-				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners').','.get_cat_ID('Coders');
+				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners').','.get_cat_ID('Coders').','.get_cat_ID('Locations');
 				foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
 					if($cat->slug == 'news') $state = 'selected'; else $state='';
 					echo '<option value="'.$cat->name.'" '.$state.'>'.ucfirst($cat->slug).'</option>';
