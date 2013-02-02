@@ -175,11 +175,11 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function do_your_score_box() {
-            echo '<li id="profilemenu">Your Score: ' . $this->current_user_points . ' ▼</li>';
+            echo '<li id="profilemenu" class="icon-heart">' . $this->current_user_points . ' ▼</li>';
         }
 
         public function do_userlink_score() {
-            echo "<br><em>{$this->current_user_rank['rank']} ({$this->current_user_points})</em>";
+            echo "<br><em>{$this->current_user_rank['rank']} <span class='icon-heart'>{$this->current_user_points}</span></em>";
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
@@ -348,15 +348,15 @@ if (!class_exists('CoWoBo_CubePoints')) :
             $goal = (int) $next_rank['points'] - (int) $current_rank['points'];
             if ( $goal == 0 ) return false;
             $percentage = round ( ($current_points / $goal) * 100 );
-            if ( $percentage < 10 ) $percentage = 100;
+            if ( $percentage < 5 ) $percentage = 100;
 
-            $image_url = COWOBO_CP_INC_URL . 'progress_bar_angels.png';
+            $image_width = 50;
+            $pixels = ( $image_width / 100 ) * $percentage;
 
             ?>
-            <div class="points-progression-container" style="width:100px;border:1px solid #ccc;display: inline-block">
-                <div class="stat-bar" style="width:<?php echo $percentage;?>px; overflow: hidden;">
-                    <img title="Another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo $image_url;?>"/>
-                </div>
+            <div class="points-progression-container" style="width:100px;display: inline-block;position:relative;height:15px">
+                <div class="stat-bar" style="width:<?php echo $pixels ;?>px; overflow: hidden;height:15px;background:#ff0;">                </div>
+                <img title="Another <?php echo $goal - $current_points; ?> points to become a <?php echo $next_rank['rank']; ?>!" src="<?php echo COWOBO_CP_INC_URL ?>progress_hearts.png" style="position:absolute;top:0;">
             </div>
             <?php
             return $goal - $current_points;
@@ -555,7 +555,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
                 $this->setup_displayed_user();
 
-                echo ' <span class="field"><h3>Score:</h3><span class="hint">' . $this->displayed_user_points . '</span></span>';
+                echo ' <span class="field"><span class="hint icon-heart">' . $this->displayed_user_points . '</span></span>';
                 echo ' <span class="field"><h3>Rank:</h3><span class="hint">' . $this->displayed_user_rank['rank'] . '</span></span>';
                 echo ' <span class="field">';
                 $this->do_progression( $this->displayed_user_points, $this->displayed_user_rank, $this->displayed_user_next_rank );
@@ -674,7 +674,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $points = $config['points'];
                 if ( ! array_key_exists( $points, $out ) ) $out[$points] = array();
 
-                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'>+$points</span><p>{$config['description']}</p></div>";
+                $out[$points][] = "<div class='point-desc $key active-{$config['active']}'><span class='points-tag grey'><span class='icon-heart'>$points</span></span><p>{$config['description']}</p></div>";
             }
             krsort ( $out );
 
