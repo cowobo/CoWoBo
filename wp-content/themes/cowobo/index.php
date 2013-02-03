@@ -12,7 +12,7 @@ $viewerheight = '70%';
 if(is_home()) {
 	$feedtitle = $langnames[$lang][1];
 	$subtitle = $langnames[$lang][2];
-	$intropost = get_page_by_title( 'All About Us', 'OBJECT', 'post' );
+	$intropost = get_page_by_title( 'Who are Coders Without Borders?', 'OBJECT', 'post' );
 	if ( $intropost ) $postid = $intropost->ID;
 } elseif(is_single()) {
 	$userid = $profile_id;
