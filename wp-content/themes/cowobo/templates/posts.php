@@ -124,6 +124,9 @@ if (have_posts()) : while (have_posts()) : the_post();
 		endforeach;
 	endif;
 
+	//show comments
+    if ( is_object ( $postcat ) ) comments_template();
+
 	echo '<div class="tab">';
 		echo '<div class="tabthumb">+</div>';
 		echo '<div class="tabtext">';
@@ -144,12 +147,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 		echo '</div>';
 	echo '</div>';
 
-	if( $postcat->slug == 'coder' ) {
-	    	do_action ( 'cowobo_after_post', $postid, $postcat, $author );
-	}
 
-	//show comments
-    if ( is_object ( $postcat ) ) comments_template();
 
 endwhile;
 endif;
