@@ -124,8 +124,7 @@ class CoWoBo_Posts
 				if($location = cwb_geocode( $post_title.', '.$country ) ) {
 					//check if location has already been added
 					$countryid = get_cat_ID( $location['country']);
-					$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
-
+					$citypost = get_posts('cat='.$countryid.'&name='.sanitize_title($location['city']) );
 					if( $citypost && $citypost[0]->ID != $postid ) {
                         $postmsg['title'] = 'This location already exists, <a href="'.get_permalink($$citypost[0]->ID).'?action=editpost">click here to edit it</a>';
                     } else {
@@ -155,7 +154,7 @@ class CoWoBo_Posts
 			if( $location = cwb_geocode( $newlocation ) ) {
 				$coordinates = $location['lat'].','.$location['lng'];
 				$countryid = get_cat_ID( $location['country']);
-				$citypost = get_post('cat='.$countryid.'&pagename='.sanitize_title($location['city']) );
+				$citypost = get_posts('cat='.$countryid.'&name='.sanitize_title($location['city']) );
 				//check if location has already been added
                 if( $citypost ) {
                 	$cityid = $citypost[0]->ID;
@@ -206,7 +205,7 @@ class CoWoBo_Posts
          * @todo check for malicious code in jpg?
          */
         for ($x=0; $x<3; $x++):
-            $imgid = "imgid$x";
+            $imgid = "cwb_imgid$x";
 			$oldid = cowobo()->query->$imgid;
             $file = ( isset ( $_FILES['file'.$x] ) ) ? $_FILES['file'.$x]['name'] : '';
             $url_id = "cwb_url$x";
@@ -455,6 +454,7 @@ class CoWoBo_Posts
 				echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
 				echo '<a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';
 				echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
+				echo '<div class="dragbar"></div>';
 			echo '</div>';
 		echo '</div>';
     }
@@ -556,11 +556,11 @@ class CoWoBo_Posts
 
 			//include media form
 			echo '<div class="lefthalf imgrow">';
-				echo '<div class="thumbcol left">'.$thumb.'<input type="hidden" name="imgid'.$x.'" value="'. $imgid .'"/></div>';
-				echo '<div class="urlcol"><input type="text" name="url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
+				echo '<div class="thumbcol left">'.$thumb.'<input type="hidden" name="cwb_imgid'.$x.'" value="'. $imgid .'"/></div>';
+				echo '<div class="urlcol"><input type="text" name="cwb_url'.$x.'" class="full" value="'. $imgurl .'"/></div>';
 			echo '</div>';
 			echo '<div class="righthalf imgrow">';
-				echo '<div class="poscol right"><select name="pos'.$x.'">'.$options.'</select></div>';
+				echo '<div class="poscol right"><select name="cwb_pos'.$x.'">'.$options.'</select></div>';
 				echo '<div class="browsecol"><input type="file" class="full" name="file'.$x.'"></div>';
 			echo '</div>';
 		endfor;

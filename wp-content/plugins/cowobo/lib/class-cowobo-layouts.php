@@ -75,7 +75,6 @@ class Cowobo_Layouts {
 			array('type' => 'title', 'label' =>'Full Name', 'hint' => 'Keep it real if you can'),
 			array('type' => 'gallery', 'label' =>'Gallery', 'hint' => 'Add Images and Videos (leave blank to delete)'),
 			array('type' => 'tags', 'label' =>'Tags', 'hint' => 'Separate tags with commas ","'),
-			array('type' => 'email', 'label' =>'Email', 'hint' => 'Required to notify you of responses (will stay hidden)'),
 			array('type' => 'location', 'label' =>'Current Location', 'hint' => 'Enter nearest city and country'),
 			array('type' => 'checkboxes', 'label' =>'Coding Languages', 'hint' => 'C++,C#,Html,Java,jQuery,PHP,Perl,Python,Ruby,Visual Basic'),
 			array('type' => 'website', 'label' =>'Website', 'hint' => 'ie http://www.myblog.com'),
