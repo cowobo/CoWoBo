@@ -303,8 +303,7 @@ if (!class_exists('CoWoBo')) :
             }
             if ( empty ( $redirect_url ) ) {
                 if ( $this->query->action == 'login' ) {
-                    $profile_id = $this->users->get_current_user_profile_id();
-                    $redirect_url = get_permalink( $profile_id );;
+                    $redirect_url = get_bloginfo ( 'url' );
                 } else {
                     $redirect_url = $_SERVER["REQUEST_URI"];
                 }
