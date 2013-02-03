@@ -7,7 +7,14 @@ if (have_posts()) : while (have_posts()) : the_post();
 	$postid = get_the_ID();
 	$postcat = cowobo()->posts->get_category($postid);
 
+
 	echo '<div class="tab">';
+
+		//include main text if post has content
+		if(get_the_content()):
+	        do_action ( 'cowobo_before_postcontent' );
+			the_content();
+		endif;
 
 	    if ( isset ( cowobo()->layouts->layout[$postcat->term_id] ) ) {
 
@@ -97,14 +104,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 	        do_action ( 'cowobo_after_layouts', $postid, $postcat, $author );
 
 	    }
-
-		//include main text if post has content
-		if(get_the_content()):
-			echo '<div style="margin-top:10px">';
-	            do_action ( 'cowobo_before_postcontent' );
-				the_content();
-			echo '</div>';
-		endif;
 
 	echo '</div>';
 
