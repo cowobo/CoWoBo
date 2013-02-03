@@ -53,7 +53,9 @@ class CoWoBo_Posts
      */
     public function save_post(){
 
-        global $post, $cowobo, $profile_id;
+        global $post, $profile_id;
+
+        cowobo()->remove_notice('post_saved');
         $linkedid = 0; $tagarray = array();
 
         //store all data
@@ -450,7 +452,7 @@ class CoWoBo_Posts
 		echo '<div class="titlebar">';
 			echo '<div class="shade"></div>';
 			echo '<img class="resizeicon" src="'.$imgfolder.'/resizeicon.png" title="Toggle viewer height" alt=""/>';
-			echo '<div class="container">';	
+			echo '<div class="container">';
 				echo '<div class="titlepadding"><div>';
 					echo '<div class="feedtitle">'.cowobo()->feed->feed_title().'</div>';
 					echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
