@@ -97,9 +97,10 @@ class CoWoBo_Points_Chart_Widget extends WP_Widget {
 
         echo $before_widget . "<div class='points_chart'>";
         echo $before_title . "Get more points &raquo;" . $after_title;
-
-       	cowobo()->points->do_point_descriptions( 'mixed' );
-
+		echo "<div class='points_restrict'>";
+       		cowobo()->points->do_point_descriptions( 'mixed' );
+		echo "</div>";
+		echo '<a href="#" class="show_points">Show more ways ▼</a>';
         echo "</div>" . $after_widget;
     }
 
