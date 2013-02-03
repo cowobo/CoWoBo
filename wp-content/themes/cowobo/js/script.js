@@ -82,7 +82,7 @@ jQuery(document).ready(function() {
 	    pan = true;
 	});
 
-	jQuery(".titlebar").mousedown(function(e) {
+	jQuery(".dragbar").mousedown(function(e) {
 		e.preventDefault();
 		get_offsets();
 		jQuery('body').addClass('unselectable');
@@ -195,11 +195,20 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 
 //get vertical offset of slide from center
 function store_y_offset(slide) {
-	var currpos = slide.position();
+	//unhide the slide briefly so we can check its position
+	if (!slide.is(":visible")) {
+		slide.css({'visibility':'hidden', 'display':'block'});
+		var currtop = slide.position().top;
+		slide.css({'visibility':'visible', 'display':'none'});
+	} else {
+		var currtop = slide.position().top; // slide.parent().height() * 100;
+	}
 	var viewheight = jQuery('.imageviewer').height();
 	var ycenter = (viewheight - slide.height()) / 2;
-	var offset = currpos.top - ycenter;
+	var offset = currtop - ycenter;
+	
 	return offset;
+
 }
 
 //get horizontal offset of slide from center
@@ -219,10 +228,12 @@ function get_offsets() {
 	});
 }
 
+//center slide based on viewheight
 function center_slide(slide) {
 	var viewheight = jQuery('.imageviewer').height();
 	var newy = (viewheight - slide.height()) / 2;
 	if(slide.data('offset')) newy += parseFloat(slide.data('offset'));
+	
 	var ymax = viewheight - slide.height();
 	if(newy > 0) newy = 0;
 	if(newy < ymax) newy = ymax;
@@ -269,6 +280,7 @@ jQuery('.smallthumbs a').live('click', function(event) {
 	var num = jQuery(this).attr('class');
 	var slide = jQuery('#slide-'+num);
 	var caption = jQuery('#caption-'+num);
+	event.stopPropagation();
 	event.preventDefault();
 	if(slide.index() > 0){
 		caption.show().siblings('.caption').hide();
