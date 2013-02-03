@@ -38,5 +38,8 @@ if(is_user_logged_in()):
 	echo '</div>';
 
 else:
-	$redirect='edit'; include( TEMPLATEPATH . '/templates/login.php');
+	echo '<div class="tab">';
+		echo "<h2>You are not an author of this post yet &raquo;</h2>";
+		$redirect='edit'; include( TEMPLATEPATH . '/templates/login.php');
+	echo '</div>';
 endif;

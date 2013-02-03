@@ -29,7 +29,6 @@ if ( $query->new ) {
 
 //if user is not author show become editor screen
 if( ! isset ( $author ) || ! $author ):
-	echo "<h2>You are not an author of this post yet &raquo;</h2>";
 	include( TEMPLATEPATH . '/templates/editrequest.php');
 else:
 
@@ -99,10 +98,6 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			elseif($field['type'] == 'website'):
 				$websiteurl = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_website', true) : $query->website;
 				echo '<input tabindex="'.$index.'" type="text" name="cwb_website" class="blue bold" value="'.$websiteurl.'"/>';
-				echo '<br/>';
-			elseif($field['type'] == 'email'):
-				$email = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_email', true) : $query->email;
-				echo '<input tabindex="'.$index.'" type="text" name="cwb_email" class="blue bold" value="'.$email.'"/>';
 				echo '<br/>';
 			elseif($field['type'] == 'country'):
 				$country = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_country', true) : $query->cwb_country ;
