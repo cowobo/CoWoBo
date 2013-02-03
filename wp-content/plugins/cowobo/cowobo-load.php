@@ -423,16 +423,8 @@ if (!class_exists('CoWoBo')) :
 
         public function has_notice( $notice_type ) {
             if ( ! $this->has_notices() ) return false;
-            $notice_types = &$this->notice_types;
 
-            // Refresh notice_types array?
-            if ( empty ( $notice_types ) || ( count ( $notice_types ) < count( $this->notices ) ) ) {
-                $notice_types = array();
-                foreach ( $this->notices as $notice ) {
-                    if ( ! is_array ( $notice ) ) continue;
-                    $notice_types[] = key ( $notice );
-                }
-            }
+            $notice_types = $this->get_notice_types();
 
             if ( is_array ( $notice_type ) ) {
                 foreach ( $notice_type as $type ) {
@@ -443,6 +435,19 @@ if (!class_exists('CoWoBo')) :
 
             return in_array ( $notice_type, $notice_types );
         }
+
+            private function get_notice_types() {
+                $notice_types = &$this->notice_types;
+
+                if ( empty ( $notice_types ) || ( count ( $notice_types ) < count( $this->notices ) ) ) {
+                    $notice_types = array();
+                    foreach ( $this->notices as $notice ) {
+                        if ( ! is_array ( $notice ) ) continue;
+                        $notice_types[] = key ( $notice );
+                    }
+                }
+                return $notice_types;
+            }
 
         public function add_notice ( $message, $key = 'message' ) {
             $this->notices[] = array ( $key => $message );
@@ -472,6 +477,19 @@ if (!class_exists('CoWoBo')) :
             if ( array_key_exists ( $key, $this->default_notices ) ) {
                 $this->add_notice( $this->default_notices[$key], $key );
             }
+        }
+
+        public function remove_notice( $key ) {
+            if ( ! $this->has_notice ( $key ) ) return;
+
+            foreach ( $this->notices as &$notice ) {
+                if ( array_key_exists( $key, $notice ) ) {
+                    if ( count ( $notice > 1 ) )
+                        unset ( $notice[$key] );
+                    else unset ( $notice );
+                }
+            }
+            return $this->get_notice_types();
         }
 
     }
