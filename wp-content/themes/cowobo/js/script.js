@@ -251,14 +251,15 @@ jQuery('.searchbar li').live('click', function(){
 
 jQuery('.searchform span input').live('click', function(event){
 	event.stopPropagation();
-	jQuery(this).parent().toggleClass('checked');
+	jQuery(this).parent().toggleClass('checked').siblings('span').removeClass('checked');
+	
 });
 
 jQuery('.searchform span').live('click', function(event){
 	var checkbox = jQuery(this).children('input');
 	var type = jQuery(this).parents('.dropmenu').attr('id');
 	checkbox.prop("checked", !checkbox.prop("checked"));
-	jQuery(this).toggleClass('checked');
+	jQuery(this).toggleClass('checked').siblings('span').removeClass('checked');
 });
 
 

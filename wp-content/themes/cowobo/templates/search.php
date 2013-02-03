@@ -3,24 +3,19 @@
 if(is_single()) $editlink = '?action=editpost';
 else  $editlink = '?action=editpage';
 
-if(! is_user_logged_in()) $profilelink = '<li id="loginmenu">Your Profile ▼</li>';
-else $profilelink = '<li><a class="black" href="'.get_permalink (cowobo()->users->current_user_profile_id ).'">Your Profile ▼</a></li>';
-
-
+if(is_home()) $homelink = 'Categories';
+else $homelink = 'Coders Without Borders';
 
 echo '<div class="tab">';
-
-	echo '<div class="feedtitle">'.cowobo()->feed->feed_title().'</div>';
 			
 	echo '<ul class="horlist searchbar">';
+		echo '<li id="catmenu">'.$homelink.' ▼</li>';
 		echo '<li id="searchmenu">Search ▼</li>';
-		echo '<li id="catmenu">Categories ▼</li>';
 		echo '<li id="sortmenu">Sort ▼</li>';
 		echo '<li id="addmenu" class="blue">Add New ▼</li>';
 		echo '<li id="editmenu">';
 			echo '<a class="black" href="'.$editlink.'">Edit ▼</a>';
 		echo '</li>';
-		echo $profilelink;
 	echo '</ul>';
 	
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
@@ -32,16 +27,13 @@ echo '<div class="tab">';
 	    echo '</div>';
 	
 	    echo '<div class="hide dropmenu catmenu">';
-	        if($querycats = cowobo()->query->cats) $selected = $querycats;
-	        else $selected = array(get_cat_ID('Coders'), get_cat_ID('Jobs'));
-	        $exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners');
 	        echo '<div class="clear dropoptions">';
-	            foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
-	                if(in_array($cat->term_id, $selected)) $state = 'checked'; else $state='';
-	                echo '<span class="'.$state.'"><input type="checkbox" name="cats[]" value="'.$cat->term_id.'" '.$state.'>'.$cat->name.'</span>';
+				echo '<span><a href="'.get_bloginfo('url').'">HOME (538)</a></span>';
+	            foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
+					$catposts = get_posts('cat='.$cat->term_id.'&numberposts=-1');
+	                echo '<span><a href="'.get_category_link($cat->term_id).'">'.$cat->name.' ('.count($catposts).')</a></span>';
 	            endforeach;
 	        echo '</div>';
-	        echo '<input type="submit" class="button clear" value="Search"/>';
 	    echo '</div>';
 	
 	    $sorttypes = array(
@@ -57,20 +49,16 @@ echo '<div class="tab">';
 	
 	    echo '<div class="hide dropmenu sortmenu">';
 	        if( $querysort = cowobo()->query->sort ) $selected = $querysort;
-	        else $selected = array( 'modified' );
+	        else $selected = 'modified';
 	        echo '<div class="clear dropoptions">';
 	            foreach( $sorttypes as $sortslug => $sortlabel ):
-	                if( in_array($sortslug, $selected) ) $state = 'checked'; else $state='';
-	                echo '<span class="'.$state.'"><input type="checkbox" name="sort[]" value="'.$sortslug.'" '.$state.'>'.$sortlabel.'</span>';
+	                if( $sortslug == $selected ) $state = 'checked'; else $state='';
+	                echo '<span class="'.$state.'"><input type="radio" name="sort" value="'.$sortslug.'" '.$state.'>'.$sortlabel.'</span>';
 	            endforeach;
 	        echo '</div>';
 	        echo '<input type="submit" class="button" value="Update"/>';
 	    echo '</div>';
 		
-		echo '<div class="hide dropmenu loginmenu">';
-			include(TEMPLATEPATH.'/templates/login.php');
-	    echo '</div>';
-	
 	echo '</form>';
 	
 	//Add Post form
