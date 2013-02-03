@@ -18,7 +18,7 @@ li {margin-left:15px;}
 p {margin:0 0 15px 0;}
 img {border:none;}
 h1 {font-size:26px; }
-h2, h2 a, .h2 {font-size:19px; color:#555; margin: -2px 0 7px 0;}
+h2, h2 a, .h2 {font-size:19px; color:#555; margin: -2px 0 4px 0;}
 h2 a {font-weight:bold;}
 h3 {font-size:16px; font-weight:bold; margin:0 0 10px 0;}
 h4, h4 a {font-size:14px; color:#555}
@@ -86,11 +86,11 @@ form {margin:0 auto;}
 .smallthumbs a:hover img {opacity:0.8; -moz-opacity: 0.8; -khtml-opacity: 0.8;}
 
 /* Page Styles */
-.page  {position:relative; overflow:hidden;}
+.page  {position:relative; overflow:hidden; padding:10px 5px 0 5px;}
 .shadow  {position:absolute; top:0; left:0; width:100%; height:10px; opacity:0.6; z-index:5;}
-.container {position:relative; max-width:990px; margin:0 auto 0 auto; overflow:hidden;  z-index: 2;}
-.page .container {margin-top:10px;}
-.feed {float:left; margin:10px 10px 0 10px; width:640px;}
+.container {position:relative; max-width:1100px; min-width:340px; margin:0 auto; overflow:hidden;  z-index: 2;}
+.feed {float:left; width:65%;}
+.widgets {float:right; width: 35%; clear:right;}
 .feedtitle {font-size:24px; margin:0 0 6px 0; line-height: 32px;}
 .background {position:absolute; top:0; left:0; width:100%; height:100%; background:#ddd; z-index:1;}
 .pagesource {position:relative; text-align:center; margin-top:25px; direction:ltr; color:#ccc; z-index:3}
@@ -113,16 +113,18 @@ form {margin:0 auto;}
 .dropmenu li:hover {color:#333;}
 
 /* Tab Styles */
-.widget {float:right; margin:10px; width:290px; clear:right;}
-.feed .tab {margin-bottom:20px;}
-.feed .tab, .widget {position:relative; border:10px solid #fff; background:#fff; overflow:hidden;}
-.feed .tab, .widget {-moz-box-shadow: 0 0 6px rgba(0,0,0,0.3); -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.3); box-shadow: 0 0 6px rgba(0,0,0,0.3);}
-.tabthumb, .square {display:block; float:left; position:relative; margin:0 15px 0 0; min-width: 149px; max-width: 149px; height:100px; overflow:hidden; cursor: pointer; }
-.square {height: 149px; }
+
+.tab, .widget {margin: 10px 10px 20px 10px; position:relative; border:10px solid #fff; background:#fff; overflow:hidden;}
+.tab, .widget {-moz-box-shadow: 0 0 6px rgba(0,0,0,0.3); -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.3); box-shadow: 0 0 6px rgba(0,0,0,0.3);}
+.widget {clear:right;}
+.tabthumb, .square {float:left;  width: 25%; display:block; position:relative; height:100px; overflow:hidden; cursor: pointer; }
+.tabtext {float:right; width:72%; height:75px; overflow:hidden;}
+
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
 .tabthumb .avatar {margin-top: -20px;}
 .tabthumb:hover {opacity:0.8}
-.tabtext {width: auto; min-width:250px; height:100px; overflow:hidden;}
+
+.tabtitle {margin-left: 160px;}
 .notice {background: #eee; border:#EEE solid 12px; font-weight: bold; }
 .notice.error { background: rgba(255,210,210,0.7); }
 body.js.notice { padding-right: 60px; }
@@ -154,8 +156,8 @@ body.js.notice { padding-right: 60px; }
 .field h3 {display:inline;}
 .field a {margin-left:5px}
 .savebar span {padding-right:10px; font-size:18px; font-weight:bold; cursor:pointer; color:#5c63b3}
-.feed .lefthalf, .feed .righthalf {width:305px; float:left;}
-.feed .lefthalf {margin:0 10px 10px 0; clear:left;}
+.feed .lefthalf, .feed .righthalf {width:48%; float:left;}
+.feed .lefthalf {margin:0 2% 10px 0; clear:left;}
 
 /* Rich Editor Styles */
 .richtext {min-height:200px; border:3px solid #ddd; padding: 0 10px 0 10px; margin-bottom:15px;}
@@ -193,6 +195,7 @@ div.point-descriptions { overflow: auto; }
 div.log-entry, div.point-desc { color:#888; line-height:220%; }
 div.log-entry p, div.point-desc p { margin:5px 0; padding-left:55px; }
 span.time-since{ color:#aaa; font-weight:bold; }
+.points_restrict { height:200px; overflow:hidden; }
 .points-tag{ float:left; font-size:17px; color:#5c63b3; font-weight:bold; }
 .active-yes .grey { color:#5c63b3 }
 .active-no .grey { color:#888 }
@@ -204,14 +207,6 @@ span.time-since{ color:#aaa; font-weight:bold; }
 .icon-heart:before{content:"\e000"; margin:0 5px 0 2px}
 
 
-/* Responsive Styles */
-@media (max-width: 990px) {
-.container {max-width:660px;}
-.widget {clear:inherit}
-}
-
-@media (max-width: 660px) {
-.container {max-width:330px;}
-.feed {width:310px;}
-.feed .lefthalf, .feed .righthalf {width:290px;}
+@media (max-width: 640px) {
+.feed, .widgets {width:100%;}
 }
