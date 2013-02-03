@@ -76,7 +76,9 @@ function feed_title(){
 
         $feedtitle = '';
         $feedlink = get_bloginfo ( 'url' );
-        if( cowobo()->query->new ) {
+        $postcat = cowobo()->posts->get_category($post->ID);
+		
+		if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
             $feedlink = get_category_link( get_cat_ID ( cowobo()->query->new ) );
         } elseif( is_404() ) {
@@ -95,7 +97,8 @@ function feed_title(){
         } elseif( cowobo()->query->action == 'translate') {
             $feedtitle = 'Change Language';
         } elseif( cowobo()->query->action == 'editpost') {
-            $feedtitle = 'Edit Post';
+            if($postcat->slug == 'coder') $feedtitle = 'Update Your Profile';
+			else $feedtitle = 'Edit Post';
             $feedlink = remove_query_arg( 'action' );
         } elseif( is_single() ) {
 			$feedtitle = $post->post_title;
