@@ -108,7 +108,7 @@ function feed_title(){
             $feedlink = get_category_link ( $currentcat );
             //$feedlink = get_category_link ( $currentcat );
         } elseif( is_home() ) {
-            $feedtitle = 'Live News Feed';
+			$feedtitle = '<b>Coders</b> Without <b>Borders</b> <a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';
         }
 
         if ( ! empty ( $feedlink ) )

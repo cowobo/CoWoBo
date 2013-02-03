@@ -165,7 +165,7 @@ class CoWoBo_Posts
 						$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
 						$countryid = $tagid['term_id'];
 					}
-					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'Publish'));
+					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'publish'));
 					update_post_meta( $cityid, 'cwb_coordinates', $coordinates);
 				}
 
@@ -450,11 +450,12 @@ class CoWoBo_Posts
 		echo '<div class="titlebar">';
 			echo '<div class="shade"></div>';
 			echo '<img class="resizeicon" src="'.$imgfolder.'/resizeicon.png" title="Toggle viewer height" alt=""/>';
-			echo '<div class="container">';
-				echo '<a class="sitetitle" href="'.get_bloginfo('url').'"><b>Coders</b> Without <b>Borders</b></a>';
-				echo '<a class="tour" href="'.get_bloginfo('url').'/category/wiki">Take the tour >></a>';
-				echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
-				echo '<div class="dragbar"></div>';
+			echo '<div class="container">';	
+				echo '<div class="titlepadding"><div>';
+					echo '<div class="feedtitle">'.cowobo()->feed->feed_title().'</div>';
+					echo '<div class="smallthumbs">'.implode('', $thumbs).'</div>';
+					echo '<div class="dragbar"></div>';
+				echo '</div></div>';
 			echo '</div>';
 		echo '</div>';
     }
