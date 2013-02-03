@@ -100,8 +100,11 @@ echo '<div class="page">';
 		echo '</div>';
 
 		//include action sidebar
-        if (is_user_logged_in() ) dynamic_sidebar('sidebar_logged_in');
-        else dynamic_sidebar('sidebar');
+		echo '<div class="widgets">';
+	        if (is_user_logged_in() ) dynamic_sidebar('sidebar_logged_in');
+	        else dynamic_sidebar('sidebar');
+			dynamic_sidebar('always');
+		echo '</div>';
 
 	echo '</div>';
 
