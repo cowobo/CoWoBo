@@ -41,16 +41,16 @@ elseif ( cowobo()->query->rp ) :
 
 
 elseif ( cowobo()->has_notice( 'INVALIDUSER' ) ) :
-
-	echo '<h2>We could not find your profile, are you new here?</h2><br/>';
-	echo '<form method="post" action="">';
-        wp_nonce_field('confirm', 'confirm');
-		echo '<input type="hidden" name="userpw" value="'.cowobo()->query->userpw.'"/>';
-		echo '<input type="hidden" name="email" value="'.cowobo()->query->email.'"/>';
-		echo '<button type="submit" class="button">Yes, add me</button>';
-		echo '<a class="button" href="?action=login&relogin='.cowobo()->query->email.'">No, I have logged in before</a>';
-	echo '</form>';
-
+	echo '<div class="tab">';
+		echo '<h2>Is this your first time here?</h2><br/>';
+		echo '<form method="post" action="">';
+	        wp_nonce_field('confirm', 'confirm');
+			echo '<input type="hidden" name="userpw" value="'.cowobo()->query->userpw.'"/>';
+			echo '<input type="hidden" name="email" value="'.cowobo()->query->email.'"/>';
+			echo '<button type="submit" class="button">Yes, add me</button>';
+			echo '<a class="button" href="?action=login&relogin='.cowobo()->query->email.'">No, I have logged in before</a>';
+		echo '</form>';
+	echo '</div>';
 else:
 
     /**
