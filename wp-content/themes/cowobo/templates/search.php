@@ -1,32 +1,39 @@
 <?php
 
-if(is_single()) $editlink = '?action=editpost';
-else  $editlink = '?action=editpage';
 
-if(is_home()) $homelink = 'Categories';
-else $homelink = 'Coders Without Borders';
+//define dynamic links
+if(!is_user_logged_in()) $editlink = '<li><a class="black" href="?action=login">Edit ▼</a></li>';
+elseif(is_single() && ( !isset ( $author ) || ! $author ) ) $editlink = '<li id="editmenu">Edit ▼</li>';
+elseif (is_single()) $editlink = '<li><a class="black" href="?action=editpost">Edit ▼</a></li>';
+else $editlink = '<li><a class="black" href="?action=editpage">Edit ▼</a></li>';
+
+if(!is_user_logged_in()) $addlink = '<li><a class="black" href="?action=login">Add New ▼</a></li>';
+else $addlink = '<li id="addmenu" class="blue">Add New ▼</li>';
+
+if(is_home()) $homelink = '<li id="catmenu">Categories ▼</li>';
+else $homelink = '<li id="catmenu">Coders Without Borders ▼</li>';
 
 echo '<div class="tab">';
 			
 	echo '<ul class="horlist searchbar">';
-		echo '<li id="catmenu">'.$homelink.' ▼</li>';
+		echo $homelink;
 		echo '<li id="searchmenu">Search ▼</li>';
 		echo '<li id="sortmenu">Sort ▼</li>';
-		echo '<li id="addmenu" class="blue">Add New ▼</li>';
-		echo '<li id="editmenu">';
-			echo '<a class="black" href="'.$editlink.'">Edit ▼</a>';
-		echo '</li>';
+		echo $editlink;
+		echo $addlink;;
 	echo '</ul>';
 	
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
-	
-	    echo '<div class="hide dropmenu searchmenu">';
+		
+		if($action != 'search') $state='hide'; else $state= '';
+	    echo '<div class="dropmenu searchmenu '.$state.'">';
 	        echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.'" placeholder="Enter keywords to search for here.."/>';
 	        echo '<input type="submit" class="button" value="Search"/>';
 	        echo '<input type="checkbox" class="auto" name="allcats" value="1"> All Categories';
 	    echo '</div>';
-	
-	    echo '<div class="hide dropmenu catmenu">';
+
+		if($action != 'categories') $state='hide'; else $state= '';	
+	    echo '<div class="dropmenu catmenu '.$state.'">';
 	        echo '<div class="clear dropoptions">';
 				echo '<span><a href="'.get_bloginfo('url').'">HOME (538)</a></span>';
 	            foreach( get_categories('parent=0&hide_empty=0&exclude='.get_cat_ID('Uncategorized')) as $cat ):
@@ -46,8 +53,9 @@ echo '<div class="tab">';
 	        'comment_count'=>'Replies',
 	        'rand'=>'Random',
 	    );
-	
-	    echo '<div class="hide dropmenu sortmenu">';
+
+		if($action != 'sort') $state='hide'; else $state= '';
+	    echo '<div class="dropmenu sortmenu '.$state.'">';
 	        if( $querysort = cowobo()->query->sort ) $selected = $querysort;
 	        else $selected = 'modified';
 	        echo '<div class="clear dropoptions">';
@@ -60,21 +68,19 @@ echo '<div class="tab">';
 	    echo '</div>';
 		
 	echo '</form>';
+
+	//Add Request form if required
+	if( ! isset ( $author ) || ! $author ):
+		if($action == 'editpost') $state=''; else $state= 'hide';
+		echo '<div class="dropmenu editmenu '.$state.'">';
+			include(TEMPLATEPATH.'/templates/editrequest.php');
+		echo '</div>';
+	endif;
 	
 	//Add Post form
-	echo '<form method="GET" action="'.get_bloginfo('url').'">';
-		echo '<div class="dropmenu addmenu hide">';
-			echo '<input type="text" class="extracturl" name="url" placeholder="Insert a URL or leave blank to create a post from scratch"/>';
-			echo '<select name="new" class="addnew">';
-				$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Partners').','.get_cat_ID('Coders').','.get_cat_ID('Locations');
-				foreach( get_categories('parent=0&hide_empty=0&exclude='.$exclude) as $cat ):
-					if($cat->slug == 'news') $state = 'selected'; else $state='';
-					echo '<option value="'.$cat->name.'" '.$state.'>'.ucfirst($cat->slug).'</option>';
-				endforeach;
-			echo '</select>';
-			echo '<input type="submit" class="button clear" value="Create"/>';
-			if(is_single() && $author) echo '<span class="right"><input type="checkbox" class="auto" name="linkto" value="1"> Add to this page</span>';
-		echo '</div>';
-	echo '</form>';
-	
+	if($action == 'add') $state=''; else $state= 'hide';
+	echo '<div class="dropmenu addmenu '.$state.'">';
+			include(TEMPLATEPATH.'/templates/addpost.php');
+	echo '</div>';
+		
 echo '</div>';
