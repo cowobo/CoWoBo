@@ -1,16 +1,13 @@
 <?php
-if(is_user_logged_in()):
-	//check if the user has already requested
-	$requests = get_post_meta(get_the_ID(), 'cwb_request', false);
 
-	echo '<div class="tab">';
+	$requests = get_post_meta(get_the_ID(), 'cwb_request', false);
 
 	foreach($requests as $request):
 		$rqdata = explode('|', $request);
 		if($rqdata[0] == $GLOBALS['profile_id']):
 			if($rqdata[1] == 'deny'):
 				$denied = true;
-				echo '<h2>Your request for this post was denied</h2>';
+				echo '<b>Your request for this post was denied</b>';
 				echo 'You can try to convince the author again by submitting a new request:';
 			else:
 				$pending = true;
@@ -26,7 +23,7 @@ if(is_user_logged_in()):
 	endforeach;
 
 	if( ! isset ( $pending ) || ! $pending ):
-		if( ! isset ( $denied) || ! $denied ) echo '<h2>Request to edit "'.$post->post_title.'"</h2>';
+		if( ! isset ( $denied) || ! $denied ) echo 'Request to edit this post';
 		echo '<form method="post" action="">';
 		echo '<textarea name="requestmsg" rows="5">Dear Author, I would like to edit this post because..</textarea>';
 		echo '<input type="hidden" name="requesttype" value="add"/>';
@@ -34,12 +31,3 @@ if(is_user_logged_in()):
 		echo '<button type="submit" class="button">Send Request</button>';
 		echo '</form>';
 	endif;
-
-	echo '</div>';
-
-else:
-	echo '<div class="tab">';
-		echo "<h2>You are not an author of this post yet &raquo;</h2>";
-		$redirect='edit'; include( TEMPLATEPATH . '/templates/login.php');
-	echo '</div>';
-endif;
