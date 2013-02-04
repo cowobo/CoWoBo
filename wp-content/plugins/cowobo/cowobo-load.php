@@ -138,7 +138,7 @@ if (!class_exists('CoWoBo')) :
                 "editrequest_denied"    => "Thank you, the edit request has been denied.",
                 "editrequest_cancelled" => "Thank you, your request has been cancelled.",
                 "post_deleted"          => "Post successfully deleted.",
-                "post_saved"            => "Your post has been saved. Click <a href='%post_permalink%'>here</a> to view it."
+                "post_saved"            => "Your post has been saved. <a href='%post_permalink%'>Click here to view it.</a>"
             );
 
         public $debug = false;
@@ -266,7 +266,6 @@ if (!class_exists('CoWoBo')) :
             elseif( $verify->delete ) $posts->confirm_delete();
             elseif( $verify->delete_confirmed ) $posts->delete_post();
             elseif( $verify->save ) $GLOBALS['postmsg'] = $posts->save_post();
-			elseif( $verify->captions ) $GLOBALS['postmsg'] = $posts->save_captions();
             elseif( $verify->linkposts ) $notices = $relations->link_post();
 
 //            elseif( $query->commentid ) wp_delete_comment($_POST['commentid']);
@@ -293,20 +292,13 @@ if (!class_exists('CoWoBo')) :
                         $profile_id = $this->users->get_current_user_profile_id();
                         $redirect_url = get_permalink( $profile_id );
                         break;
-                    case 'contact' :
-                        $redirect_url = '?action=contact';
-                        break;
                     case 'edit' :
                         $redirect_url = '?action=editpost';
                         break;
                 }
             }
             if ( empty ( $redirect_url ) ) {
-                if ( $this->query->action == 'login' ) {
-                    $redirect_url = get_bloginfo ( 'url' );
-                } else {
                     $redirect_url = $_SERVER["REQUEST_URI"];
-                }
             }
 
             if ( func_num_args() > 1 ) {
