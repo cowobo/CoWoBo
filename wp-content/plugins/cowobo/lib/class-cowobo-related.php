@@ -85,6 +85,7 @@ class Cowobo_Related_Posts {
      */
 	 
 	public function get_related_types($linkedids, $exclude= array()) {
+		$types = array();
 		if(is_array($linkedids)) {
 			foreach($linkedids as $linkedid) {
 				$typecat = cowobo()->posts->get_category($linkedid);
