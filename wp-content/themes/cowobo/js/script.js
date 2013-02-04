@@ -2,6 +2,7 @@
 var rooturl;
 var pan = false;
 var drag = false;
+var slideshow;
 var previousX;
 var previousY;
 
@@ -9,29 +10,7 @@ var previousY;
 jQuery(document).ready(function() {
 
 	rooturl = jQuery('meta[name=rooturl]').attr("content");
-
-    // Avatar uploads
-    jQuery( ".upload-avatar-link").click( function(e) {
-        e.preventDefault();
-        //jQuery(".upload-avatar, .current-user-after-avatar").slideToggle();
-        jQuery(".current-user, .current-user-avatar-form").slideToggle();
-    });
-
-    // Spread the word 'send email'
-    jQuery('.email-form-toggle').click( function(e) {
-        if ( ! jQuery('.email-form').is(':visible') ) {
-            e.preventDefault();
-            jQuery('.email-form').slideDown();
-        }
-    });
-
-    // Login in tour widget
-    jQuery('.toggle-loginform').click(function(e) {
-        e.preventDefault();
-        jQuery('.loginform').slideToggle();
-    });
-
-
+	
 	//Add minimize buttons to all tabs
 	jQuery('.tab, .widget').not('.notice').each(function () {
 		jQuery(this).append('<div class="minimize">-</div>');
@@ -48,22 +27,11 @@ jQuery(document).ready(function() {
 		}
 	});
 
-
-	//center images when window is resized
-
-
-
-    // Point descriptions
+	
+    // Hide Point descriptions
     jQuery( "div.point-desc:not(.active-yes)").hide();
-    jQuery('.toggle-inactive-point-descs').click(function(e) {
-        e.preventDefault();
-        jQuery( "div.point-desc:not(.active-yes)").slideToggle();
-    })
-    jQuery( ".show-points-descriptions" ).click( function(e) {
-        e.preventDefault();
-        jQuery(".point-descriptions").slideToggle();
-    });
 
+	
 	//store initial zoom levels of each slide
 	jQuery('.slide').each(function(){
 		var slide = jQuery(this);
@@ -73,7 +41,12 @@ jQuery(document).ready(function() {
 		slide.data('zoom', level);
 	});
 
-	//Enable Map Resizing and Panning
+	// start sideshow
+	if(jQuery('.slide').length>1){
+		startslideshow();
+	}
+	
+	//Enable panning
 	jQuery(".imageholder").mousedown(function(e) {
 		e.preventDefault();
 		jQuery('body').addClass('unselectable');
@@ -82,6 +55,7 @@ jQuery(document).ready(function() {
 	    pan = true;
 	});
 
+	//enabe viewer resizing
 	jQuery(".dragbar").mousedown(function(e) {
 		e.preventDefault();
 		get_offsets();
@@ -90,6 +64,7 @@ jQuery(document).ready(function() {
 	    drag = true;
 	});
 
+	//get amount based on mouse position
 	jQuery("body").mousemove(function(e) {
 		var viewer = jQuery(".imageviewer");
 		var viewheight = viewer.height();
@@ -125,7 +100,7 @@ jQuery(document).ready(function() {
 	    }
 	});
 
-	//disable panning and dragging on mouse up
+	//disable panning and dragging
 	jQuery(document).mouseup(function() {
 	    pan = false; drag = false;
 		jQuery('body').removeClass('unselectable');
@@ -135,6 +110,67 @@ jQuery(document).ready(function() {
 });
 
 //IMAGE VIEWER FUNCTIONS//
+
+//get vertical offset of slide from center
+function store_y_offset(slide) {
+	//unhide the slide briefly so we can check its position
+	if (!slide.is(":visible")) {
+		slide.css({'visibility':'hidden', 'display':'block'});
+		var currtop = slide.position().top;
+		slide.css({'visibility':'visible', 'display':'none'});
+	} else {
+		var currtop = slide.position().top; // slide.parent().height() * 100;
+	}
+	var viewheight = jQuery('.imageviewer').height();
+	var ycenter = (viewheight - slide.height()) / 2;
+	var offset = currtop - ycenter;
+	
+	return offset;
+
+}
+
+//get horizontal offset of slide from center
+function store_x_offset(slide) {
+	var currpos = slide.position();
+	var viewwidth = jQuery(window).width();
+	var xcenter = (viewwidth - slide.width()) / 2;
+	var offset = currpos.left - xcenter;
+	return offset;
+}
+
+//get vertical offsets of each slide
+function get_offsets() {
+	jQuery('.slide').each(function(){
+		var offset = store_y_offset(jQuery(this));
+		jQuery(this).data('offset', offset);
+	});
+}
+
+//center slide based on viewheight
+function center_slide(slide) {
+	var viewheight = jQuery('.imageviewer').height();
+	var newy = (viewheight - slide.height()) / 2;
+	if(slide.data('offset')) newy += parseFloat(slide.data('offset'));
+	
+	var ymax = viewheight - slide.height();
+	if(newy > 0) newy = 0;
+	if(newy < ymax) newy = ymax;
+	slide.css({top: newy});
+}
+
+
+//start slideshow
+function startslideshow() {
+	slideshow = setInterval(function(){
+		jQuery('.slide:first').appendTo(jQuery('.imageholder')).fadeOut(2000);
+		jQuery('.slide:first').show();
+	}, 6000);
+}
+
+
+//IMAGE VIEWER LISTERNERS//
+
+//listeners for nav buttons
 jQuery('.zoom, .pan, .labels').live('click', function(event){
 	event.preventDefault();
 	var action = jQuery(this).attr('class').split(' ')[1];
@@ -193,55 +229,40 @@ jQuery('.zoom, .pan, .labels').live('click', function(event){
 	slide.animate(newstyle, 1500);
 });
 
-//get vertical offset of slide from center
-function store_y_offset(slide) {
-	//unhide the slide briefly so we can check its position
-	if (!slide.is(":visible")) {
-		slide.css({'visibility':'hidden', 'display':'block'});
-		var currtop = slide.position().top;
-		slide.css({'visibility':'visible', 'display':'none'});
-	} else {
-		var currtop = slide.position().top; // slide.parent().height() * 100;
-	}
-	var viewheight = jQuery('.imageviewer').height();
-	var ycenter = (viewheight - slide.height()) / 2;
-	var offset = currtop - ycenter;
-	
-	return offset;
 
-}
-
-//get horizontal offset of slide from center
-function store_x_offset(slide) {
-	var currpos = slide.position();
-	var viewwidth = jQuery(window).width();
-	var xcenter = (viewwidth - slide.width()) / 2;
-	var offset = currpos.left - xcenter;
-	return offset;
-}
-
-//get vertical offsets of each slide
-function get_offsets() {
-	jQuery('.slide').each(function(){
-		var offset = store_y_offset(jQuery(this));
-		jQuery(this).data('offset', offset);
+//resize imageviewer
+jQuery('.resizeicon').live('click', function(event){
+	event.stopPropagation();
+	var ratiodiv = jQuery('.ratio');
+	var ratio = parseFloat(ratiodiv.attr('width').split('%')[0]);
+	if(ratio < 80) var amount = 100;
+	else var amount = 70;
+	var newheight = jQuery(window).width()*(amount/100) / 2;
+	ratiodiv.animate({width: amount + '%'}, 1000, function(){
+		ratiodiv.attr('width', amount + '%').removeAttr('style');
 	});
-}
-
-//center slide based on viewheight
-function center_slide(slide) {
-	var viewheight = jQuery('.imageviewer').height();
-	var newy = (viewheight - slide.height()) / 2;
-	if(slide.data('offset')) newy += parseFloat(slide.data('offset'));
-	
-	var ymax = viewheight - slide.height();
-	if(newy > 0) newy = 0;
-	if(newy < ymax) newy = ymax;
-	slide.css({top: newy});
-}
+	jQuery('html, body').animate({scrollTop: 0}, 1000);
+	jQuery('.slide').each(function(){
+		var newtop = (newheight - jQuery(this).height()) / 2 ;
+		jQuery(this).animate({top: newtop}, 1000);
+	});
+});
 
 
-//SEARCH
+//show specific slide in gallery
+jQuery('.smallthumbs a').live('click', function(event) {
+	var num = jQuery(this).attr('class');
+	var slide = jQuery('#slide-'+num);
+	event.preventDefault();
+	if(slide.index() > 0){
+		jQuery('.slide:first').fadeOut(1000);
+		slide.prependTo(jQuery('.imageholder')).show();
+		clearInterval(slideshow);
+	}
+});
+
+
+//SEARCH BAR LISTERNERS
 
 jQuery('.searchbar li').live('click', function(){
 	var menu = jQuery('.' + jQuery(this).attr('id'))
@@ -263,72 +284,30 @@ jQuery('.searchform span').live('click', function(event){
 });
 
 
-/// TABS ///
-jQuery(document).ready(function($) {
-    $(".tab span.close").click( function() {
-        $(this).parent('.tab').fadeOut();
-    })
+//ACTIVITY LISTERNERS
+
+jQuery( ".upload-avatar-link").live('click', function(e) {
+    e.preventDefault();
+    jQuery(".current-user, .current-user-avatar-form").slideToggle();
 });
+		
+jQuery('.toggle-inactive-point-descs').live('click', function(e) {
+   e.preventDefault();
+   jQuery( "div.point-desc:not(.active-yes)").slideToggle();
+})
+	
+jQuery( ".show-points-descriptions" ).live('click', function(e) {
+   e.preventDefault();
+   jQuery(".point-descriptions").slideToggle();
+});
+
 
 jQuery(".tab span.close").live('click', function(){
    jQuery(this).parent('.tab').fadeOut();
 })
 
-//GALLERY//
 
-//show specific slide in gallery
-jQuery('.smallthumbs a').live('click', function(event) {
-	var num = jQuery(this).attr('class');
-	var slide = jQuery('#slide-'+num);
-	var caption = jQuery('#caption-'+num);
-	event.stopPropagation();
-	event.preventDefault();
-	if(slide.index() > 0){
-		caption.show().siblings('.caption').hide();
-		jQuery('.slide:first').fadeOut(1000);
-		slide.prependTo(jQuery('.imageholder')).show();
-	}
-});
-
-//resize imageviewer
-jQuery('.resizeicon').live('click', function(event){
-	event.stopPropagation();
-	var ratiodiv = jQuery('.ratio');
-	var ratio = parseFloat(ratiodiv.attr('width').split('%')[0]);
-	if(ratio < 80) var amount = 100;
-	else var amount = 70;
-	var newheight = jQuery(window).width()*(amount/100) / 2;
-	ratiodiv.animate({width: amount + '%'}, 1000, function(){
-		ratiodiv.attr('width', amount + '%').removeAttr('style');
-	});
-	jQuery('html, body').animate({scrollTop: 0}, 1000);
-	jQuery('.slide').each(function(){
-		var newtop = (newheight - jQuery(this).height()) / 2 ;
-		jQuery(this).animate({top: newtop}, 1000);
-	});
-});
-
-//start slideshow
-function startslideshow() {
-	if(jQuery('.slide').length>1){
-		slideshow = setInterval(function(){
-			var newnum = jQuery('.slide:visible').length;
-			if(newnum == jQuery('.slide').length) newnum = 0;
-			var newslide = jQuery('.slide').eq(newnum);
-			var newcaption = jQuery('.caption').eq(newnum);
-
-			//fade in new slide
-			if(newslide.is(':visible')) newslide.nextAll('.slide').fadeOut(2000);
-			else newslide.fadeIn(2000);
-
-			//update caption
-			newcaption.fadeIn(2000).siblings().fadeOut(2000);
-
-		}, 4000);
-	}
-}
-
-//TEXT EDITOR FUNCTIONS
+//TEXT EDITOR LISTERNERS
 
 jQuery('.submitform').live('click', function(e){
 	var html = jQuery('#rte').html().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
