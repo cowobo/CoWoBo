@@ -190,12 +190,10 @@ class CoWoBo_Users
             return;
         }
 
-        $profileid = get_user_meta( $signed_in_user->ID, 'cowobo_profile', true );
-        if( $go_to_profile )
-            wp_safe_redirect( get_permalink( $profileid ) . '?action=editpost' );
-        else
-            cowobo()->redirect();
-
+        //go back to previous page, we can nag about profile later
+        $previousurl = explode('?', $_SERVER["REQUEST_URI"]);
+		wp_safe_redirect($previousurl[0]);
+		
     }
 
     public function lost_password() {
