@@ -124,8 +124,8 @@ form {margin:0 auto;}
 .tabtext {float:right; width:72%; height:100px; overflow:hidden;}
 .square {margin-right: 15px;}
 .tabthumb {text-align:center; line-height:90px; background:#ccc; font-size:100px; color:#888;}
-.tabthumb img {min-width:150px;}
-.tabthumb .avatar {margin-top: -20px;}
+.tabthumb img {min-width:169px;}
+.tabthumb .avatar {margin-top: -35px;}
 .tabthumb:hover {opacity:0.8}
 .tabtitle {margin-left: 160px;}
 .notice {background: #eee; border:#EEE solid 12px; font-weight: bold; }
