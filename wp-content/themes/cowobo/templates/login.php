@@ -90,9 +90,8 @@ echo '</div>';
 	
 echo '<div class="tab">';
 	echo '<h2>Tips to avoid this message</h2>';
-	echo '- Click on Don\'t Ask Again<br/>';
 	echo '- Turn on cookies in your browser<br/>';
-	echo '- Use your borwser\'s autocomplete or lastpas.com<br/>';
+	echo '- Use your browser\'s autocomplete functions or lastpas.com<br/>';
 	echo '- Enter a valid email so we can send your lost password<br/>';
 echo '</div>';
 
