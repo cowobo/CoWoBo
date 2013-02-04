@@ -9,23 +9,21 @@ if ( post_password_required() ) { ?>
 // ##########  End do not delete section
 
 
-if(!is_user_logged_in()):
-	echo '<div class="tab">';
-	echo '<h2>To leave a comment or message &raquo;</h2>';
-	include(TEMPLATEPATH.'/templates/login.php');
-	echo '</div>';
-else:
-	echo '<div class="tab">';
-		echo '<h2>Comments &raquo;</h2>';
+echo '<div class="tab">';
+	echo '<h2>Comments &raquo;</h2>';
+	if(!is_user_logged_in()):
+		echo '<a href="?action=login"><textarea rows="3" disabled/></textarea></a>';
+		echo '<a class="button" href="?action=login">Comment</a>';
+	else:
 		comment_form(array(
-		  'title_reply' => '',
-		  'logged_in_as'=> '',
-		  'comment_field' => '<textarea name="comment" id="comment" rows="4" tabindex="4"></textarea>',
-		  'label_submit' => 'Submit Comment',
-		  'comment_notes_after' => '',
-		 ));
-	echo '</div>';
-endif;
+			'title_reply' => '',
+			'logged_in_as'=> '',
+			'comment_field' => '<textarea name="comment" id="comment" rows="4" tabindex="4"></textarea>',
+			'label_submit' => 'Submit Comment',
+			'comment_notes_after' => '',
+		));
+	endif;
+echo '</div>';
 
 // Calback for comments (display)
 if (!function_exists('cowobo_comments')) {
