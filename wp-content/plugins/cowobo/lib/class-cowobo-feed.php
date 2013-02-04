@@ -97,8 +97,10 @@ function feed_title(){
         } elseif( cowobo()->query->action == 'translate') {
             $feedtitle = 'Change Language';
         } elseif( cowobo()->query->action == 'editpost') {
-            if($postcat->slug == 'coder') $feedtitle = 'Update Your Profile';
-			else $feedtitle = 'Edit Post';
+            if( is_user_logged_in() ) {
+				if($postcat->slug == 'coder') $feedtitle = 'Update Your Profile';
+				else $feedtitle = 'Edit Post';
+			} else $feedtitle = 'Who are you angel?';
             $feedlink = remove_query_arg( 'action' );
         } elseif( is_single() ) {
 			$feedtitle = $post->post_title;
