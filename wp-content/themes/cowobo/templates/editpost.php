@@ -147,7 +147,7 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			elseif($field['type'] == 'largetext'):
 				if ( ! $unsaved_data ) {
 	                //$thispost = get_post($postid);
-	                $post_content = $post->post_content;
+	                $post_content = apply_filters('the_content', $post->post_content);
 	            } else {
 	                $post_content = $query->post_content;
 	            }
