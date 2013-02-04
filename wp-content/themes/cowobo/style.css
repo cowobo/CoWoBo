@@ -151,7 +151,7 @@ body.js.notice { padding-right: 60px; }
 .browsecol {margin-right:90px;}
 .poscol {width:80px;}
 .country {width:170px}
-.button, .form-submit input {font-size:16px; color:#5c63b3; background:none; border:none; width:auto; font-weight:bold; margin: 0 15px 0 0; cursor:pointer; }
+.button, .form-submit input {font-size:16px; vertical-align: inherit; color:#5c63b3; background:none; border:none; width:auto; font-weight:bold; margin: 0 15px 0 0; cursor:pointer; }
 .button:hover {color:#3a68a2;}
 .button-secondary { background: #d5d5d5; color: #757575; }
 .form-submit input {width:auto;}
@@ -179,8 +179,11 @@ body.js.notice { padding-right: 60px; }
 .emailtext {margin-bottom:10px;}
 .fb-like{ margin-top:15px;}
 .translate-widget input {width:auto;}
+.introline {font-size:19px; color:#888; padding: 7px 0 10px 0}
 
 /* Current user box */
+.profilemenu { margin: 10px 0 0 0; }
+.mysteryman { float:left; width:96px; height:96px; margin: 2px 15px 0 0; }
 div.profilemenu img.avatar,
 div.recently_active_user img.avatar { margin-right: 10px; }
 div.profilemenu div.upload-avatar form input { width: initial; }
