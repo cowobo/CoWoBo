@@ -331,12 +331,14 @@ function startslideshow() {
 //TEXT EDITOR FUNCTIONS
 
 jQuery('.submitform').live('click', function(e){
-	jQuery('.htmlbox').val(jQuery('#rte').html());
+	var html = jQuery('#rte').html().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
+	jQuery('.htmlbox').val(html);
 });
 
 jQuery('.htmlmode').live('click', function(e){
 	e.preventDefault();
-	jQuery('.htmlbox').val(jQuery('#rte').html());
+	var html = jQuery('#rte').html().replace(/<div>/gi,'<br>').replace(/<\/div>/gi,'');
+	jQuery('.htmlbox').val(html);
 	jQuery('#rte, .htmlbox, .htmlmode, .richmode').toggle();
 });
 
