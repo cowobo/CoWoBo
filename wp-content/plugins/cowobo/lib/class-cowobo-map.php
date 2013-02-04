@@ -201,12 +201,14 @@ function cwb_loadmap() {
 				$countarray[$post->ID] = $count;
 				$linkedmarkers[] = $post;
 			}
-		endwhile;
+		endwhile;	
 		$post = $originapost;
 	} elseif( is_single() && $postcoordinates) {
 		$countarray[$post->ID] = 1;
 		$linkedmarkers[] = $post;
-	} else {
+	} 
+	
+	if( empty($linkedmarkers) ) {
 		$markerposts = get_posts('cat='.get_cat_id('Locations').'&numberposts=-1');
 		foreach ($markerposts as $markerpost):
 			$linkedids = $cowobo->relations->get_related_ids($markerpost->ID);
