@@ -140,7 +140,7 @@ class CoWoBo_Translate_widget extends WP_Widget {
         extract($args, EXTR_SKIP);
 
         echo $before_widget . "<div class='translate-widget'>";
-	    echo $before_title . "Translate our site &raquo;" . $after_title;
+	    echo $before_title . "Help translate our site &raquo;" . $after_title;
 		
 		//todo improve edit translation button
 		//$args = 

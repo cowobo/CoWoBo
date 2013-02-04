@@ -1,5 +1,3 @@
 <?php
-echo "<h2>Join the movement &raquo;</h2>";
+echo '<h2><a href="'.get_bloginfo('url').'/category/wiki'">Learn more about us &raquo;</a>';
 
-cowobo()->query->login = 'login';
-include TEMPLATEPATH . '/templates/login.php';
