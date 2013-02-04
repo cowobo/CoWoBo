@@ -74,15 +74,16 @@ echo '<div class="page">';
 			endif;
 
 			if($action && file_exists(TEMPLATEPATH.'/templates/'.$action.'.php')):
-				if($action == 'edit' && !is_user_logged_in()): $redirect = 'edit';
+				if($action == 'editpost' && !is_user_logged_in()):
 					include(TEMPLATEPATH.'/templates/login.php');
 				else:
 					include(TEMPLATEPATH.'/templates/'.$action.'.php');
 				endif;
-			elseif( cowobo()->query->new ): $author = true;
-				if(!is_user_logged_in()): $redirect = 'new'; $redirect = 'new';
+			elseif( cowobo()->query->new ): 
+				if(!is_user_logged_in()):
 					include(TEMPLATEPATH.'/templates/login.php');
-				else:
+				else: 
+					$author = true;
 					include(TEMPLATEPATH.'/templates/editpost.php');
 				endif;
 			elseif(is_404()):
