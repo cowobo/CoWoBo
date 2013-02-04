@@ -99,6 +99,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 add_action ( 'cp_log', array ( &$this, 'add_notification' ), 10, 4);
             }
 
+            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box_after_post'), 20, 3 );
             add_action ( 'cowobo_after_layouts', array ( &$this, 'do_post_points'), 10, 3 );
             add_action ('cowobo_logs_description', array ( &$this, 'cp_logs_desc' ), 10, 4);
             add_filter ( 'cp_post_points', array ( &$this, 'no_points_for_profiles' ), 10, 1 );
@@ -163,7 +164,6 @@ if (!class_exists('CoWoBo_CubePoints')) :
 
         private function logged_in_templates() {
             add_action ( 'current_user_box', array ( &$this, 'do_ranking_box' ) );
-            add_action ( 'cowobo_after_post', array ( &$this, 'do_points_log_box_after_post'), 20, 3 );
             add_action ( 'cowobo_after_post', array ( &$this, 'do_post_kudos_box'), 30, 3 );
 
             add_action ( 'cowobo_after_searchbar', array ( &$this, 'do_your_score_box') );
