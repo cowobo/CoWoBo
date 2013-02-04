@@ -11,6 +11,10 @@ if (have_posts()) : while (have_posts()) : the_post();
 	echo '<div class="tab">';
 
 		//include main text if post has content
+	    if($introline = get_post_meta(get_the_ID(), 'cwb_slogan', true)):
+			echo '<div class="introline">'.$introline.'</div>';
+	    endif;
+		
 		if(get_the_content()):
 	        do_action ( 'cowobo_before_postcontent' );
 			the_content();
@@ -94,10 +98,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 	                    echo '<span class="hint">not specified</span>';
 	                endif;
 	                echo '</span>';
-	            elseif($field['type'] == 'slogan'):
-	                if($value = get_post_meta(get_the_ID(), 'cwb_slogan', true)):
-	                    echo '<b>'.$value.'</b>';
-	                endif;
 	            endif;
 	        endforeach;
 
@@ -106,7 +106,6 @@ if (have_posts()) : while (have_posts()) : the_post();
 	    }
 
 	echo '</div>';
-
 
 	//sort linked posts by type
 	$linkedids = cowobo()->relations->get_related_ids($postid);
@@ -134,11 +133,11 @@ if (have_posts()) : while (have_posts()) : the_post();
 			$exclude = get_cat_ID('Uncategorized').','.get_cat_ID('Coders').','.get_cat_ID('Locations');
 			echo '<form method="post" action="">';
 				echo '<select name="linkto">';
-					echo '<option>Select a post or scroll up and click on Add New</option>';
+					echo '<option>Select from posts you have already added: </option>';
 					$exclude = '-'.get_cat_ID('Uncategorized').', -'.get_cat_ID('Partners').', -'.get_cat_ID('Coders');
-					foreach(get_posts('meta_key=author&meta_value='.$GLOBALS['profile_id'].'&cat='.$exclude.'&numberposts=-1') as $userpost):
-						if($userpost->ID == cowobo()->query->linkto) $state = 'selected'; else $state='';
-						echo '<option value="'.$userpost->ID.'">' . $userpost->post_title.'</option>';
+					foreach(get_posts('meta_key=cwb_author&meta_value='.$GLOBALS['profile_id'].'&cat='.$exclude.'&numberposts=-1') as $userpost):
+						if($userpost->ID != $postid)
+							echo '<option value="'.$userpost->ID.'">' . $userpost->post_title.'</option>';
 					endforeach;
 				echo '</select>';
                 wp_nonce_field( 'linkposts', 'linkposts' );
