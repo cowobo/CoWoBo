@@ -4,7 +4,7 @@ global $user_ID;
 
 //common variables
 $cubepoints = &cowobo()->points;
-$prefix = '';
+$prefix = 'Related ';
 $sort = ( isset ( $sort ) ) ? $sort : '';
 
 if( isset ( $tabtype ) && $tabtype == 'cat'):
@@ -13,7 +13,7 @@ if( isset ( $tabtype ) && $tabtype == 'cat'):
 	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
 
 	if(is_single()):
-		if( isset ( $postcat ) && is_object( $postcat ) && $postcat->slug !='coder') $prefix = 'Related ';
+		if( isset ( $postcat ) && is_object( $postcat ) && $postcat->slug =='coder') $prefix = 'My ';
 		$catlink = '?showall='.$tabcat->name;
 	else:
 		$catlink = get_category_link($tabcat->term_id);
