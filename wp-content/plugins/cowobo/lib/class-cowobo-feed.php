@@ -84,14 +84,14 @@ function feed_title(){
         } elseif( is_404() ) {
             $feedtitle = 'Yikes we cannot find that content';
         } elseif( cowobo()->query->userpw ) {
-            $feedtitle = 'Welcome to the club';
+            $feedtitle = 'Welcome to the club!';
         } elseif( cowobo()->query->showall ) {
             $feedtitle = '<a href="'.get_permalink( $post->ID ).'">'.get_the_title($post->ID).'</a> <b class="grey">></b> '.$currentcat->name;
             $feedlink = '';
         } elseif( cowobo()->query->s ) {
 			$feedtitle = 'Search Results';
         } elseif( cowobo()->query->action == 'login') {
-            $feedtitle = 'Who are you?';
+            $feedtitle = 'Who are you angel?';
         } elseif( cowobo()->query->action == 'contact') {
             $feedtitle = 'Contact';
         } elseif( cowobo()->query->action == 'translate') {
