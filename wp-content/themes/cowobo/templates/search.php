@@ -7,8 +7,8 @@ elseif(is_single() && ( !isset ( $author ) || ! $author ) ) $editlink = '<li id=
 elseif (is_single()) $editlink = '<li><a class="black" href="?action=editpost">Edit ▼</a></li>';
 else $editlink = '<li><a class="black" href="?action=editpage">Edit ▼</a></li>';
 
-if(!is_user_logged_in()) $addlink = '<li><a class="black" href="?action=login">Add New ▼</a></li>';
-else $addlink = '<li id="addmenu" class="blue">Add New ▼</li>';
+if(!is_user_logged_in()) $addlink = '<li><a href="?action=login">Add New ▼</a></li>';
+else $addlink = '<li id="addmenu">Add New ▼</li>';
 
 if(is_home()) $homelink = '<li id="catmenu">Categories ▼</li>';
 else $homelink = '<li id="catmenu">Coders Without Borders ▼</li>';
@@ -70,7 +70,7 @@ echo '<div class="tab">';
 	echo '</form>';
 
 	//Add Request form if required
-	if( ! isset ( $author ) || ! $author ):
+	if( ! isset ( $author ) || ! $author && is_user_logged_in() ):
 		if($action == 'editpost') $state=''; else $state= 'hide';
 		echo '<div class="dropmenu editmenu '.$state.'">';
 			include(TEMPLATEPATH.'/templates/editrequest.php');
@@ -78,7 +78,7 @@ echo '<div class="tab">';
 	endif;
 	
 	//Add Post form
-	if($action == 'add') $state=''; else $state= 'hide';
+	if( $action == 'add' ) $state=''; else $state= 'hide';
 	echo '<div class="dropmenu addmenu '.$state.'">';
 			include(TEMPLATEPATH.'/templates/addpost.php');
 	echo '</div>';
