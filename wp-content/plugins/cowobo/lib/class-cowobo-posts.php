@@ -376,7 +376,8 @@ class CoWoBo_Posts
 				$top = 0; $url = ''; $thumb = '';
 
 				if ($imgurl = wp_get_attachment_image_src($imgid, $size = 'large')) {
-					$thumb = wp_get_attachment_image($imgid, $size = 'thumbnail', array('height'=>'100%'));
+					$thumbsrc = wp_get_attachment_image_src($imgid, $size = 'thumbnail');
+					$thumb = '<img src="'.$thumbsrc[0].'" height="100%" alt=""/>';
 					$url = $imgurl[0];
 					$image_check = true;
 				} elseif ( $url = get_post_meta($postid, 'cwb_url'.$x, true) ) {
@@ -835,6 +836,8 @@ class CoWoBo_Posts
                 if ( $text = $html->find( $selector, 0)->innertext ) break;
             }
 
+			$text = preg_replace("/<div[^>]*?>/", "<p>", $text);
+			$text = str_replace("</div>", "</p>", $text);
 			$text = strip_tags ( $text, '<p><a><br><b><strong><i><em><u>' );
             if ( empty ( $text ) ) cowobo()->add_notice('We could not parse the content for this article, try pasting it in manually.', 'error');
 		} else {
