@@ -3,12 +3,16 @@
 //common variables
 $cubepoints = &cowobo()->points;
 $prefix = '';
-$sort = ( isset ( $sort ) ) ? $sort : '';
+
+if ( ! isset ( $sort ) ) $sort = '';
 
 if( isset ( $tabtype ) && $tabtype == 'cat'):
 	if ( isset ( $tabposts ) && ! empty ( $tabposts ) ) $catposts = $tabposts;
-    /** @todo something is wrong with $sort **/
-	else $catposts = get_posts('cat='.$tabcat->term_id.'&numberposts=3&orderby='.$sort);
+    /** Generate a query for this tab **/
+	else {
+        $cowobo_feed = cowobo()->feed;
+        $catposts = $cowobo_feed->get_catposts ( $tabcat, 3, $sort );
+    }
 
 	if(is_single()):
 		if( isset ( $postcat ) && is_object( $postcat ) && $postcat->slug =='coder') $prefix = 'My ';
