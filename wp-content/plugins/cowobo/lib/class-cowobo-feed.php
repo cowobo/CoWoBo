@@ -68,9 +68,9 @@ class CoWoBo_Feed
 
     }
 
-    public function get_category_sort_query( $cat ) {
+    public function get_category_sort_query( $cat, $query = array() ) {
         $sort = $this->get_category_default_sort( $cat );
-        return $this->get_sort_query( $sort );
+        return $this->get_sort_query( $sort, $query );
     }
 
         private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query = false ) {
@@ -102,9 +102,9 @@ class CoWoBo_Feed
             return array ( "sort" => $sort, "query" => $query );
         }
 
-        private function get_sort_query ( $sort ) {
+        private function get_sort_query ( $sort, $query = array() ) {
             $results = $this->get_sort_and_query( $sort, array(), true );
-            return $results['query'];
+            return array_merge ( $results['query'], $query );
         }
 
         private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
