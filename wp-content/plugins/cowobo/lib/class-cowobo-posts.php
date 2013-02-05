@@ -116,6 +116,14 @@ class CoWoBo_Posts
                     add_post_meta($postid, $key, $newval);
                 }
             }else {
+                if ( 'cwb_startdate' == $key ) {
+                    if ( ! $timestamp = strtotime ( $value ) ) {
+                        $postmsg["startdate"] = "Please enter a valid date.";
+                        continue;
+                    } else {
+                        add_post_meta ( $postid, 'cwb_startdate_timestamp', $timestamp );
+                    }
+                }
                 add_post_meta($postid, $key, $value);
             }
         }
@@ -471,7 +479,7 @@ class CoWoBo_Posts
         if($catslug == 'location') {
 			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
 			$mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype=satellite&sensor=false';
-			$mappath .= '&size=170x120&format=jpg&zoom=15&center='.$coordinates;	
+			$mappath .= '&size=170x120&format=jpg&zoom=15&center='.$coordinates;
 			echo '<img src="'.$mappath.'"/>';
             return;
         }
