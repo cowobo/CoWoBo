@@ -14,7 +14,7 @@ if(is_home()) $homelink = '<li id="catmenu">Categories ▼</li>';
 else $homelink = '<li id="catmenu">Coders Without Borders ▼</li>';
 
 echo '<div class="tab">';
-			
+
 	echo '<ul class="horlist searchbar">';
 		echo $homelink;
 		echo '<li id="searchmenu">Search ▼</li>';
@@ -22,9 +22,9 @@ echo '<div class="tab">';
 		echo $editlink;
 		echo $addlink;;
 	echo '</ul>';
-	
+
 	echo '<form method="GET" action="'.get_bloginfo('url').'" class="searchform">';
-		
+
 		if($action != 'search') $state='hide'; else $state= '';
 	    echo '<div class="dropmenu searchmenu '.$state.'">';
 	        echo '<input type="text" class="searchfield" name="s" value="'.cowobo()->query->s.'" placeholder="Enter keywords to search for here.."/>';
@@ -32,7 +32,7 @@ echo '<div class="tab">';
 	        echo '<input type="checkbox" class="auto" name="allcats" value="1"> All Categories';
 	    echo '</div>';
 
-		if($action != 'categories') $state='hide'; else $state= '';	
+		if($action != 'categories') $state='hide'; else $state= '';
 	    echo '<div class="dropmenu catmenu '.$state.'">';
 	        echo '<div class="clear dropoptions">';
 				echo '<span><a href="'.get_bloginfo('url').'">HOME (538)</a></span>';
@@ -42,7 +42,7 @@ echo '<div class="tab">';
 	            endforeach;
 	        echo '</div>';
 	    echo '</div>';
-	
+
 	    $sorttypes = array(
 	        'rating'=>'Rating',
 	        'location'=>'Locations',
@@ -60,13 +60,13 @@ echo '<div class="tab">';
 	        else $selected = 'modified';
 	        echo '<div class="clear dropoptions">';
 	            foreach( $sorttypes as $sortslug => $sortlabel ):
-	                if( $sortslug == $selected ) $state = 'checked'; else $state='';
-	                echo '<span class="'.$state.'"><input type="radio" name="sort" value="'.$sortslug.'" '.$state.'>'.$sortlabel.'</span>';
+                    $link = add_query_arg( "sort", $sortslug );
+	                $state = ( $sortslug == $selected ) ? 'checked' : '';
+	                echo "<span><a href='$link' class='$state'>$sortlabel</a></span>";
 	            endforeach;
 	        echo '</div>';
-	        echo '<input type="submit" class="button" value="Update"/>';
 	    echo '</div>';
-		
+
 	echo '</form>';
 
 	//Add Request form if required
@@ -76,11 +76,11 @@ echo '<div class="tab">';
 			include(TEMPLATEPATH.'/templates/editrequest.php');
 		echo '</div>';
 	endif;
-	
+
 	//Add Post form
 	if( $action == 'add' ) $state=''; else $state= 'hide';
 	echo '<div class="dropmenu addmenu '.$state.'">';
 			include(TEMPLATEPATH.'/templates/addpost.php');
 	echo '</div>';
-		
+
 echo '</div>';
