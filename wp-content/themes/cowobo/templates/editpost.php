@@ -107,12 +107,19 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				$location = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_location', true) : $query->cwb_location;
 				$map = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includemap', true) : $query->cwb_includemap;
 				$street = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includestreet', true) : $query->cwb_includestreet;
+				$zoom = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_zoom', true) : $query->cwb_zoom;
 				if($street==1) $streetstate = 'checked'; else $streetstate = '';
 				if($map==1) $mapstate = 'checked'; else $mapstate = '';
 				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="cwb_location" value="'.$location.'"/>';
 				echo '<ul class="righthalf horlist">';
-					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Show Map</li>';
-					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Show Streetview</li>';
+					echo '<select name="cwb_zoom" class="auto">';
+						for($x=3; $x<17; $x++):
+							if($x == $zoom) $state = 'selected'; else $state='';
+							echo '<option value="'.$x.'" '.$state.'>'.$x.'</option>'; 
+						endfor;
+					echo '</select>';
+					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Map</li>';
+					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Streetview</li>';
 				echo '</li>';
 			elseif($field['type'] == 'smalltext'):
 				$value = ( ! $unsaved_data ) ? get_post_meta($postid, "cwb_" . $slug, true) : $query->{"cwb_$slug"};
