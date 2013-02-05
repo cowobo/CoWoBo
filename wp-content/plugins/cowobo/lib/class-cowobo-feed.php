@@ -28,17 +28,14 @@ class CoWoBo_Feed
         if( $cats && $cats[0] != 'all' ) $catstring = implode(',',$cats);
         elseif( is_category() ) $catstring = get_query_var('cat');
 
-		//todo: handle multiple sort values
-        //$metaquery = array();
         $query = array();
 		$sort = ( is_array( $sortby ) ) ? $sortby[0] : $sortby;
-        $direction = '';
         if ( empty ( $sort ) ) $sort = 'modified';
 
         $this->set_sort_and_query ( $sort, $query );
 
         $query_default = array (
-            'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords
+            'orderby'=>$sort, 'cat'=> $catstring, 's'=>$keywords
         );
         $query = array_merge ( $query, $query_default );
 
@@ -50,9 +47,10 @@ class CoWoBo_Feed
         private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
             if ( $sort == 'a-z' ) {
                 $sort = 'title';
+                $query['order'] = 'ASC';
             } elseif ( $sort == 'z-a' ) {
                 $sort = 'title';
-                $direction = 'ASC';
+                $query['order'] = 'DESC';
             } elseif ( $sort == 'location') {
                 $sort = $this->sort['type'] = 'meta_value';
                 $query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
