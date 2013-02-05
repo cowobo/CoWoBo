@@ -125,7 +125,7 @@ function cwb_loadmap() {
 	if( is_single() && $coordinates) {
 		$latlng = explode(',', $coordinates);
 		$zoom = get_post_meta($postid, 'cwb_zoom', true);
-		if(empty($zoom)) $zoom = 15;
+		if(empty($zoom)) $zoom = 16;
 		$mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype=hybrid&sensor=false';
 		$mappath .= '&size=640x640&format=jpg&zoom='.$zoom.'&center='.$latlng[0].',';
 		$newlayer = '<img class="slideimg map" src="'.$mappath.adjustLonByPx($latlng[1], -320, $zoom).'" alt="" width="50%">';

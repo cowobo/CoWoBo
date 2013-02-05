@@ -112,15 +112,16 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				if($map==1) $mapstate = 'checked'; else $mapstate = '';
 				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="cwb_location" value="'.$location.'"/>';
 				echo '<ul class="righthalf horlist">';
-					echo '<select name="cwb_zoom" class="auto">';
+					echo '<li><select name="cwb_zoom" class="auto">';
+						echo '<option>Zoom</option>'; 
 						for($x=3; $x<17; $x++):
 							if($x == $zoom) $state = 'selected'; else $state='';
 							echo '<option value="'.$x.'" '.$state.'>'.$x.'</option>'; 
 						endfor;
-					echo '</select>';
+					echo '</select></li>';
 					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includemap" value="1" '.$mapstate.'/> Map</li>';
 					echo '<li><input type="checkbox" class="auto" tabindex="'.$index.'" name="cwb_includestreet" value="1" '.$streetstate.'/> Streetview</li>';
-				echo '</li>';
+				echo '</ul>';
 			elseif($field['type'] == 'smalltext'):
 				$value = ( ! $unsaved_data ) ? get_post_meta($postid, "cwb_" . $slug, true) : $query->{"cwb_$slug"};
 				echo '<input type="text" tabindex="'.$index.'" name="cwb_'.$slug.'" value="'.$value.'"/>';
