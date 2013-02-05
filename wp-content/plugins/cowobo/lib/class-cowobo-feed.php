@@ -10,8 +10,9 @@ class CoWoBo_Feed
     );
 
     public $default_cat_sorting = array (
-       "news"   => "date",
-       "event" => "startdate"
+       "news"       => "date",
+       "event"      => "startdate",
+       "default"    => "rating"
     );
 
     public function __construct() {
@@ -21,18 +22,21 @@ class CoWoBo_Feed
 
     public function filter_category_pages ( $wp_query ) {
 
-        if (is_category() || is_archive()) {
+        if (is_category() ) {
             $cat = $wp_query->get_queried_object();
 
-            if ( array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
+            if ( isset ( $cat->slug ) && array_key_exists ( $cat->slug, $this->default_cat_sorting ) ) {
                 $sort = $this->default_cat_sorting[$cat->slug];
+            } else {
+                $sort = $this->default_cat_sorting['default'];
+            }
 
             $query = $this->get_sort_query( $sort );
-            //$results = $this->get_sort_and_query( $sort, array(), true );
 
-            $wp_query->set( 'orderby', 'meta_value_num' );
-            $wp_query->set( 'meta_key', 'price' );
-            $wp_query->set( 'order', 'ASC' );
+            foreach ( $query as $query_key => $query_value ) {
+                $wp_query->set( $query_key, $query_value );
+
+            }
         }
         return $wp_query;
     }
