@@ -25,11 +25,7 @@ class CoWoBo_Feed
         if (is_category() ) {
             $cat = $wp_query->get_queried_object();
 
-            if ( isset ( $cat->slug ) && array_key_exists ( $cat->slug, $this->default_cat_sorting ) ) {
-                $sort = $this->default_cat_sorting[$cat->slug];
-            } else {
-                $sort = $this->default_cat_sorting['default'];
-            }
+            $sort = get_category_sort_query ( $cat );
 
             $query = $this->get_sort_query( $sort );
 
@@ -70,6 +66,11 @@ class CoWoBo_Feed
         //query filtered posts
         query_posts( $query );
 
+    }
+
+    public function get_category_sort_query( $cat ) {
+        $sort = $this->get_category_default_sort( $cat );
+        return $this->get_sort_query( $sort );
     }
 
         private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query = false ) {
@@ -120,13 +121,22 @@ class CoWoBo_Feed
             'cat'           => $cat->term_id
         );
 
-        if ( array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
-            $sort = $this->default_cat_sorting[$cat->slug];
+        if ( empty ( $sort ) )
+            $sort = $this->get_category_default_sort( $cat );
 
         $this->set_sort_and_query( $sort, $query, true );
 
         return get_posts( $query );
     }
+
+        private function get_category_default_sort ( $cat ) {
+            if ( isset ( $cat->slug ) && array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
+            $sort = $this->default_cat_sorting[$cat->slug];
+            else
+                $sort = $this->default_cat_sorting['default'];
+
+            return $sort;
+        }
 
     /**
      * Show all posts related to current post in requested category
