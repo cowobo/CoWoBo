@@ -18,7 +18,7 @@ echo '<div class="tab">';
 	echo '<ul class="horlist searchbar">';
 		echo $homelink;
 		echo '<li id="searchmenu">Search ▼</li>';
-		echo '<li id="sortmenu">Sort ▼</li>';
+		if ( ! is_home() ) echo '<li id="sortmenu">Sort ▼</li>';
 		echo $editlink;
 		echo $addlink;;
 	echo '</ul>';
