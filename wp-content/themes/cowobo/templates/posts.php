@@ -117,14 +117,15 @@ if (have_posts()) : while (have_posts()) : the_post();
 	if( $types = cowobo()->relations->get_related_types($linkedids, $exclude ) ):
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
-			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
+            $query = cowobo()->feed->get_category_sort_query( $tabcat, array('post__in'=>$typeposts, 'numberposts'=>3) );
+			$tabposts = get_posts( $query );
 			$tabtype = 'cat';
 			if(! empty($tabposts) ) include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
 
     do_action ( 'cowobo_after_post', $postid, $postcat, $author );
-    
+
 	//show comments
     if ( is_object ( $postcat ) ) comments_template();
 
