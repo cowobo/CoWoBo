@@ -32,53 +32,39 @@
  */
 
 //MAP FUNCTIONS
-global $offset, $mapdata, $cowobo;
+global $mapcenter, $mapdata, $cowobo;
 
-//offset is the horizontal center in pixels of the custom map at max zoom level (3)
+//offset is the horizontal center in pixels of the map at max zoom level
 
-function LonToX($lon) {
-	$offset = 2000;
-	$radius = $offset / pi();
-	$x = round($offset + $radius * $lon * pi() / 180);
+//custom map functions
+function LonToX($lon, $mapcenter) {
+	$radius = $mapcenter / pi();
+	$x = round($mapcenter + $radius * $lon * pi() / 180);
 	return $x;
 }
 
-function LatToY($lat) {
-	$offset = 2000;
-	$radius = $offset / pi();
-	$y = round($offset - $radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
+function LatToY($lat, $mapcenter) {
+	$radius = $mapcenter / pi();
+	$y = round($mapcenter - $radius * log((1 + sin($lat * pi() / 180)) / (1 - sin($lat * pi() / 180))) / 2);
 	return $y;
 }
 
 
+//google map functions
 function XToLon($x) {
-	$offset = 268435456;
-	$radius = $offset / pi();
-	$lon = ((round($x) - $offset) / $radius) * 180/ pi();
+	$mapcenter = 268435456;
+	$radius = $mapcenter / pi();
+	$lon = ((round($x) - $mapcenter) / $radius) * 180/ pi();
 	return $lon;
 }
 
-function YToLat($y) {
-	$offset = 268435456;
-	$radius = $offset / pi();
-	$y = (pi() / 2 - 2 * atan(exp((round($y) - $offset) / $radius))) * 180 / pi();
-	return $y;
-}
-
 function adjustLonByPx($lon, $amount, $zoom) {
-	$newlon = XToLon(LonToX($lon) + ($amount << (21 - $zoom)));
+	$mapcenter = 268435456;
+	$newlon = XToLon(LonToX($lon, $mapcenter) + ($amount << (21 - $zoom)));
 	if ($newlon < -180) $newlon = 360 + $newlon;
 	elseif ($newlon > 180) $newlon = $newlon - 360;
 	return $newlon;
 }
-
-function adjustLatByPx($lat, $amount, $zoom) {
-	$newlat = YToLat(LatToY($lat) + ($amount << (21 - $zoom)));
-	if ($newlat < -90) $newlat = 180 + $newlat;
-	elseif ($newlat > 90) $newlat = $newlat - 180;
-	return $newlat;
-}
-
 
 //return streetview tiles
 function cwb_streetview($postid) {
@@ -122,78 +108,40 @@ function cwb_geocode($address) {
 	return $location;
 }
 
-function latlng_to_percent($coordinates) {
-	$xmid = 1000; $ymid = 500;
-	$map_center_lat = 20;
-	$map_center_lng = 0;
-
-    if ( empty ( $coordinates ) ) return;
-	$latlng = explode(',', $coordinates);
-	$delta_x  = (LonToX($latlng[1]) - LonToX($map_center_lng)) >> 1;
-	$delta_y  = (LatToY($latlng[0]) - LatToY($map_center_lat)) >> 1;
-
-    $pos['left'] = ($xmid + $delta_x)/($xmid*2);
-   	$pos['top'] = ($ymid + $delta_y)/($ymid*2);
-	return $pos;
-}
-
-function get_map_position($width, $height, $coordinates) {
-	$xmapsize = 500;
-	$ymapsize = 250;
-	$pos = latlng_to_percent($coordinates);
-	$x =  $width - ($pos['left'] * $xmapsize) - ($width/2);
-	$y = $height - ($pos['top']* $ymapsize) - ($height/2);
-	$xmax = $width - $xmapsize;
-	$ymax = $height - $ymapsize;
-	if($x > 0) $x = 0;
-	if($y > 0) $y = 0;
-	if($x < $xmax) $x = $xmax;
-	if($y < $ymax) $y = $ymax;
-	$position = 'position:absolute; top:'.$y.'px; left:'.$x.'px';
-
-	return $position;
-}
 
 function cwb_loadmap() {
 	global $cowobo, $post;
-	$linkedmarkers = array();
-
-	$data = array('lat'=> '20', 'lng'=>'0');
-	$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
-	$zoom3src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
-
-	if ( cowobo()->query->post_ID ) $postid = cowobo()->query->post_ID;
+	$linkedmarkers = array(); $postid = 0;
+	
+	//check if its a single post with coordinates
+	if ( $queryid = cowobo()->query->post_ID ) $postid = $queryid;
 	elseif ( is_single() ) $postid = $post->ID;
-
-	//get coordinates if specified in url or post
-	if(is_single() && $postcoordinates = get_post_meta($postid, 'cwb_coordinates', true)):
-		$pos = latlng_to_percent($postcoordinates);
-		$x = (-$pos['left']*200) + 50;
-		$y = (-$pos['top']*200) + 40;
-		if($x > 0) $x = 0;
-		if($y > 0) $y = 0;
-		if($x < -100) $x = -100;
-		if($y < -100) $y = -100;
-		$position = 'style="top:'.$y.'%; left:'.$x.'%"';
-		$zoomlevel = 2;
-	else:
-		$zoomlevel = $x = $y = 0;
-        $position = 'style="top:-20%;"';
-	endif;
-
+	$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
+	
 	//construct new maplayer
-	$map = '<div class="slide hide zoom-'.$zoomlevel.'" id="slide-map" '.$position.'>';
-	$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100%">';
-	$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
-
-	//include large angel on homepage
-	if(!is_single()) {
-		$newlayer .= '<img class="largeangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" alt="">';
-	}
-
-	//sort $posts by related count
+	$map = '<div class="slide hide zoom-0" id="slide-map">';
+	
+	//include map image
+	if( is_single() && $coordinates) {
+		$latlng = explode(',', $coordinates);
+		$zoom = get_post_meta($postid, 'cwb_zoom', true);
+		if(empty($zoom)) $zoom = 15;
+		$mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype=hybrid&sensor=false';
+		$mappath .= '&size=640x640&format=jpg&zoom='.$zoom.'&center='.$latlng[0].',';
+		$newlayer = '<img class="slideimg map" src="'.$mappath.adjustLonByPx($latlng[1], -320, $zoom).'" alt="" width="50%">';
+		$newlayer .= '<img class="slideimg map" src="'.$mappath.adjustLonByPx($latlng[1], 320, $zoom).'" alt="" width="50%">';
+		$newlayer .= '<img class="smallangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" alt="">';	
+	}else {
+		$zoom1src = get_bloginfo('template_url').'/images/maps/zoom_2.jpg';
+		$zoom3src = get_bloginfo('template_url').'/images/maps/zoom_3.jpg';
+		$newlayer = '<img class="slideimg map" src="'.$zoom1src.'" alt="" width="100%">';
+		$newlayer .= '<input type="hidden" class="zoomsrc3" value="'.$zoom3src.'"/>';
+		$newlayer .= '<img class="largeangel" src="'.get_bloginfo('template_url').'/images/largeangel.png" alt="">';	
+	}	
+		
+	//get marker posts
 	if( is_search() or is_category() && have_posts() ){
-		$originapost = $post;
+		$originalpost = $post;
 		while (have_posts()) : the_post();
 			if($coordinates = get_post_meta($post->ID, 'cwb_coordinates', true)){
 				$linkedids = $cowobo->relations->get_related_ids($post->ID);
@@ -202,13 +150,8 @@ function cwb_loadmap() {
 				$linkedmarkers[] = $post;
 			}
 		endwhile;	
-		$post = $originapost;
-	} elseif( is_single() && $postcoordinates) {
-		$countarray[$post->ID] = 1;
-		$linkedmarkers[] = $post;
-	} 
-	
-	if( empty($linkedmarkers) ) {
+		$post = $originalpost;
+	} elseif( ! $coordinates ) {
 		$markerposts = get_posts('cat='.get_cat_id('Locations').'&numberposts=-1');
 		foreach ($markerposts as $markerpost):
 			$linkedids = $cowobo->relations->get_related_ids($markerpost->ID);
@@ -218,9 +161,10 @@ function cwb_loadmap() {
 		endforeach;
 	}
 
+	$max = 1;
+	
 	//store the maximum number of links
-	if($countarray) $max = max($countarray);
-	if($max == 0) $max = 1;
+	if( isset( $countarray ) ) $max = max($countarray);
 
 	//find marker position and add it to map
     $id = 0; $xmid = 1000; $ymid = 500;
@@ -228,8 +172,10 @@ function cwb_loadmap() {
 		$coordinates = get_post_meta($markerpost->ID, 'cwb_coordinates', true);
         if ( empty ( $coordinates ) ) continue;
 		$latlng = explode(',', $coordinates);
-		$delta_x  = (LonToX($latlng[1]) - LonToX($data['lng'])) >> 1;
-		$delta_y  = (LatToY($latlng[0]) - LatToY($data['lat'])) >> 1;
+		$mapcenter = 2000; //pixels to center of map
+		$data = array('lat'=> '20', 'lng'=>'0'); //coordinates of center
+		$delta_x  = (LonToX($latlng[1], $mapcenter) - LonToX($data['lng'], $mapcenter)) >> 1;
+		$delta_y  = (LatToY($latlng[0], $mapcenter) - LatToY($data['lat'], $mapcenter)) >> 1;
    		$marker_x = ($xmid + $delta_x)/($xmid*2)*100;
    		$marker_y = ($ymid + $delta_y)/($ymid*2)*100;
 		if($max == 0) $max = 1;

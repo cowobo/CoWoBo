@@ -470,8 +470,9 @@ class CoWoBo_Posts
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location') {
 			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
-            $position = get_map_position(149, 100, $coordinates);
-			echo '<img style="'.$position.'" src="'.get_bloginfo('template_url').'/images/maps/day_thumb.jpg"/>';
+			$mappath = 'http://www.mapquestapi.com/staticmap/v3/getmap?key=Fmjtd%7Cluuanuutn9%2Cbg%3Do5-96blg6';
+			$mappath .= '&type=sat&scalebar=false&size=200,100&zoom=10&center='.$coordinates;			
+			echo '<img src="'.$mappath.'" height="100%"/>';
             return;
         }
 
