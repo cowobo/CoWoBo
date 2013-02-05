@@ -27,6 +27,9 @@ class CoWoBo_Feed
             if ( array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
                 $sort = $this->default_cat_sorting[$cat->slug];
 
+            $query = $this->get_sort_query( $sort );
+            //$results = $this->get_sort_and_query( $sort, array(), true );
+
             $wp_query->set( 'orderby', 'meta_value_num' );
             $wp_query->set( 'meta_key', 'price' );
             $wp_query->set( 'order', 'ASC' );
@@ -65,7 +68,7 @@ class CoWoBo_Feed
 
     }
 
-        private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query ) {
+        private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query = false ) {
             if ( $sort == 'a-z' ) {
                 $sort = 'title';
                 $query['order'] = 'ASC';
@@ -94,12 +97,18 @@ class CoWoBo_Feed
             return array ( "sort" => $sort, "query" => $query );
         }
 
+        private function get_sort_query ( $sort ) {
+            $results = $this->get_sort_and_query( $sort, array(), true );
+            return $results['query'];
+        }
+
         private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
             $results = $this->get_sort_and_query( $sort, $query, $set_sort_in_query );
 
             $sort = $results['sort'];
             $query = $results['query'];
         }
+
 
     public function get_catposts( $cat, $numposts = 3, $sort = '' ) {
         $query = array(
