@@ -104,7 +104,7 @@ class CoWoBo_Posts
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
 		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
-            if ( "cwb_" != substr ( $valuet, 0, 4 ) || $valuet == "cwb_author" ) continue;
+            if ( "cwb_" != substr ( $valuet, 0, 4 ) || in_array ( $valuet, array ( "cwb_author", "cwb_points" ) ) ) continue;
 		    delete_post_meta($postid, $key);
 		}
 
