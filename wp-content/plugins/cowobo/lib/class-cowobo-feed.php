@@ -102,7 +102,6 @@ function feed_title(){
 
         $feedtitle = '';
         $feedlink = get_bloginfo ( 'url' );
-        $postcat = cowobo()->posts->get_category($post->ID);
 
 		if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
@@ -124,6 +123,7 @@ function feed_title(){
             $feedtitle = 'Change Language';
         } elseif( cowobo()->query->action == 'editpost') {
             if( is_user_logged_in() ) {
+				$postcat = cowobo()->posts->get_category($post->ID);
 				if($postcat->slug == 'coder') $feedtitle = 'Update Your Profile';
 				else $feedtitle = 'Edit Post';
 			} else $feedtitle = 'Who are you angel?';
