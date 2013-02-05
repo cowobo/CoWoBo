@@ -14,6 +14,26 @@ class CoWoBo_Feed
        "event" => "startdate"
     );
 
+    public function __construct() {
+        add_filter('pre_get_posts', array ( &$this, 'filter_category_pages' ) );
+
+    }
+
+    public function filter_category_pages ( $wp_query ) {
+
+        if (is_category() || is_archive()) {
+            $cat = $wp_query->get_queried_object();
+
+            if ( array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
+                $sort = $this->default_cat_sorting[$cat->slug];
+
+            $wp_query->set( 'orderby', 'meta_value_num' );
+            $wp_query->set( 'meta_key', 'price' );
+            $wp_query->set( 'order', 'ASC' );
+        }
+        return $wp_query;
+    }
+
     /**
      * Filter feed based on parameters set in browse
      */
@@ -45,7 +65,7 @@ class CoWoBo_Feed
 
     }
 
-        private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
+        private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query ) {
             if ( $sort == 'a-z' ) {
                 $sort = 'title';
                 $query['order'] = 'ASC';
@@ -56,7 +76,7 @@ class CoWoBo_Feed
                 $sort = $this->sort['type'] = 'meta_value';
                 $query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
             } elseif ( 'date' == $sort ) {
-                $osrt = $this->sort['type'] = 'modified';
+                $sort = $this->sort['type'] = 'modified';
             } elseif ( 'category' == $sort ) {
                 $sort = $this->sort['type'] = 'category';
             } elseif ( 'startdate' == $sort ) {
@@ -65,12 +85,20 @@ class CoWoBo_Feed
                 $query['order'] = 'ASC';
             } elseif( $sort == 'rating' || empty ( $sort ) ) { // Default
                 $sort = 'meta_value_num';
-                //$metaquery[] = array( 'metakey'=>'cowobo_points' );
                 $query['meta_key'] = 'cwb_points';
             }
 
             if ( $set_sort_in_query )
                 $query['orderby'] = $sort;
+
+            return array ( "sort" => $sort, "query" => $query );
+        }
+
+        private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
+            $results = $this->get_sort_and_query( $sort, $query, $set_sort_in_query );
+
+            $sort = $results['sort'];
+            $query = $results['query'];
         }
 
     public function get_catposts( $cat, $numposts = 3, $sort = '' ) {
