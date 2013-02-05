@@ -9,6 +9,10 @@ class CoWoBo_Feed
         'type'  => ''
     );
 
+    public $default_cat_sorting = array (
+       "news"   => "date"
+    );
+
     /**
      * Filter feed based on parameters set in browse
      */
@@ -30,20 +34,8 @@ class CoWoBo_Feed
 		$sort = $sortby[0];
         $direction = '';
         if ( empty ( $sort ) ) $sort = 'modified';
-        elseif( $sort == 'rating' ) {
-            $sort = 'meta_value_num';
-			//$metaquery[] = array( 'metakey'=>'cowobo_points' );
-            $query['meta_key'] = 'cwb_points';
-		} elseif ( $sort == 'a-z' ) {
-			$sort = 'title';
-		} elseif ( $sort == 'z-a' ) {
-			$sort = 'title';
-			$direction = 'ASC';
-		} elseif ( $sort == 'location') {
-            $sort = $this->sort['type'] = 'meta_value';
-			$query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
-		} elseif ( 'category' == $sort ) {
-            $sort = $this->sort['type'] = 'category';
+        else {
+            $this->set_sort_and_query ( $sort, $query );
         }
 
         $query_default = array (
@@ -54,6 +46,43 @@ class CoWoBo_Feed
         //query filtered posts
         query_posts( $query );
 
+    }
+
+        private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
+            if ( $sort == 'a-z' ) {
+                $sort = 'title';
+            } elseif ( $sort == 'z-a' ) {
+                $sort = 'title';
+                $direction = 'ASC';
+            } elseif ( $sort == 'location') {
+                $sort = $this->sort['type'] = 'meta_value';
+                $query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
+            } elseif ( 'date' == $sort ) {
+                $osrt = $this->sort['type'] = 'date';
+            } elseif ( 'category' == $sort ) {
+                $sort = $this->sort['type'] = 'category';
+            } elseif( $sort == 'rating' || empty ( $sort ) ) { // Default
+                $sort = 'meta_value_num';
+                //$metaquery[] = array( 'metakey'=>'cowobo_points' );
+                $query['meta_key'] = 'cwb_points';
+            }
+
+            if ( $set_sort_in_query )
+                $query['orderby'] = $sort;
+        }
+
+    public function get_catposts( $cat, $numposts = 3, $sort = '' ) {
+        $query = array(
+            'numberposts'   => $numposts,
+            'cat'           => $cat->term_id
+        );
+
+        if ( array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
+            $sort = $this->default_cat_sorting[$cat->slug];
+
+        $this->set_sort_and_query( $sort, $query, true );
+
+        return get_posts( $query );
     }
 
     /**
@@ -77,7 +106,7 @@ function feed_title(){
         $feedtitle = '';
         $feedlink = get_bloginfo ( 'url' );
         $postcat = cowobo()->posts->get_category($post->ID);
-		
+
 		if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
             $feedlink = get_category_link( get_cat_ID ( cowobo()->query->new ) );
