@@ -183,7 +183,7 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
-            if ( is_a( get_post(), 'WP_Post' ) ) $has_post = true;
+            $has_post = ( is_a( get_post(), 'WP_Post' ) );
             if ( $has_post && ! $post_id ) $post_id = get_the_ID();
             if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
 
