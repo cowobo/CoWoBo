@@ -10,7 +10,8 @@ class CoWoBo_Feed
     );
 
     public $default_cat_sorting = array (
-       "news"   => "date"
+       "news"   => "date",
+       "event" => "startdate"
     );
 
     /**
@@ -58,6 +59,10 @@ class CoWoBo_Feed
                 $osrt = $this->sort['type'] = 'modified';
             } elseif ( 'category' == $sort ) {
                 $sort = $this->sort['type'] = 'category';
+            } elseif ( 'startdate' == $sort ) {
+                $sort = $this->sort['type'] = 'meta_value';
+                $query['meta_key'] = $this->sort['meta_key'] = 'cwb_startdate_timestamp';
+                $query['order'] = 'ASC';
             } elseif( $sort == 'rating' || empty ( $sort ) ) { // Default
                 $sort = 'meta_value_num';
                 //$metaquery[] = array( 'metakey'=>'cowobo_points' );
