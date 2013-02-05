@@ -484,7 +484,7 @@ class CoWoBo_Posts
                     $fallback = $attached_src[0];
             }
             if ( $user = cowobo()->users->get_users_by_profile_id( $postid, true ) ) {
-                echo get_avatar( $user->ID, '149', $fallback );
+                echo get_avatar( $user->ID, '169', $fallback );
                 return;
             }
         }

@@ -14,7 +14,7 @@ if (have_posts()) : while (have_posts()) : the_post();
 	    if($introline = get_post_meta(get_the_ID(), 'cwb_slogan', true)):
 			echo '<div class="introline">'.$introline.'</div>';
 	    endif;
-		
+
 		if(get_the_content()):
 	        do_action ( 'cowobo_before_postcontent' );
 			the_content();
@@ -118,11 +118,13 @@ if (have_posts()) : while (have_posts()) : the_post();
 		foreach($types as $typeid => $typeposts):
 			$tabcat = get_category($typeid);
 			$tabposts = get_posts(array('post__in'=>$typeposts, 'numberposts'=>3));
-			$tabtype = 'cat'; 
+			$tabtype = 'cat';
 			if(! empty($tabposts) ) include(TEMPLATEPATH.'/templates/tabs.php');
 		endforeach;
 	endif;
 
+    do_action ( 'cowobo_after_post', $postid, $postcat, $author );
+    
 	//show comments
     if ( is_object ( $postcat ) ) comments_template();
 

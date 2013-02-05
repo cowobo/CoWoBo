@@ -1,7 +1,5 @@
 <?php
 
-global $user_ID;
-
 //common variables
 $cubepoints = &cowobo()->points;
 $prefix = '';
