@@ -398,11 +398,11 @@ class CoWoBo_Posts
 
 				//check if the slide is uploaded image, youtube video, or image url;
 				if( isset ( $videocheck[1] ) && $videourl = $videocheck[1]) {
-	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'"><object>';
+	                $slides[$x] = '<div class="slide hide" id="slide-'.$x.'" style="top:-15%;"><object>';
 	                    $slides[$x] .= '<param name="movie" value="http://www.youtube.com/v/'.$url.'">';
 	                    $slides[$x] .= '<param NAME="wmode" VALUE="transparent">';
 	                    $slides[$x] .= '<param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">';
-	                    $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$videourl.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%"/>';
+	                    $slides[$x] .= '<embed src="http://www.youtube.com/v/'.$videourl.'" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" wmode="opaque" width="100%" height="100%" style="margin-bottom:45px;"/>';
 	                $slides[$x] .= '</object></div>';
 					$thumbs[] = '<a class="'.$x.'" href="?img='.$x.'"><img src="http://img.youtube.com/vi/'.$videourl.'/1.jpg" height="100%" alt=""/></a>';
 	            } elseif ( $image_check ) {
@@ -413,7 +413,7 @@ class CoWoBo_Posts
 
 	            }
 
-	           unset($imgid); unset($zoom2src);
+	           unset($imgid); unset($zoom2src); unset($videocheck);
 
 	        endfor;
 
@@ -470,9 +470,9 @@ class CoWoBo_Posts
     function the_thumbnail($postid, $catslug = false){
         if($catslug == 'location') {
 			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
-			$mappath = 'http://www.mapquestapi.com/staticmap/v3/getmap?key=Fmjtd%7Cluuanuutn9%2Cbg%3Do5-96blg6';
-			$mappath .= '&type=sat&scalebar=false&size=200,100&zoom=10&center='.$coordinates;			
-			echo '<img src="'.$mappath.'" height="100%"/>';
+			$mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype=satellite&sensor=false';
+			$mappath .= '&size=170x120&format=jpg&zoom=15&center='.$coordinates;	
+			echo '<img src="'.$mappath.'"/>';
             return;
         }
 

@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
 	
 	//Enable panning
 	jQuery(".imageholder").mousedown(function(e) {
-		e.preventDefault();
+		if(jQuery('.slide:first object').length<1) e.preventDefault();
 		jQuery('body').addClass('unselectable');
 	    previousX = e.clientX;
 	    previousY = e.clientY;
@@ -151,7 +151,6 @@ function center_slide(slide) {
 	var viewheight = jQuery('.imageviewer').height();
 	var newy = (viewheight - slide.height()) / 2;
 	if(slide.data('offset')) newy += parseFloat(slide.data('offset'));
-	
 	var ymax = viewheight - slide.height();
 	if(newy > 0) newy = 0;
 	if(newy < ymax) newy = ymax;
@@ -259,6 +258,7 @@ jQuery('.smallthumbs a').live('click', function(event) {
 		slide.prependTo(jQuery('.imageholder')).show();
 		clearInterval(slideshow);
 	}
+	
 });
 
 
