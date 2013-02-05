@@ -31,12 +31,11 @@ class CoWoBo_Feed
 		//todo: handle multiple sort values
         //$metaquery = array();
         $query = array();
-		$sort = $sortby[0];
+		$sort = ( is_array( $sortby ) ) ? $sortby[0] : $sortby;
         $direction = '';
         if ( empty ( $sort ) ) $sort = 'modified';
-        else {
-            $this->set_sort_and_query ( $sort, $query );
-        }
+
+        $this->set_sort_and_query ( $sort, $query );
 
         $query_default = array (
             'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords
@@ -58,7 +57,7 @@ class CoWoBo_Feed
                 $sort = $this->sort['type'] = 'meta_value';
                 $query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
             } elseif ( 'date' == $sort ) {
-                $osrt = $this->sort['type'] = 'date';
+                $osrt = $this->sort['type'] = 'modified';
             } elseif ( 'category' == $sort ) {
                 $sort = $this->sort['type'] = 'category';
             } elseif( $sort == 'rating' || empty ( $sort ) ) { // Default
