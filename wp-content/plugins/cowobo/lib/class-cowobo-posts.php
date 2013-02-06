@@ -103,9 +103,9 @@ class CoWoBo_Posts
 		//delete old post data in case they were cleared in the form
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
-		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
             if ( "cwb_" != substr ( $valuet, 0, 4 ) || in_array ( $valuet, array ( "cwb_author", "cwb_points" ) ) ) continue;
-		    delete_post_meta($postid, $key);
+			if ( $postcat->slug == 'location' && ( $key == 'cwb_coordinates' || $key == 'cwb_country' ) ) continue;
+			delete_post_meta($postid, $key);
 		}
 
 		//now store the new data
@@ -128,36 +128,6 @@ class CoWoBo_Posts
             }
         }
 
-        //if its a new location post geocode its location
-        if( $postcat->slug == 'location') {
-            if( $country = cowobo()->query->cwb_country ) {
-				if($location = cwb_geocode( $post_title.', '.$country ) ) {
-					//check if location has already been added
-					$countryid = get_cat_ID( $location['country']);
-					$citypost = get_posts('cat='.$countryid.'&name='.sanitize_title($location['city']) );
-					if( $citypost && $citypost[0]->ID != $postid ) {
-                        $postmsg['title'] = 'This location already exists, <a href="'.get_permalink($$citypost[0]->ID).'?action=editpost">click here to edit it</a>';
-                    } else {
-						//use title and country returned from geocode to avoid spelling duplicates
-                        $post_title = $location['city'];
-						$coordinates = $location['lat'].','.$location['lng'];
-						update_post_meta($postid, 'cwb_country', $location['country']);
-						update_post_meta($postid, 'cwb_coordinates', $coordinates);
-						if($countryid)
-							$tagarray[] = $countryid;
-						else {
-							$tagid = wp_insert_term( $location['country'] , 'category', array('parent'=> get_cat_ID('Locations')));
-							$tagarray[] = $tagid['term_id'];
-				            $tagarray = array_map('intval', $tagarray);
-						}
-                    }
-                } else {
-                    $postmsg['title'] = 'We could not find that city. Check your spelling or internet connection.';
-                }
-            } else {
-                $postmsg['country'] = 'Please enter a country';
-            }
-        }
 
         //if post contains a location create or link to that location post
         if( $newlocation = cowobo()->query->cwb_location ) {
@@ -177,8 +147,10 @@ class CoWoBo_Posts
 					}
 					$cityid = wp_insert_post(array('post_title'=>$location['city'], 'post_category'=>array($countryid), 'post_status'=>'publish'));
 					update_post_meta( $cityid, 'cwb_coordinates', $coordinates);
+					update_post_meta( $cityid, 'cwb_country', $countryid );
+					update_post_meta( $cityid, 'cwb_includemap', '1' );
+					update_post_meta( $cityid, 'cwb_includestreet', '1' );
 				}
-
 				update_post_meta( $postid, 'cwb_country', $countryid );
 				update_post_meta( $postid, 'cwb_city', $cityid );
 				update_post_meta( $postid, 'cwb_coordinates', $coordinates);
