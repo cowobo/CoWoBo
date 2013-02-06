@@ -63,7 +63,8 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 			echo '</h3>';
 			if($field['type'] == 'title'):
 				$post_title = ( ! $unsaved_data ) ? get_the_title($postid) : $query->post_title;
-				echo '<input type="text" name="post_title" value="'.$post_title.'"/>';
+				if($postcat->slug == 'location') $state = 'readonly'; else $state = '';
+				echo '<input type="text" name="post_title" value="'.$post_title.'" '.$state.'/>';
 			elseif($field['type'] == 'gallery'):
 				cowobo()->posts->cwb_upload_form($postid, 3);
 			elseif($field['type'] == 'tags'):
@@ -108,12 +109,12 @@ echo '<form method="post" action="" enctype="multipart/form-data">';
 				$map = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includemap', true) : $query->cwb_includemap;
 				$street = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_includestreet', true) : $query->cwb_includestreet;
 				$zoom = ( ! $unsaved_data ) ? get_post_meta($postid, 'cwb_zoom', true) : $query->cwb_zoom;
-				if($street==1) $streetstate = 'checked'; else $streetstate = '';
-				if($map==1) $mapstate = 'checked'; else $mapstate = '';
+				if( $street == 1 ) $streetstate = 'checked'; else $streetstate = '';
+				if( $map == 1 ) $mapstate = 'checked'; else $mapstate = '';
 				echo '<input type="text" class="lefthalf" tabindex="'.$index.'" name="cwb_location" value="'.$location.'"/>';
 				echo '<ul class="righthalf horlist">';
 					echo '<li><select name="cwb_zoom" class="auto">';
-						echo '<option>Zoom</option>'; 
+						echo '<option value="">Zoom</option>'; 
 						for($x=3; $x<17; $x++):
 							if($x == $zoom) $state = 'selected'; else $state='';
 							echo '<option value="'.$x.'" '.$state.'>'.$x.'</option>'; 
