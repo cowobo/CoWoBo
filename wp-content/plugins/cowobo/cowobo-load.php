@@ -46,6 +46,7 @@ require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-layouts.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'class-cowobo-map.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'notices.php' );
 require_once ( COWOBO_PLUGIN_LIB . 'widgets.php' );
+require_once ( COWOBO_PLUGIN_LIB . 'upgrade.php' );
 
 require_once ( COWOBO_PLUGIN_LIB . 'external/simple-local-avatars.php' );
 
