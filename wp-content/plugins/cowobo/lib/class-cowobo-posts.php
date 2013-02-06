@@ -74,7 +74,7 @@ class CoWoBo_Posts
         if ( ! $postid ) {
             $postid = $GLOBALS['newpostid'] = wp_insert_post( array('post_name' =>$newslug, 'post_category' => array ( get_cat_ID( cowobo()->query->new ) ), 'post_content' => " " ) );
             add_post_meta( $postid, 'cwb_author', $profile_id);
-            //$_POST['cwb_author'] = $profile_id;
+            add_post_meta( $postid, 'cwb_points', 0);
         }
 
         //check if post is created from within another post
@@ -104,7 +104,7 @@ class CoWoBo_Posts
 		foreach (get_post_custom_keys($postid) as $key ) {
 		    $valuet = trim($key);
 		    //if ( '_' == $valuet{0} ) continue; // don't touch wordpress fields
-            if ( "cwb_" != substr ( $valuet, 0, 4 ) || $valuet == "cwb_author" ) continue;
+            if ( "cwb_" != substr ( $valuet, 0, 4 ) || in_array ( $valuet, array ( "cwb_author", "cwb_points" ) ) ) continue;
 		    delete_post_meta($postid, $key);
 		}
 
@@ -116,6 +116,14 @@ class CoWoBo_Posts
                     add_post_meta($postid, $key, $newval);
                 }
             }else {
+                if ( 'cwb_startdate' == $key ) {
+                    if ( ! $timestamp = strtotime ( $value ) ) {
+                        $postmsg["startdate"] = "Please enter a valid date.";
+                        continue;
+                    } else {
+                        add_post_meta ( $postid, 'cwb_startdate_timestamp', $timestamp );
+                    }
+                }
                 add_post_meta($postid, $key, $value);
             }
         }
@@ -471,7 +479,7 @@ class CoWoBo_Posts
         if($catslug == 'location') {
 			$coordinates = get_post_meta($postid, 'cwb_coordinates', true);
 			$mappath = 'http://maps.googleapis.com/maps/api/staticmap?maptype=satellite&sensor=false';
-			$mappath .= '&size=170x120&format=jpg&zoom=15&center='.$coordinates;	
+			$mappath .= '&size=170x120&format=jpg&zoom=15&center='.$coordinates;
 			echo '<img src="'.$mappath.'"/>';
             return;
         }
@@ -828,6 +836,7 @@ class CoWoBo_Posts
                 'h2 + div',
                 'h1 + div', // CNN
                 'p.introduction', // BBC
+                'span#articleText', // Reuters
             );
 
             $text = '';

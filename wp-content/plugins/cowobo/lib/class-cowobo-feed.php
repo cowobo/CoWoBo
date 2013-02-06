@@ -9,6 +9,34 @@ class CoWoBo_Feed
         'type'  => ''
     );
 
+    public $default_cat_sorting = array (
+       "news"       => "date",
+       "event"      => "startdate",
+       "default"    => "rating"
+    );
+
+    public function __construct() {
+        add_filter('pre_get_posts', array ( &$this, 'filter_category_pages' ) );
+
+    }
+
+    public function filter_category_pages ( $wp_query ) {
+
+        if (is_category() ) {
+            $cat = $wp_query->get_queried_object();
+
+            $sort = get_category_sort_query ( $cat );
+
+            $query = $this->get_sort_query( $sort );
+
+            foreach ( $query as $query_key => $query_value ) {
+                $wp_query->set( $query_key, $query_value );
+
+            }
+        }
+        return $wp_query;
+    }
+
     /**
      * Filter feed based on parameters set in browse
      */
@@ -24,30 +52,14 @@ class CoWoBo_Feed
         if( $cats && $cats[0] != 'all' ) $catstring = implode(',',$cats);
         elseif( is_category() ) $catstring = get_query_var('cat');
 
-		//todo: handle multiple sort values
-        //$metaquery = array();
         $query = array();
-		$sort = $sortby[0];
-        $direction = '';
+		$sort = ( is_array( $sortby ) ) ? $sortby[0] : $sortby;
         if ( empty ( $sort ) ) $sort = 'modified';
-        elseif( $sort == 'rating' ) {
-            $sort = 'meta_value_num';
-			//$metaquery[] = array( 'metakey'=>'cowobo_points' );
-            $query['meta_key'] = 'cwb_points';
-		} elseif ( $sort == 'a-z' ) {
-			$sort = 'title';
-		} elseif ( $sort == 'z-a' ) {
-			$sort = 'title';
-			$direction = 'ASC';
-		} elseif ( $sort == 'location') {
-            $sort = $this->sort['type'] = 'meta_value';
-			$query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
-		} elseif ( 'category' == $sort ) {
-            $sort = $this->sort['type'] = 'category';
-        }
+
+        $this->set_sort_and_query ( $sort, $query );
 
         $query_default = array (
-            'orderby'=>$sort, 'order'=>$direction, 'cat'=> $catstring, 's'=>$keywords
+            'orderby'=>$sort, 'cat'=> $catstring, 's'=>$keywords
         );
         $query = array_merge ( $query, $query_default );
 
@@ -55,6 +67,76 @@ class CoWoBo_Feed
         query_posts( $query );
 
     }
+
+    public function get_category_sort_query( $cat, $query = array() ) {
+        $sort = $this->get_category_default_sort( $cat );
+        return $this->get_sort_query( $sort, $query );
+    }
+
+        private function get_sort_and_query ( $sort = '', $query = array(), $set_sort_in_query = false ) {
+            if ( $sort == 'a-z' ) {
+                $sort = 'title';
+                $query['order'] = 'ASC';
+            } elseif ( $sort == 'z-a' ) {
+                $sort = 'title';
+                $query['order'] = 'DESC';
+            } elseif ( $sort == 'location') {
+                $sort = $this->sort['type'] = 'meta_value';
+                $query['meta_key'] = $this->sort['meta_key'] = 'cwb_country';
+            } elseif ( 'date' == $sort ) {
+                $sort = $this->sort['type'] = 'modified';
+            } elseif ( 'category' == $sort ) {
+                $sort = $this->sort['type'] = 'category';
+            } elseif ( 'startdate' == $sort ) {
+                $sort = $this->sort['type'] = 'meta_value';
+                $query['meta_key'] = $this->sort['meta_key'] = 'cwb_startdate_timestamp';
+                $query['order'] = 'ASC';
+            } elseif( $sort == 'rating' || empty ( $sort ) ) { // Default
+                $sort = 'meta_value_num';
+                $query['meta_key'] = 'cwb_points';
+            }
+
+            if ( $set_sort_in_query )
+                $query['orderby'] = $sort;
+
+            return array ( "sort" => $sort, "query" => $query );
+        }
+
+        private function get_sort_query ( $sort, $query = array() ) {
+            $results = $this->get_sort_and_query( $sort, array(), true );
+            return array_merge ( $results['query'], $query );
+        }
+
+        private function set_sort_and_query ( &$sort, &$query, $set_sort_in_query = false ) {
+            $results = $this->get_sort_and_query( $sort, $query, $set_sort_in_query );
+
+            $sort = $results['sort'];
+            $query = $results['query'];
+        }
+
+
+    public function get_catposts( $cat, $numposts = 3, $sort = '' ) {
+        $query = array(
+            'numberposts'   => $numposts,
+            'cat'           => $cat->term_id
+        );
+
+        if ( empty ( $sort ) )
+            $sort = $this->get_category_default_sort( $cat );
+
+        $this->set_sort_and_query( $sort, $query, true );
+
+        return get_posts( $query );
+    }
+
+        private function get_category_default_sort ( $cat ) {
+            if ( isset ( $cat->slug ) && array_key_exists ( $cat->slug, $this->default_cat_sorting ) )
+            $sort = $this->default_cat_sorting[$cat->slug];
+            else
+                $sort = $this->default_cat_sorting['default'];
+
+            return $sort;
+        }
 
     /**
      * Show all posts related to current post in requested category
@@ -76,7 +158,7 @@ function feed_title(){
 
         $feedtitle = '';
         $feedlink = get_bloginfo ( 'url' );
-				
+
 		if( cowobo()->query->new ) {
             $feedtitle .= 'Add '.cowobo()->query->new;
             $feedlink = get_category_link( get_cat_ID ( cowobo()->query->new ) );

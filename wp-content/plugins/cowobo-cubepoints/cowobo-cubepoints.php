@@ -183,7 +183,8 @@ if (!class_exists('CoWoBo_CubePoints')) :
         }
 
         public function add_points( $type, $post_id = 0, $data_user_id = 0, $recipient_id = 0, $data = '', $points = false ) {
-            if ( ! $post_id ) $post_id = get_the_ID();
+            $has_post = ( is_a( get_post(), 'WP_Post' ) );
+            if ( $has_post && ! $post_id ) $post_id = get_the_ID();
             if ( ! $recipient_id ) $recipient_id = get_current_user_id ();
 
             if ( ! is_array ( $data ) ) parse_str ( $data );
@@ -193,7 +194,9 @@ if (!class_exists('CoWoBo_CubePoints')) :
                 $points = $this->points_config[$type]['points'];
             }
 
-            $data['postid'] = $post_id;
+            if ( $has_post )
+                $data['postid'] = $post_id;
+
             if ( $data_user_id ) $data['userid'] = $data_user_id;
             elseif ( $recipient_id != get_current_user_id() ) $data['userid'] = get_current_user_id();
             $data_str = http_build_query($data);
