@@ -25,7 +25,7 @@ class CoWoBo_Feed
         if (is_category() ) {
             $cat = $wp_query->get_queried_object();
 
-            $sort = get_category_sort_query ( $cat );
+            $sort = $this->get_category_sort_query ( $cat );
 
             $query = $this->get_sort_query( $sort );
 
